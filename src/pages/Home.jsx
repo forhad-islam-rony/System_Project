@@ -8,6 +8,11 @@ import icon03 from '../assets/images/icon03.png'
 import { Link } from 'react-router-dom'
 import { BsArrowRight } from 'react-icons/bs'
 import SpecialityMenu from '../components/SpecialityMenu'
+import DoctorLists from './DoctorLists'
+import faqImg from '../assets/images/faq-img.png'
+import Faq from './Faq'
+import Testimonial from './Testimonial'
+import Footer from './Footer'
 
 const Home = () => {
   return <>
@@ -76,7 +81,7 @@ const Home = () => {
         <h2 className='text-[26px] leading-9 text-headingColor font-[700] text-center'>Find a Doctor</h2>
         <p className='text_para text-center leading-7 text-textColor font-[400] mt-4 text-center'>Find expert doctors across Bangladesh, compare specialties, and book appointments with ease for personalized, quality care</p>
 
-        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#1B1A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
+        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
         <BsArrowRight className='group-hover:text-white w-6 h-5' />
         </Link>
        </div>
@@ -89,7 +94,7 @@ const Home = () => {
         <h2 className='text-[26px] leading-9 text-headingColor font-[700] text-center'>Find an Ambulance</h2>
         <p className='text_para text-center leading-7 text-textColor font-[400] mt-4 text-center'>Get access to reliable ambulance services in Bangladesh, book instantly for emergencies, and ensure timely medical transport.</p>
 
-        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#1B1A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
+        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
         <BsArrowRight className='group-hover:text-white w-6 h-5' />
         </Link>
        </div>
@@ -102,7 +107,7 @@ const Home = () => {
         <h2 className='text-[26px] leading-9 text-headingColor font-[700] text-center'>Online Health Checkup</h2>
         <p className='text_para text-center leading-7 text-textColor font-[400] mt-4 text-center'>Get personalized health assessments with AI-driven chatbots, detect potential diseases online, and stay proactive about your well-being.</p>
 
-        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#1B1A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
+        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
         <BsArrowRight className='group-hover:text-white w-6 h-5' />
         </Link>
        </div>
@@ -112,8 +117,60 @@ const Home = () => {
 </section>
  {/* SpecialityMenu Section */}
   <SpecialityMenu />
+
+  {/* Best Doctor List */}
+
+ <section>
+ <div className="container">
+    <div className='xl:w-[470px] mx-auto'>
+      <h2 className='heading text-center'>
+        Our great Doctors
+      </h2>
+      <p className='text_para text-center'>
+      Discover our team of exceptional doctors, dedicated to providing top-quality care and personalized treatments across Bangladesh.
+      </p>
+    </div>
+    <DoctorLists />
+    </div>
+ </section>
+{/* Faq Section */}
+
+<section>
+  <div className="container">
+    <div className='flex justify-between gap-[50px] lg:gap-0'>
+      <div className='w-1/2 hidden md:block'>
+      <img src={faqImg} alt="" />
+      </div>
+     
+     <div className='w-full md:w-1/2'>
+     <h2 className='heading'>Most questions by out beloved patients</h2>
+
+      <Faq />
+     </div>
+
+    </div>
+  </div>
+</section>
+
+{/* testimonial */}
+<section>
+  <div className='container'>
+    <div className='xl:w-[470px] mx-auto'>
+      <h2 className='heading text-center'>What our patient say</h2>
+      <p className='text_para text-center'>
+      Hear from our patients as they share their experiences, showcasing the exceptional care and personalized attention they received on their journey to better health
+      </p>
+    </div>
+
+    <Testimonial />
+  </div>
+  </section>
+
+  {/* Footer */}
+  <section>
+    <Footer></Footer>
+  </section>
   </>
-  
   
 }
 
