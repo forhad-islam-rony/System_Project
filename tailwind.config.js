@@ -18,7 +18,7 @@ export default {
         panelShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;",
       },
       gridTemplateColumns:{
-        'auto':'repeat(auto-fill,minmax(200px,1fr))'
+        'auto':'repeat(auto-fill,minmax(250px, 1fr))'
       }
     },
   },
