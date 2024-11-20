@@ -57,7 +57,7 @@ const Doctors = () => {
             >
               {/* Image */}
               <img
-                className="w-full h-64 object-cover bg-blue-50"
+                className="w-full h-80 object-cover bg-blue-50"
                 src={item.photo}
                 alt={item.name}
               />
