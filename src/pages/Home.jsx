@@ -8,6 +8,7 @@ import icon03 from '../assets/images/icon03.png'
 import { Link } from 'react-router-dom'
 import { BsArrowRight } from 'react-icons/bs'
 import SpecialityMenu from '../components/SpecialityMenu'
+import TopDoctors from '../components/TopDoctors'
 
 const Home = () => {
   return <>
@@ -112,8 +113,11 @@ const Home = () => {
 </section>
  {/* SpecialityMenu Section */}
   <SpecialityMenu />
+  <TopDoctors />
   </>
   
+  
+
   
 }
 
