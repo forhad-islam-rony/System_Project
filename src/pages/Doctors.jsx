@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { doctors } from "../assets/data/doctors";
+import { doctorsapn } from "../assets/data/doctorsapn";
 
 const Doctors = () => {
   const { speciality } = useParams(); // Get speciality from URL
@@ -10,12 +10,12 @@ const Doctors = () => {
   // Apply filtering based on speciality
   const applyFilter = () => {
     if (speciality) {
-      const filtered = doctors.filter(
+      const filtered = doctorsapn.filter(
         (item) => item.speciality.toLowerCase() === speciality.toLowerCase()
       );
       setFilterDoc(filtered);
     } else {
-      setFilterDoc(doctors); // Show all doctors if no speciality
+      setFilterDoc(doctorsapn); // Show all doctors if no speciality
     }
   };
 
