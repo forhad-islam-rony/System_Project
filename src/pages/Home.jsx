@@ -167,9 +167,7 @@ const Home = () => {
   </section>
 
   {/* Footer */}
-  <section>
-    <Footer></Footer>
-  </section>
+  
   </>
   
 }
