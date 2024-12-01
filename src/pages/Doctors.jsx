@@ -7,7 +7,6 @@ const Doctors = () => {
   const [filterDoc, setFilterDoc] = useState([]); // Initialize with empty array
   const navigate = useNavigate();
 
-  // Apply filtering based on speciality
   const applyFilter = () => {
     if (speciality) {
       const filtered = doctorsapn.filter(
@@ -19,7 +18,6 @@ const Doctors = () => {
     }
   };
 
-  // Trigger filtering whenever speciality changes
   useEffect(() => {
     applyFilter();
   }, [speciality]); // Dependency on speciality
@@ -32,16 +30,18 @@ const Doctors = () => {
       <div className="flex flex-col sm:flex-row items-start gap-8 mt-5">
         {/* Categories */}
         <div className="flex flex-col gap-6 text-sm text-gray-600 w-full sm:w-[20%] mt-5">
-          {["Surgeon", "Neurologist", "Dermatologist","Cardiologist"].map((spec) => (
-            <button
-              key={spec}
-              onClick={() => navigate(`/doctors/${spec}`)}
-              className={`text-md px-5 py-3 text-center border border-gray-300 rounded-lg transition-all cursor-pointer shadow-sm hover:shadow-md w-full 
+          {["Surgeon", "Neurologist", "Dermatologist", "Cardiologist"].map(
+            (spec) => (
+              <button
+                key={spec}
+                onClick={() => navigate(`/doctors/speciality/${spec}`)}
+                className={`text-md px-5 py-3 text-center border border-gray-300 rounded-lg transition-all cursor-pointer shadow-sm hover:shadow-md w-full 
               ${speciality === spec ? "bg-blue-500 text-white" : ""}`}
-            >
-              {spec}
-            </button>
-          ))}
+              >
+                {spec}
+              </button>
+            )
+          )}
         </div>
         {/* Doctors Grid */}
         <div
@@ -54,6 +54,7 @@ const Doctors = () => {
             <div
               key={index}
               className="bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden cursor-pointer hover:translate-y-[-5px] transition-transform duration-300"
+              onClick={() => navigate(`/doctors/${item.id}`)} // Navigate on click
             >
               {/* Image */}
               <img

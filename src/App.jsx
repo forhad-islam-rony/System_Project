@@ -12,6 +12,7 @@ import Appointment from './pages/Appointment';
 import "./App.css";
 import Footer from './pages/Footer';
 import Register from './pages/Register';
+import DoctorsDetails from './pages/DoctorsDetails';
 
 export const App = () => {
   return (
@@ -20,11 +21,12 @@ export const App = () => {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/doctors' element={<Doctors />} />
+        <Route path="/doctors/:id" element={<DoctorsDetails />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/about' element={<About />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/doctors/:speciality' element={<Doctors />} /> {/* Fixed */}
+        <Route path='/doctors/speciality/:speciality' element={<Doctors />} /> {/* Fixed */}
         <Route path='/myprofile' element={<Myprofile />} />
         <Route path='/myappointments' element={<Myappointments />} />
         <Route path='/appointment/:docId' element={<Appointment />} />

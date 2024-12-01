@@ -8,7 +8,7 @@ import doctorImg04 from "../doc4.png";
 
 export const doctorsapn = [
   {
-    id: "01",
+    id: "1",
     name: "Dr. Alfaz Ahmed",
     speciality: "Surgeon",
     avgRating: 4.8,
@@ -18,7 +18,7 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "02",
+    id: "2",
     name: "Dr. Saleh Mahmud",
     speciality: "Neurologist",
     avgRating: 4.8,
@@ -28,7 +28,7 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "03",
+    id: "3",
     name: "Dr. Farid Uddin",
     speciality: "Dermatologist",
     avgRating: 4.8,
@@ -39,8 +39,8 @@ export const doctorsapn = [
   },
   //generate more doctors info
   {
-    id: "04",
-    name: "Dr. Alfaz Ahmed",
+    id: "4",
+    name: "Dr. Alfaz Ahmedaa",
     speciality: "Surgeon",
     avgRating: 4.8,
     totalRating: 272,
@@ -49,8 +49,8 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "05",
-    name: "Dr. Saleh Mahmud",
+    id: "5",
+    name: "Dr. Saleh Mahmd",
     speciality: "Neurologist",
     avgRating: 4.8,
     totalRating: 272,
@@ -59,8 +59,8 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "06",
-    name: "Dr. Farid Uddin",
+    id: "6",
+    name: "Dr. Faridul Uddin",
     speciality: "Dermatologist",
     avgRating: 4.8,
     totalRating: 272,
@@ -70,8 +70,8 @@ export const doctorsapn = [
   },
   
   {
-    id: "07",
-    name: "Dr. Alfaz Ahmed",
+    id: "7",
+    name: "Dr. Alfaz Islam",
     speciality: "Surgeon",
     avgRating: 4.8,
     totalRating: 272,
@@ -80,8 +80,8 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "08",
-    name: "Dr. Saleh Mahmud",
+    id: "8",
+    name: "Dr. Saleh Mahmud Uddin",
     speciality: "Neurologist",
     avgRating: 4.8,
     totalRating: 272,
@@ -90,8 +90,8 @@ export const doctorsapn = [
     hospital: "Mount Adora Hospital, Sylhet.",
   },
   {
-    id: "09",
-    name: "Dr. Farid Uddin",
+    id: "9",
+    name: "Dr. Faridul Uddin",
     speciality: "Dermatologist",
     avgRating: 4.8,
     totalRating: 272,
@@ -103,7 +103,7 @@ export const doctorsapn = [
   //add a cardiologist
   {
     id: "10",
-    name: "Dr. Farhan Ahmed",
+    name: "Dr. Farhad Ahmed",
     speciality: "Cardiologist",
     avgRating: 4.8,
     totalRating: 272,
