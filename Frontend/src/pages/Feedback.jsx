@@ -1,5 +1,6 @@
 import React from 'react'
 import avatar from '../assets/images/avatar-icon.png';
+import { formateDate } from "../utils/formateDate";
 
 const Feedback = () => {
   return (
@@ -20,12 +21,12 @@ const Feedback = () => {
 
             <div>
               <h5 className='text-[16px] leading-6
-              text-primaryColor fond-bold'>
+              text-primaryColor font-bold'>
                 Ali ahmed
               </h5>
               <p className="text-[14px] leading-6
               text-textColor">
-                {formateData("02-14-2023")}
+                {formateDate("02-14-2023")}
               </p>
               <p className='text_para mt-3 font-medium
               text-[15px]'>
@@ -35,9 +36,6 @@ const Feedback = () => {
               </p>
             </div>
           </div>
-
-          
-
         </div>
       </div>
     </div>
