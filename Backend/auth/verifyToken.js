@@ -3,6 +3,7 @@ import Doctor from '../models/DoctorSchema.js';
 import User from '../models/UserSchema.js';
 
 export const authenticate = async (req, res, next) => {
+
   const authToken = req.headers.authorization;
 
   if (!authToken || !authToken.startsWith('Bearer')) {
@@ -12,11 +13,14 @@ export const authenticate = async (req, res, next) => {
   try {
     const token = authToken.split(' ')[1];
     const decoded = fwt.verify(token, process.env.JWT_SECRET_KEY);
+    
+    // console.log(decoded);
 
-    req.userId = decoded.id;
+    req.userId = decoded.iid;
     req.role = decoded.role;
+    // console.log(req.userId);
+    // console.log(req.role);
 
-    console.log(decoded);
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
@@ -27,16 +31,15 @@ export const authenticate = async (req, res, next) => {
 };
 
 export const restrict = (roles) => async (req, res, next) => {
-
   const userId = req.userId;
-  console.log("Decoded userId:", userId);
+  // console.log("Decoded userId:", userId);
 
   try {
     const patient = await User.findById(userId); 
     const doctor = await Doctor.findById(userId);
 
-    console.log("Patient:", patient);
-    console.log("Doctor:", doctor);
+    // console.log("Patient:", patient);
+    // console.log("Doctor:", doctor);
 
     const user = patient || doctor;
 
@@ -44,7 +47,7 @@ export const restrict = (roles) => async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    console.log("User role:", user.role);
+    // console.log("User role:", user.role);
 
     if (!roles.includes(user.role)) {
       return res.status(403).json({ success: false, message: 'You are not authorized' });
