@@ -5,6 +5,7 @@ import  testImg  from "../assets/doc1.png";
 import starIcon from "../assets/images/Star.png";
 import DoctorAbout from './DoctorAbout';
 import Feedback from './Feedback';
+import SidePanel from './SidePanel';
 
 
 const DoctorsDetails = () => {
@@ -76,9 +77,11 @@ const DoctorsDetails = () => {
                         {tab === 'about' && <DoctorAbout/>}
                         {tab === 'feedback' && <Feedback/>}
                     </div>
-
                 </div>
-                <div></div>
+
+                <div>
+                    <SidePanel/>
+                </div>
             </div> 
         </div>  
     </section>
