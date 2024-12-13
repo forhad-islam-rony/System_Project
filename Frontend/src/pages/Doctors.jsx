@@ -30,7 +30,7 @@ const Doctors = () => {
       <div className="flex flex-col sm:flex-row items-start gap-8 mt-5">
         {/* Categories */}
         <div className="flex flex-col gap-6 text-sm text-gray-600 w-full sm:w-[20%] mt-5">
-          {["Surgeon", "Neurologist", "Dermatologist", "Cardiologist"].map(
+          {["Surgeon", "Neurologist", "Dermatologist", "Cardiologist","Gastroenterologist","Gastroenterologist"].map(
             (spec) => (
               <button
                 key={spec}
