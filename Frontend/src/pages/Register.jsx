@@ -3,11 +3,20 @@ import signupImg from '../assets/images/signup.gif'
 import avatar from '../assets/images/doctor-img01.png'
 import { Link } from 'react-router-dom'
 import { useState } from 'react';
+import uploadCloudinary from '../utils/uploadCloudinary';
+import { BASE_URL } from '../utils/config';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import HashLoader from 'react-spinners/HashLoader';
 
 const Register = () => {
 
  const [selectedFile, setSelectedFile] = useState(null);
  const [previeweURL, setprevieweURL] = useState("");
+  const Navigate = useNavigate();
+
+ const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,11 +36,46 @@ const handleInputChange = (e) => {
 const handleFileChange = async (event) => {
   const file = event.target.files[0];
 
+  const data = await uploadCloudinary(file);
+
+  setprevieweURL(data.url)
+  setSelectedFile(data.url);
+  setFormData({
+    ...formData,
+    photo: data.url
+  });
+
 
 };
 
 const submitHandler = async (event) => {
+ 
   event.preventDefault();
+  setLoading(true);
+  try{
+    const res = await fetch (`${BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const {message} = await res.json();
+
+    if(!res.ok){
+      throw new Error(message);
+    }
+    console.log(res);
+
+      setLoading(false);
+    toast.success(message);
+    Navigate('/login');
+   
+
+  }catch (error){
+    toast.error(error.message);
+  }
 };
 
     return <section className='px-5 xl:px-0'>
@@ -70,7 +114,7 @@ const submitHandler = async (event) => {
               <label className='text-headingColor font-bold text-[16px] leading-7'>Are you a:
                 <select name="role" 
                 value={formData.role}
-                onAbort={handleInputChange}
+                onChange={handleInputChange}
                 className='text-textColor font-semibold text-[15px] leading-7 px-4 py-3 focus:outline-none'>
                   <option value="patient">Patient</option>
                   <option value="doctor">Doctor</option>
@@ -91,9 +135,9 @@ const submitHandler = async (event) => {
             </div>
 
             <div className='mb-5 flex items-center gap-3'>
-             <figure className='w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center '>
-               <img src={avatar} alt="" className='w-full rounded-full ' />
-             </figure>
+             {selectedFile && (<figure className='w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center '>
+               <img src={previeweURL} alt="" className='w-full rounded-full ' />
+             </figure>)}
              
              <div className='relative w-[160px] h-[50px]'>
               <input type="file" name="photo" id="customFile" onChange={handleFileChange} accept=".jpg, .png" className='absolute top-0 left-0 w-full opacity-0 cursor-pointer' />
@@ -104,7 +148,9 @@ const submitHandler = async (event) => {
             </div>
 
             <div className='mt-7'>
-               <button type='submit' className='w-full bg-primaryColor text-white text-[18px]leading-[30px] rounded-lg px-4 py-3'>Sign Up</button>
+               <button
+               disabled = {loading && true}
+               type='submit' className='w-full bg-primaryColor text-white text-[18px]leading-[30px] rounded-lg px-4 py-3'>{loading ?( <HashLoader size={35} color = "ffffff" />) : ("Sign Up")}</button>
             </div>
 
             <p className='mt-5 text-textColor text-center'>Already have an account? <Link to='/login' className='text-primaryColor font-medium ml-1' >Login</Link></p>
