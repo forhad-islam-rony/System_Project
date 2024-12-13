@@ -112,4 +112,15 @@ export const doctorsapn = [
     hospital: "Ibn Sina Hospital, Dhaka.",
   },
 
+  {
+    id: "11",
+    name: "Dr. Saleya Mahmud",
+    speciality: "Neurologist",
+    avgRating: 4.8,
+    totalRating: 272,
+    photo: doctorImg02,
+    totalPatients: 1500,
+    hospital: "Mount Adora Hospital, Sylhet.",
+  },
+
 ];
