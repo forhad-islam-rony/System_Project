@@ -13,6 +13,7 @@ import "./App.css";
 import Footer from './pages/Footer';
 import Register from './pages/Register';
 import DoctorsDetails from './pages/DoctorsDetails';
+import MyAccount from './Dashboard/user-account/MyAccount'
 
 export const App = () => {
   return (
@@ -30,6 +31,8 @@ export const App = () => {
         <Route path='/myprofile' element={<Myprofile />} />
         <Route path='/myappointments' element={<Myappointments />} />
         <Route path='/appointment/:docId' element={<Appointment />} />
+        <Route path='/users/profile/me' element={<MyAccount />} />
+
       </Routes>
       <section>
       <Footer />
