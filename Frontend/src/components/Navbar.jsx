@@ -22,6 +22,10 @@ const navLinks = [
     path: '/contact',
     display: 'Contact',
   },
+  {
+    path: '/pharmacy',
+    display: 'Pharmacy',
+  },
 ];
 
 const Navbar = () => {
