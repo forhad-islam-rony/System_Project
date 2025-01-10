@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { medicines } from '../assets/data/medicines';
 import { BsSearch, BsCart3 } from 'react-icons/bs';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Pharmacy = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMed, setFilterMed] = useState(medicines);
   const [category, setCategory] = useState('all');
@@ -96,8 +98,14 @@ const Pharmacy = () => {
         <div className="md:w-3/4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filterMed.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div className="relative">
+              <div 
+                key={item.id} 
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+                onClick={() => navigate(`/pharmacy/${item.id}`)}
+              >
+                <div 
+                  className="relative cursor-pointer"
+                >
                   <img
                     className="w-full h-48 object-cover"
                     src={item.image}

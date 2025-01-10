@@ -36,8 +36,8 @@ const authReducer = (state, action) => {
       case "LOGOUT":
         return {
           user: null,
-          role: null,
           token: null,
+          role: null,
         };
 
       default:
