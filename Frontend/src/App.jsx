@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import DoctorsDetails from './pages/DoctorsDetails';
 import MyAccount from './Dashboard/user-account/MyAccount';
 import Pharmacy from './pages/Pharmacy';
+import MedicineDetails from './pages/MedicineDetails';
 
 export const App = () => {
   return (
@@ -42,6 +43,7 @@ export const App = () => {
         
         {/* Pharmacy Route */}
         <Route path="/pharmacy" element={<Pharmacy />} />
+        <Route path="/pharmacy/:id" element={<MedicineDetails />} />
       </Routes>
       <Footer />
     </div>
