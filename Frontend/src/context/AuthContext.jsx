@@ -1,75 +1,74 @@
-import { useContext, useEffect, useReducer, createContext } from "react";
+import { createContext, useContext, useReducer, useEffect } from 'react';
 
-const getUserFromLocalStorage = () => {
-  const user = localStorage.getItem('user');
-  try {
-    return user ? JSON.parse(user) : null;
-  } catch {
-    return null;
-  }
-};
+export const AuthContext = createContext();
 
 const initialState = {
-  user: getUserFromLocalStorage(),
+  user: localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')) : null,
   role: localStorage.getItem('role') || null,
   token: localStorage.getItem('token') || null,
 };
 
-
-export const AuthContext = createContext(initialState);
-
 const authReducer = (state, action) => {
   switch (action.type) {
-    case 'LOGIN_START':
-      return {
-        user: null,
-        role: null,
-        token: null,
-      };
-    case "LOGIN_SUCCESS":
+    case 'LOGIN':
       return {
         user: action.payload.user,
-        role: action.payload.role,
         token: action.payload.token,
+        role: action.payload.user.role,
       };
 
-      case "LOGOUT":
-        return {
-          user: null,
-          token: null,
-          role: null,
-        };
-
-      default:
-        return state;
-}
-};  
-
-
-export const AuthContextProvider = ({ children }) => {
-  
-  const [state, dispatch] = useReducer(authReducer, initialState)
-
-  useEffect(() => {
-    if (state.user) {
-      localStorage.setItem('user', JSON.stringify(state.user));
-    } else {
-      localStorage.removeItem('user');
-    }
-    if (state.token) {
-      localStorage.setItem('token', state.token);
-    } else {
+    case 'LOGOUT':
       localStorage.removeItem('token');
-    }
-    if (state.role) {
-      localStorage.setItem('role', state.role);
-    } else {
+      localStorage.removeItem('userData');
       localStorage.removeItem('role');
-    }
-  }, [state]);
-  
-  
-  return <AuthContext.Provider value={{user:state.user, role:state.role, token:state.token, dispatch}}>
-    {children}
-  </AuthContext.Provider>
-}
+      return {
+        user: null,
+        token: null,
+        role: null,
+      };
+
+    default:
+      return state;
+  }
+};
+
+export const AuthProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  const login = (userData, token) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('userData', JSON.stringify(userData));
+    localStorage.setItem('role', userData.role);
+
+    dispatch({
+      type: 'LOGIN',
+      payload: {
+        user: userData,
+        token,
+      },
+    });
+  };
+
+  const logout = () => {
+    dispatch({ type: 'LOGOUT' });
+  };
+
+  return (
+    <AuthContext.Provider 
+      value={{
+        user: state.user,
+        token: state.token,
+        role: state.role,
+        dispatch,
+        login,
+        logout
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
