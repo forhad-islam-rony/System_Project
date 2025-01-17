@@ -8,21 +8,11 @@ import Profile from "./Profile";
 
 const MyAccount = () => {
   const [tab, setTab] = React.useState("bookings");
-  const { dispatch } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    
-    dispatch({
-      type: "LOGOUT",
-      payload: {
-        user: null,
-        token: null,
-        role: null,
-      },
-    });
-
+    dispatch({ type: 'LOGOUT' });
     navigate('/');
   };
 
@@ -40,7 +30,7 @@ const MyAccount = () => {
             <div className="flex items-center justify-center">
               <figure className="w-[100px] h-[100px] rounded-full border-2 border-solid border-primaryColor">
                 <img
-                  src={userImg}
+                  src={user?.photo || userImg}
                   alt=""
                   className="w-full h-full rounded-full"
                 />
@@ -49,15 +39,15 @@ const MyAccount = () => {
 
             <div className="text-center mt-4">
               <h3 className="text-[18px] leading-[30px] text-headingColor font-bold">
-                Muhibur Rahman
+                {user?.name || "User"}
               </h3>
               <p className="text-textColor text-[15px] leading-6 font-medium">
-                example@gmail.com
+                {user?.email || "email@example.com"}
               </p>
               <p className="text-textColor text-[15px] leading-6 font-medium">
                 Blood Type:
                 <span className="ml-2 text-headingColor text-[22px] leading-8">
-                  O-
+                  {user?.bloodType || "N/A"}
                 </span>
               </p>
             </div>

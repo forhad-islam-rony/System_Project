@@ -1,10 +1,9 @@
 import React from 'react'
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../utils/config';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext.jsx';
+import { useAuth } from '../context/AuthContext';
 import { HashLoader } from 'react-spinners';
 
 const Login = () => {
@@ -16,57 +15,52 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-    const {dispatch} = useContext(AuthContext);
-
+    const { login } = useAuth();
 
     const handleInputChange = (e) => {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value
-      });
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
     };
 
-    const submitHandler = async (event) => {
-     
-      event.preventDefault();
-      setLoading(true);
-      try{
-        const res = await fetch (`${BASE_URL}/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-    
-        const result = await res.json();
-    
-        if(!res.ok){
-          throw new Error(result.message);
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.message);
+            }
+
+            // Use the login function from context
+            login(result.data, result.token);
+            
+            toast.success(result.message);
+            
+            // Navigate based on role
+            if (result.data.role === 'doctor') {
+                navigate('/doctors/profile/me');
+            } else {
+                navigate('/users/profile/me');
+            }
+
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
-
-        dispatch({
-          type: 'LOGIN_SUCCESS',
-          payload: {
-            user: result.date, 
-            role: result.role,
-            token: result.token,
-          },
-        });
-        
-        console.log(result, "Login result");
-        
-          setLoading(false);
-        toast.success(result.message);
-        navigate('/');
-       
-    
-      }catch (error){
-        toast.error(error.message);
-      }
     };
-
 
     return <section className='px-5 lg:px-0'>
       <div className='w-full max-w-[570px] mx-auto rounded-lg shadow-md md:p-10'>
@@ -74,7 +68,7 @@ const Login = () => {
           Hello! <span className='text-primaryColor'>Welcome</span>Back 🎉
         </h3>
 
-         <form className='py-4 md:py-0' onSubmit={submitHandler}>
+         <form className='py-4 md:py-0' onSubmit={handleLogin}>
             <div className='mb-5'>
               <input type="email" placeholder='Enter your email' name='email' value={formData.email} onChange={handleInputChange} className='w-full py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[22p] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer'
               required />

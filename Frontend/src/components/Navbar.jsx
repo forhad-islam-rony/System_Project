@@ -55,6 +55,11 @@ const Navbar = () => {
 
   const toggleMenu = () => menuRef.current.classList.toggle('show__menu');
 
+  const getProfilePath = () => {
+    const userRole = localStorage.getItem('role');
+    return userRole === 'doctor' ? '/doctors/profile/me' : '/users/profile/me';
+  };
+
   return (
     <header className="header flex items-center" ref={headerRef}>
       <div className="container">
@@ -88,7 +93,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {token && user ? (
             <div>
-              <Link to={`${role === 'doctor' ? '/doctors/profile/me' : '/users/profile/me'}`}>
+              <Link to={getProfilePath()}>
                 <figure className='w-[35px] h-[35px] rounded-full cursor-pointer'>
                   <img 
                     src={user?.photo || userImg} 

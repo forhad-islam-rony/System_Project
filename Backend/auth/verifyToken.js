@@ -1,60 +1,56 @@
-import fwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import Doctor from '../models/DoctorSchema.js';
 import User from '../models/UserSchema.js';
 
 export const authenticate = async (req, res, next) => {
-
+  // Get token from header
   const authToken = req.headers.authorization;
 
-  if (!authToken || !authToken.startsWith('Bearer')) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  // Check if token exists
+  if (!authToken || !authToken.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'No token, authorization denied' });
   }
 
   try {
     const token = authToken.split(' ')[1];
-    const decoded = fwt.verify(token, process.env.JWT_SECRET_KEY);
-    
-    // console.log(decoded);
 
-    req.userId = decoded.iid;
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    req.userId = decoded.id;
     req.role = decoded.role;
-    // console.log(req.userId);
-    // console.log(req.role);
 
     next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ success: false, message: 'Session Expired' });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Token expired' });
     }
-    return res.status(401).json({ success: false, message: 'Invalid Token' });
+    return res.status(401).json({ success: false, message: 'Invalid token' });
   }
 };
 
-export const restrict = (roles) => async (req, res, next) => {
+export const restrict = roles => async (req, res, next) => {
   const userId = req.userId;
-  // console.log("Decoded userId:", userId);
 
   try {
-    const patient = await User.findById(userId); 
+    let user;
+    
+    const patient = await User.findById(userId);
     const doctor = await Doctor.findById(userId);
 
-    // console.log("Patient:", patient);
-    // console.log("Doctor:", doctor);
-
-    const user = patient || doctor;
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (patient) {
+      user = patient;
+    }
+    if (doctor) {
+      user = doctor;
     }
 
-    // console.log("User role:", user.role);
-
     if (!roles.includes(user.role)) {
-      return res.status(403).json({ success: false, message: 'You are not authorized' });
+      return res.status(401).json({ success: false, message: "You're not authorized" });
     }
 
     next();
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Something went wrong' });
   }
 };
