@@ -11,42 +11,32 @@ const generateToken = user => {
 }
 
 export const register = async (req, res) => {
-
-  const { email, password, name, role, photo, gender } = req.body;
-  try{
-      let user = null;
-      
-      if(role =="patient"){
-        user = await User.findOne({email})
-      }
-      else if(role=="doctor"){
-        user = await Doctor.findOne({email})
-  }
-
-  if(user){
-    return res.status(400).json({message: 'User already exists'});
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  if(role=='patient'){
-    user = new User({name, email, password: hashedPassword, role, photo, gender });
-  }
-
-  if(role=='doctor'){
-    user = new Doctor({name,email, password: hashedPassword,role, photo, gender, });
-  }
-  await user.save();
-  res.status(200).json({success: true, message: 'User created  successfully'});
-
-
-}
-
-  catch(error){
-      res.status(500).json({success: false, message: 'Something went wrong', error: error.message});
-  }
-}
+    try {
+        const { email, password, name } = req.body;
+        
+        const existingUser = await User.findOne({ email });
+        
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+        
+        const newUser = new User({
+            name,
+            email,
+            password: hashPassword,
+            role: 'admin' // Temporarily set role to admin
+        });
+        
+        await newUser.save();
+        
+        res.status(200).json({ message: 'Admin created successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 export const login = async (req, res) => {
     const { email, password } = req.body;

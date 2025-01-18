@@ -4,11 +4,11 @@ const DoctorSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
-  phone: { type: Number },
   photo: { type: String },
   ticketPrice: { type: Number },
   role: {
     type: String,
+    default: "doctor",
   },
 
   // Fields for doctors only
@@ -35,8 +35,12 @@ const DoctorSchema = new mongoose.Schema({
   },
   isApproved: {
     type: String,
-    enum: ["pending", "approved", "cancelled"],
+    enum: ["pending", "approved", "rejected"],
     default: "pending",
+  },
+  isAvailable: {
+    type: Boolean,
+    default: false,
   },
   appointments: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
 });
