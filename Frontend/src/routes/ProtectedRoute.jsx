@@ -1,20 +1,14 @@
-import { useContext } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-    const { token, role } = useContext(AuthContext);
-    const location = useLocation();
-    const isAdminRoute = location.pathname.startsWith('/admin');
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
     if (!token) {
-        return <Navigate to={isAdminRoute ? "/admin/login" : "/login"} replace={true} />;
+        return <Navigate to={role === 'admin' ? '/admin/login' : '/login'} replace={true} />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
-        if (isAdminRoute) {
-            return <Navigate to="/admin/login" replace={true} />;
-        }
         return <Navigate to="/" replace={true} />;
     }
 

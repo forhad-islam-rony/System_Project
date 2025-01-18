@@ -1,8 +1,8 @@
-
-
 import user from '../models/UserSchema.js';
 import BookingSchema from '../models/BookingSchema.js';
 import Doctor from '../models/DoctorSchema.js';
+import Booking from '../models/BookingSchema.js';
+import PatientDoctor from '../models/PatientDoctorSchema.js';
 
 export const updateUser = async (req, res) => {
   const id = req.params.id;
@@ -70,20 +70,89 @@ export const getUserProfile = async (req, res) => {
   }
 }
 
-export const getMyAppointment = async (req, res) => { 
-  try{
-     //step-1 : retrives appointment from booking
-       const bookings = await BookingSchema.find({user: req.userId});
-     //step-2 : extract doctor id from appointment booking
-     const doctorIds = bookings.map(el => el.doctor.id);
+export const getMyAppointments = async (req, res) => {
+  try {
+    // Get both current bookings and history
+    const bookings = await Booking.find({ user: req.userId })
+      .populate('doctor', 'name specialization');
 
-     // step-3 : retrive doctors using doctor ids
+    const patientDoctorRecords = await PatientDoctor.find({ 
+      patient: req.userId 
+    }).populate('doctor', 'name specialization');
 
-     const doctors = await Doctor.find({_id: {$in: doctorIds}}).select("-password"); 
-    res.status(200).json({success: true, message: 'Appointments are getting', data: doctors});
-    
+    // Combine and format the data
+    const allAppointments = [
+      ...bookings,
+      ...patientDoctorRecords.flatMap(record => 
+        record.history.map(hist => ({
+          ...hist,
+          doctor: record.doctor,
+          status: 'finished'
+        }))
+      )
+    ].sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+    res.status(200).json({
+      success: true,
+      message: "Appointments fetched successfully",
+      data: allAppointments
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch appointments",
+      error: error.message
+    });
   }
-  catch(error){
-    res.status(500).json({success: false, message: 'Something went wrong', error: error.message});
+};
+
+// Get current bookings
+export const getMyBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ 
+      user: req.userId,
+      status: { $ne: 'finished' }  // Exclude finished appointments
+    }).populate('doctor', 'name specialization photo');
+
+    res.status(200).json({
+      success: true,
+      message: "Current bookings fetched successfully",
+      data: bookings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch current bookings",
+      error: error.message
+    });
   }
-}
+};
+
+// Get booking history from PatientDoctor
+export const getBookingHistory = async (req, res) => {
+  try {
+    const patientDoctorRecords = await PatientDoctor.find({ 
+      patient: req.userId 
+    }).populate('doctor', 'name specialization photo');
+
+    // Extract and flatten all history entries
+    const history = patientDoctorRecords.flatMap(record => 
+      record.history.map(hist => ({
+        ...hist.toObject(),
+        doctor: record.doctor
+      }))
+    ).sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+    res.status(200).json({
+      success: true,
+      message: "Booking history fetched successfully",
+      data: history
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch booking history",
+      error: error.message
+    });
+  }
+};

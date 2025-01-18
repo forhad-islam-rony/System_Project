@@ -1,6 +1,7 @@
 import Booking from '../models/BookingSchema.js';
 import Doctor from '../models/DoctorSchema.js';
 import User from '../models/UserSchema.js';
+import PatientDoctor from '../models/PatientDoctorSchema.js';
 
 export const createBooking = async (req, res) => {
   const { 
@@ -88,17 +89,61 @@ export const getCheckoutSession = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
     const userId = req.userId;
-    const bookingData = req.body;
-
+    
     // Get doctor details
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
-    // Create booking with automatic visit type determination
-    req.body.doctor = doctorId; // Ensure doctor ID is in the request body
-    await createBooking(req, res);
+    // Get the visit type from PatientDoctor
+    const patientDoctor = await PatientDoctor.findOne({
+      doctor: doctorId,
+      patient: userId
+    });
+
+    const visitType = patientDoctor ? patientDoctor.nextVisitType : 'first';
+    
+    // Calculate fee based on visit type
+    let fee = doctor.ticketPrice;
+    if (visitType === 'second') {
+      fee *= 0.75; // 25% discount
+    } else if (visitType === 'free') {
+      fee = 0;
+    }
+
+    // Create booking with the determined visit type and fee
+    const booking = new Booking({
+      ...req.body,
+      doctor: doctorId,
+      user: userId,
+      visitType,
+      fee
+    });
+
+    const savedBooking = await booking.save();
+
+    // After successful booking, increment visits and reset next visit type
+    await PatientDoctor.findOneAndUpdate(
+      {
+        doctor: doctorId,
+        patient: userId
+      },
+      {
+        $inc: { totalVisits: 1 },
+        nextVisitType: 'first' // Reset to first visit after booking
+      },
+      {
+        upsert: true,
+        new: true
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Booking created successfully',
+      data: savedBooking
+    });
 
   } catch (error) {
     console.error('Checkout session error:', error);
@@ -125,6 +170,18 @@ export const updateAppointmentStatus = async (req, res) => {
     }
 
     if (status === 'finished') {
+      // Update the history status to finished
+      await PatientDoctor.findOneAndUpdate(
+        {
+          doctor: booking.doctor,
+          patient: booking.user,
+          'history.bookingId': booking._id
+        },
+        {
+          'history.$.status': 'finished'
+        }
+      );
+
       // Delete the appointment if marked as finished
       await Booking.findByIdAndDelete(appointmentId);
       
@@ -132,8 +189,40 @@ export const updateAppointmentStatus = async (req, res) => {
         success: true,
         message: "Appointment finished and removed successfully"
       });
+    } else if (status === 'approved') {
+      // Update booking status
+      booking.status = status;
+      await booking.save();
+
+      // Add to patient-doctor history with fee
+      await PatientDoctor.findOneAndUpdate(
+        {
+          doctor: booking.doctor,
+          patient: booking.user
+        },
+        {
+          $push: {
+            history: {
+              bookingId: booking._id,
+              visitType: booking.visitType,
+              appointmentDate: booking.appointmentDate,
+              appointmentTime: booking.appointmentTime,
+              problem: booking.problem,
+              fee: booking.fee,
+              status: 'approved'
+            }
+          }
+        },
+        { upsert: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Appointment status updated successfully",
+        data: booking
+      });
     } else {
-      // Update status for other cases
+      // Handle other status updates (like 'cancelled')
       booking.status = status;
       await booking.save();
 
@@ -260,48 +349,34 @@ export const checkVisitType = async (req, res) => {
     const doctorId = req.params.doctorId;
     const userId = req.userId;
 
-    // Find all finished appointments for this doctor-patient pair
-    const finishedAppointments = await Booking.find({
+    const patientDoctor = await PatientDoctor.findOne({
       doctor: doctorId,
-      user: userId,
-      status: 'finished'
-    }).sort({ createdAt: -1 });
-
-    // Find any existing unfinished appointment
-    const currentAppointment = await Booking.findOne({
-      doctor: doctorId,
-      user: userId,
-      status: { $ne: 'finished' }
+      patient: userId
     });
 
-    let visitType = 'first';
-    
-    if (currentAppointment) {
-      // If there's an existing unfinished appointment, use its visit type
-      visitType = currentAppointment.visitType;
-    } else if (finishedAppointments.length > 0) {
-      // If there are finished appointments, check the last one's type
-      const lastAppointment = finishedAppointments[0];
-      if (lastAppointment.visitType === 'free') {
-        visitType = 'first'; // After a free visit, next is first
-      } else if (lastAppointment.visitType === 'first') {
-        visitType = 'second'; // After first visit, next is second
-      } else if (lastAppointment.visitType === 'second') {
-        visitType = 'first'; // After second visit, cycle back to first
-      }
+    const visitType = patientDoctor ? patientDoctor.nextVisitType : 'first';
+
+    // Get doctor's base price
+    const doctor = await Doctor.findById(doctorId);
+    let price = doctor.ticketPrice;
+
+    // Calculate price based on visit type
+    if (visitType === 'second') {
+      price *= 0.75; // 25% discount
+    } else if (visitType === 'free') {
+      price = 0;
     }
 
     res.status(200).json({
       success: true,
       visitType,
-      message: 'Visit type determined successfully'
+      price
     });
-
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
       success: false,
       message: 'Error checking visit type',
-      error: error.message
+      error: err.message
     });
   }
 };
@@ -311,59 +386,36 @@ export const searchPatients = async (req, res) => {
     const { email } = req.query;
     const doctorId = req.userId;
 
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is required for search'
-      });
-    }
-
-    // First find the user by email
-    const user = await User.findOne({ 
-      email: { $regex: email, $options: 'i' } 
-    });
-
-    if (!user) {
+    const patient = await User.findOne({ email });
+    if (!patient) {
       return res.status(404).json({
         success: false,
-        message: 'No patient found with this email'
+        message: 'Patient not found'
       });
     }
 
-    // Then find all bookings for this user with this doctor
-    const bookings = await Booking.find({
+    const patientDoctor = await PatientDoctor.findOne({
       doctor: doctorId,
-      user: user._id
-    }).sort({ createdAt: -1 });
+      patient: patient._id
+    });
 
-    // Get the latest booking if exists
-    const latestBooking = bookings[0];
-
-    // Format the response data
-    const patientData = {
-      userId: user._id,
-      email: user.email,
-      name: user.name,
-      phone: user.phone,
-      lastVisitType: latestBooking ? latestBooking.visitType : null,
-      lastVisitDate: latestBooking ? latestBooking.appointmentDate : null,
-      totalVisits: bookings.length,
-      currentPrice: latestBooking ? latestBooking.ticketPrice : null,
-      bookingId: latestBooking ? latestBooking._id : null
+    const responseData = {
+      name: patient.name,
+      email: patient.email,
+      phone: patient.phone,
+      totalVisits: patientDoctor ? patientDoctor.totalVisits : 0,
+      nextVisitType: patientDoctor ? patientDoctor.nextVisitType : 'first'
     };
 
     res.status(200).json({
       success: true,
-      data: patientData,
-      message: 'Patient found'
+      data: responseData
     });
-
-  } catch (error) {
-    console.error('Search error:', error);
+  } catch (err) {
     res.status(500).json({
       success: false,
       message: 'Error searching patients',
-      error: error.message
+      error: err.message
     });
   }
 };
@@ -373,86 +425,39 @@ export const updatePatientVisitType = async (req, res) => {
     const { email, visitType } = req.body;
     const doctorId = req.userId;
 
-    // First find the user
-    const user = await User.findOne({ email });
-    if (!user) {
+    const patient = await User.findOne({ email });
+    if (!patient) {
       return res.status(404).json({
         success: false,
-        message: "Patient not found"
+        message: 'Patient not found'
       });
     }
 
-    // Get doctor's details
-    const doctor = await Doctor.findById(doctorId);
-    if (!doctor) {
-      return res.status(404).json({
-        success: false,
-        message: "Doctor not found"
-      });
-    }
-
-    // Find existing booking for this user and doctor
-    const existingBooking = await Booking.findOne({
-      doctor: doctorId,
-      user: user._id,
-      status: { $ne: 'finished' } // Get any unfinished booking
-    });
-
-    let newPrice = doctor.ticketPrice;
-    if (visitType === 'second') {
-      newPrice = doctor.ticketPrice * 0.75;
-    } else if (visitType === 'free') {
-      newPrice = 0;
-    }
-
-    if (existingBooking) {
-      // Update existing booking
-      existingBooking.visitType = visitType;
-      existingBooking.ticketPrice = newPrice;
-      const updatedBooking = await existingBooking.save();
-
-      return res.status(200).json({
-        success: true,
-        message: `Visit type updated to ${visitType}`,
-        data: updatedBooking
-      });
-    }
-
-    // If no existing booking, create new one
-    const newBooking = new Booking({
-      doctor: doctorId,
-      user: user._id,
-      ticketPrice: newPrice,
-      visitType: visitType,
-      email: user.email,
-      name: user.name,
-      phone: user.phone,
-      status: 'pending',
-      appointmentDate: new Date(),
-      appointmentTime: '09:00',
-      problem: 'Follow-up visit'
-    });
-
-    const savedBooking = await newBooking.save();
-
-    // Update doctor's appointments array
-    await Doctor.findByIdAndUpdate(
-      doctorId,
-      { $push: { appointments: savedBooking._id } }
+    const patientDoctor = await PatientDoctor.findOneAndUpdate(
+      {
+        doctor: doctorId,
+        patient: patient._id
+      },
+      {
+        nextVisitType: visitType,
+        $setOnInsert: { totalVisits: 0 }
+      },
+      {
+        upsert: true,
+        new: true
+      }
     );
 
     res.status(200).json({
       success: true,
-      message: `New booking created with ${visitType} type`,
-      data: savedBooking
+      message: 'Visit type updated successfully',
+      data: patientDoctor
     });
-
-  } catch (error) {
-    console.error('Update error:', error);
+  } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Error updating patient visit type',
-      error: error.message
+      message: 'Error updating visit type',
+      error: err.message
     });
   }
 };
