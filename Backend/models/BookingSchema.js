@@ -12,7 +12,6 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    ticketPrice: { type: String, required: true },
     appointmentDate: {
       type: Date,
       required: true,
@@ -46,5 +45,8 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Create a compound index
+bookingSchema.index({ doctor: 1, user: 1, appointmentDate: 1 }, { unique: true });
 
 export default mongoose.model("Booking", bookingSchema);

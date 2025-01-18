@@ -19,13 +19,24 @@ import MedicineDetails from './pages/MedicineDetails';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import AdminLogin from './pages/Admin/Login';
+import AdminRegister from './pages/Admin/Register';
+import Dashboard from './pages/Admin/Dashboard';
+import DoctorList from './pages/Admin/DoctorList';
+import AddDoctor from './pages/Admin/AddDoctor';
+import Appointments from './pages/Admin/Appointments';
+import PatientList from './pages/Admin/PatientList';
 
 export const App = () => {
   return (
     <AuthProvider>
       <Toaster position="top-center" reverseOrder={false} />
       <div className='mx-4 sm:max-[10%]'>
-        <Navbar />
+        <Routes>
+          <Route path="/admin/*" element={null} />
+          <Route path="*" element={<Navbar />} />
+        </Routes>
+
         <Routes>
           {/* Public Routes */}
           <Route path='/' element={<Home />} />
@@ -69,8 +80,53 @@ export const App = () => {
           {/* Pharmacy Route */}
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/pharmacy/:id" element={<MedicineDetails />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/doctors" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <DoctorList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/add-doctor" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AddDoctor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/admin/appointments" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Appointments />
+            </ProtectedRoute>
+          } />
+          <Route 
+            path="/admin/patients" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <PatientList />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
-        <Footer />
+
+        <Routes>
+          <Route path="/admin/*" element={null} />
+          <Route path="*" element={<Footer />} />
+        </Routes>
       </div>
     </AuthProvider>
   );

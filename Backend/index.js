@@ -8,6 +8,7 @@ import userRoutes from './Routes/user.js';
 import doctorRoutes from './Routes/doctor.js';
 import reviewRoutes from './Routes/review.js';
 import bookingRoute from './Routes/booking.js';
+import adminRoutes from './Routes/admin.js';
 
 dotenv.config();
 const app = express();
