@@ -57,25 +57,41 @@ export const restrict = roles => async (req, res, next) => {
 
 export const verifyAdmin = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
-        
-        if (!token) {
-            return res.status(401).json({ message: 'No token, authorization denied' });
+        console.log('Verifying admin access...');
+        const authToken = req.headers.authorization;
+
+        if (!authToken || !authToken.startsWith('Bearer ')) {
+            console.log('No token provided');
+            return res.status(401).json({ 
+                success: false, 
+                message: 'No token, authorization denied' 
+            });
         }
 
-        // Verify token
+        const token = authToken.split(' ')[1];
+        console.log('Token received');
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        
-        // Check if user exists and is admin
+        console.log('Token decoded:', decoded);
+
         const user = await User.findById(decoded.id);
-        
+        console.log('User found:', user?.role);
+
         if (!user || user.role !== 'admin') {
-            return res.status(403).json({ message: 'Not authorized as admin' });
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Not authorized as admin' 
+            });
         }
 
-        req.user = user;
+        req.userId = decoded.id;
+        req.role = decoded.role;
         next();
-    } catch (error) {
-        res.status(401).json({ message: 'Token is not valid' });
+    } catch (err) {
+        console.error('Admin verification error:', err);
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Invalid token' 
+        });
     }
 }; 

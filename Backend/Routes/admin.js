@@ -8,13 +8,13 @@ const router = express.Router();
 router.post('/login', adminController.adminLogin);
 router.post('/register', adminController.adminRegister);
 
-// Protected admin routes
+// Protected admin routes (all need verifyAdmin middleware)
 router.get('/dashboard-stats', verifyAdmin, adminController.getDashboardStats);
 router.get('/appointments', verifyAdmin, adminController.getAllAppointments);
 router.get('/doctors', verifyAdmin, adminController.getAllDoctors);
 router.post('/doctors', verifyAdmin, adminController.addDoctor);
 router.delete('/doctors/:id', verifyAdmin, adminController.deleteDoctor);
-router.patch('/appointments/:id', verifyAdmin, adminController.updateAppointmentStatus);
+router.patch('/appointments/:id/status', verifyAdmin, adminController.updateAppointmentStatus);
 router.patch('/doctors/:id/approve', verifyAdmin, adminController.updateDoctorApproval);
 router.patch('/doctors/:id/availability', verifyAdmin, adminController.updateDoctorAvailability);
 router.get('/patients', verifyAdmin, adminController.getAllPatients);

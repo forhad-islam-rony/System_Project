@@ -28,7 +28,11 @@ const bookingSchema = new mongoose.Schema(
     visitType: {
       type: String,
       enum: ["first", "second", "free"],
-      default: "first"
+      required: true
+    },
+    fee: {
+      type: Number,
+      required: true
     },
     problem: {
       type: String,

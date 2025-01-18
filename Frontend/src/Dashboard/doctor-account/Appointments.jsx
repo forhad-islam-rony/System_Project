@@ -189,7 +189,7 @@ const Appointments = () => {
           >
             Search Patient
           </button>
-        </div>
+      </div>
 
         {/* Search Modal */}
         {showSearchModal && (
@@ -347,7 +347,7 @@ const Appointments = () => {
             )}
           </div>
         </div>
-      </div>
+    </div>
     </>
   );
 };

@@ -29,26 +29,31 @@ export const getDashboardStats = async (req, res) => {
 
 export const getAllAppointments = async (req, res) => {
     try {
+        console.log('Fetching all appointments...');
+        
         const appointments = await Booking.find()
             .populate('user', 'name photo age email phone')
             .populate('doctor', 'name photo specialization email phone')
             .sort({ appointmentDate: -1 })
             .lean();
 
-        // Ensure unique appointments
-        const uniqueAppointments = appointments.reduce((acc, current) => {
-            const x = acc.find(item => item._id.toString() === current._id.toString());
-            if (!x) {
-                return acc.concat([current]);
-            } else {
-                return acc;
-            }
-        }, []);
+        console.log('Found appointments:', appointments?.length);
 
-        res.status(200).json(uniqueAppointments);
+        // Ensure we're sending an array
+        const appointmentsArray = Array.isArray(appointments) ? appointments : [];
+
+        res.status(200).json({
+            success: true,
+            data: appointmentsArray,
+            message: "Appointments fetched successfully"
+        });
     } catch (error) {
         console.error('Error fetching appointments:', error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error",
+            error: error.message 
+        });
     }
 };
 
@@ -251,14 +256,36 @@ export const updateDoctorAvailability = async (req, res) => {
 
 export const getAllPatients = async (req, res) => {
     try {
+        console.log('Fetching patients...');
+        
         const patients = await User.find({ role: 'patient' })
-            .populate('appointments')
+            .populate({
+                path: 'bookings',
+                model: 'Booking',
+                populate: {
+                    path: 'doctor',
+                    select: 'name specialization'
+                }
+            })
             .sort({ createdAt: -1 })
             .lean();
 
-        res.status(200).json(patients);
+        console.log('Found patients:', patients.length);
+
+        // Ensure we're sending an array
+        const patientsArray = Array.isArray(patients) ? patients : [];
+
+        res.status(200).json({
+            success: true,
+            data: patientsArray,
+            message: "Patients fetched successfully"
+        });
     } catch (error) {
-        console.error('Error fetching patients:', error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Error in getAllPatients:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error",
+            error: error.message 
+        });
     }
 }; 
