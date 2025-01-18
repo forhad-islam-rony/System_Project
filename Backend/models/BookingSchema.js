@@ -17,15 +17,32 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    appointmentTime: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ["pending", "approved", "cancelled"],
+      enum: ["pending", "approved", "cancelled", "finished"],
       default: "pending",
+    },
+    visitType: {
+      type: String,
+      enum: ["first", "second", "free"],
+      default: "first"
+    },
+    problem: {
+      type: String,
+      required: true
     },
     isPaid: {
       type: Boolean,
-      default: true,
+      default: false,
     },
+    isNewForDoctor: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 );

@@ -1,47 +1,103 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { doctorsapn } from "../assets/data/doctorsapn";
 import { FaSearch, FaStar } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
+import { BASE_URL } from "../config";
 
-const Doctors = () => {
+function Doctors() {
   const { speciality } = useParams();
+  const [doctors, setDoctors] = useState([]);
   const [filterDoc, setFilterDoc] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpeciality, setSelectedSpeciality] = useState(speciality || "");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const specialities = [
-    { name: "Surgeon", icon: "🔪" },
-    { name: "Neurologist", icon: "🧠" },
-    { name: "Dermatologist", icon: "👨‍⚕️" },
-    { name: "Cardiologist", icon: "❤️" },
-    { name: "Gastroenterologist", icon: "🩺" }
+    { name: "Surgery", icon: "🔪" },
+    { name: "Neurology", icon: "🧠" },
+    { name: "Dermatology", icon: "👨‍⚕️" },
+    { name: "Cardiology", icon: "❤️" },
+    { name: "Gastroenterology", icon: "🩺" }
   ];
 
-  const applyFilter = () => {
-    let filtered = doctorsapn;
-    
-    if (selectedSpeciality) {
-      filtered = filtered.filter(
-        doc => doc.speciality.toLowerCase() === selectedSpeciality.toLowerCase()
-      );
+  const handleShowAllDoctors = () => {
+    setSelectedSpeciality("");
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      let url = `${BASE_URL}/api/v1/doctors`;
+      
+      // Add query parameters if they exist
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('query', searchTerm);
+      if (selectedSpeciality) params.append('specialization', selectedSpeciality);
+      params.append('isApproved', 'approved');
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      console.log('Fetching doctors from:', url);
+
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch doctors');
+      }
+      
+      const result = await response.json();
+      console.log('API Response:', result);
+      
+      if (result.success) {
+        setDoctors(result.data);
+        setFilterDoc(result.data);
+      }
+    } catch (err) {
+      console.error('Error fetching doctors:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    
-    if (searchTerm) {
-      filtered = filtered.filter(
-        doc =>
-          doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doc.speciality.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    setFilterDoc(filtered);
   };
 
   useEffect(() => {
-    applyFilter();
-  }, [selectedSpeciality, searchTerm]);
+    const timeoutId = setTimeout(() => {
+      fetchDoctors();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedSpeciality]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading doctors...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-600">
+          <p>Error: {error}</p>
+          <button 
+            onClick={fetchDoctors}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-12 sm:px-6 lg:px-8">
@@ -75,6 +131,18 @@ const Doctors = () => {
           <div className="lg:w-1/4">
             <h2 className="text-xl font-semibold mb-6 text-gray-800">Specialities</h2>
             <div className="space-y-3">
+              <button
+                onClick={handleShowAllDoctors}
+                className={`w-full flex items-center gap-3 px-6 py-4 rounded-lg transition-all duration-300 ${
+                  selectedSpeciality === ""
+                    ? "bg-blue-500 text-white shadow-lg transform scale-105"
+                    : "bg-white hover:bg-blue-50 text-gray-700 shadow"
+                }`}
+              >
+                <span className="text-xl">👥</span>
+                <span className="font-medium">All Doctors</span>
+              </button>
+
               {specialities.map(({ name, icon }) => (
                 <button
                   key={name}
@@ -97,9 +165,9 @@ const Doctors = () => {
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filterDoc.map((doctor) => (
                 <div
-                  key={doctor.id}
+                  key={doctor._id}
                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
-                  onClick={() => navigate(`/doctors/${doctor.id}`)}
+                  onClick={() => navigate(`/doctors/${doctor._id}`)}
                 >
                   <div className="relative">
                     <img
@@ -107,8 +175,20 @@ const Doctors = () => {
                       alt={doctor.name}
                       className="w-full h-64 object-cover"
                     />
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                      Available
+                    <div className="absolute top-4 right-4 flex flex-col gap-2">
+                      {/* Availability badge */}
+                      <div className={`px-3 py-1 rounded-full text-sm text-white ${
+                        doctor.isAvailable ? "bg-green-500" : "bg-red-500"
+                      }`}>
+                        {doctor.isAvailable ? "Available" : "Not Available"}
+                      </div>
+                      
+                      {/* Approval status badge */}
+                      <div className={`px-3 py-1 rounded-full text-sm text-white ${
+                        doctor.isApproved === "approved" ? "bg-blue-500" : "bg-yellow-500"
+                      }`}>
+                        {doctor.isApproved === "approved" ? "Approved" : "Pending"}
+                      </div>
                     </div>
                   </div>
                   
@@ -117,14 +197,14 @@ const Doctors = () => {
                       {doctor.name}
                     </h3>
                     <p className="text-blue-600 font-medium mb-4">
-                      {doctor.speciality}
+                      {doctor.specialization || "Specialization not specified"}
                     </p>
                     
                     <div className="flex items-center gap-2 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className="text-yellow-400" />
+                        <FaStar key={i} className={`${i < doctor.averageRating ? "text-yellow-400" : "text-gray-300"}`} />
                       ))}
-                      <span className="text-gray-600">({doctor.avgRating})</span>
+                      <span className="text-gray-600">({doctor.averageRating})</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -155,6 +235,6 @@ const Doctors = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Doctors;

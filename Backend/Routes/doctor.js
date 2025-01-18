@@ -1,4 +1,3 @@
-
 import express from "express";
 
 import { getSingleDoctor, getAllDoctor, updateDoctor, deleteDoctor, getDoctorProfile } from "../Controllers/doctorController.js";

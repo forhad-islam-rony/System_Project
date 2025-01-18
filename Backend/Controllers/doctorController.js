@@ -73,26 +73,47 @@ export const getSingleDoctor = async (req, res) => {
 }
 
 export const getAllDoctor = async (req, res) => {
+  try {
+    const { query, specialization, isApproved } = req.query;
+    
+    let filter = {};
 
-  try{
+    // Add specialization filter if provided
+    if (specialization) {
+      filter.specialization = specialization;
+    }
 
-    const {query} = req.query;
-    let doctors;
-    if(query){
-      doctors = await Doctor.find({isApproved: 'approved', $or:[{name:{$regex: query, $option: "i"}},
-        {specialization:{$regex: query, $option: "i"}},
-      ],
-      }).select("-password");
+    // Add search query filter if provided
+    if (query) {
+      filter.$or = [
+        { name: { $regex: query, $options: "i" } },
+        { specialization: { $regex: query, $options: "i" } },
+      ];
     }
-    else{
-       doctors = await Doctor.find({isApproved: "approved"}).select("-password");
+
+    // Add isApproved filter
+    if (isApproved) {
+      filter.isApproved = isApproved;
     }
-    res.status(200).json({success: true, message: "All Doctor Found", data: doctors,});
+
+    // Get doctors and sort them
+    const doctors = await Doctor.find(filter)
+      .select("-password");
+
+    res.status(200).json({
+      success: true,
+      message: "Doctors found successfully",
+      data: doctors,
+    });
+  } catch (error) {
+    console.error('Error in getAllDoctor:', error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch doctors",
+      error: error.message
+    });
   }
-  catch(error){
-    res.status(500).json({success: false, message: 'No Doctors found', error: error.message});
-  }
-}
+};
 
 export const getDoctorProfile = async (req, res) => {
   const doctorId = req.userId;

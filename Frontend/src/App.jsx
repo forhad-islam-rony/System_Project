@@ -18,10 +18,12 @@ import Pharmacy from './pages/Pharmacy';
 import MedicineDetails from './pages/MedicineDetails';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 export const App = () => {
   return (
     <AuthProvider>
+      <Toaster position="top-center" reverseOrder={false} />
       <div className='mx-4 sm:max-[10%]'>
         <Navbar />
         <Routes>
