@@ -6,53 +6,62 @@ import bcrypt from 'bcryptjs';
 
 export const getDashboardStats = async (req, res) => {
     try {
-        const totalDoctors = await Doctor.countDocuments();
         const totalPatients = await User.countDocuments({ role: 'patient' });
+        const totalDoctors = await Doctor.countDocuments();
         const totalAppointments = await Booking.countDocuments();
         
+        // Calculate total earnings from completed appointments
+        const earnings = await Booking.aggregate([
+            { $match: { status: 'finished', isPaid: true } },
+            { $group: { _id: null, total: { $sum: '$fee' } } }
+        ]);
+        const totalEarnings = earnings.length > 0 ? earnings[0].total : 0;
+
+        // Get recent appointments
         const recentAppointments = await Booking.find()
-            .populate('doctor')
-            .populate('user')
+            .sort({ appointmentDate: -1 })
             .limit(5)
-            .sort({ createdAt: -1 });
+            .populate('user', 'name photo')
+            .populate('doctor', 'name specialization')
+            .lean();
 
         res.status(200).json({
-            totalDoctors,
-            totalPatients,
-            totalAppointments,
-            recentAppointments
+            success: true,
+            message: "Dashboard stats fetched successfully",
+            data: {
+                totalPatients,
+                totalDoctors,
+                totalAppointments,
+                totalEarnings,
+                recentAppointments
+            }
         });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error" 
+        });
     }
 };
 
 export const getAllAppointments = async (req, res) => {
     try {
-        console.log('Fetching all appointments...');
-        
         const appointments = await Booking.find()
-            .populate('user', 'name photo age email phone')
-            .populate('doctor', 'name photo specialization email phone')
-            .sort({ appointmentDate: -1 })
-            .lean();
-
-        console.log('Found appointments:', appointments?.length);
-
-        // Ensure we're sending an array
-        const appointmentsArray = Array.isArray(appointments) ? appointments : [];
+            .populate('user', 'name photo email')
+            .populate('doctor', 'name photo specialization')
+            .sort({ appointmentDate: -1 });
 
         res.status(200).json({
             success: true,
-            data: appointmentsArray,
-            message: "Appointments fetched successfully"
+            message: "Appointments fetched successfully",
+            data: appointments
         });
     } catch (error) {
         console.error('Error fetching appointments:', error);
         res.status(500).json({ 
             success: false, 
-            message: "Internal server error",
-            error: error.message 
+            message: "Internal server error" 
         });
     }
 };
@@ -256,36 +265,39 @@ export const updateDoctorAvailability = async (req, res) => {
 
 export const getAllPatients = async (req, res) => {
     try {
-        console.log('Fetching patients...');
-        
+        // Find all users with role 'patient' and exclude password
         const patients = await User.find({ role: 'patient' })
-            .populate({
-                path: 'bookings',
-                model: 'Booking',
-                populate: {
-                    path: 'doctor',
-                    select: 'name specialization'
-                }
-            })
-            .sort({ createdAt: -1 })
+            .select('-password')
             .lean();
 
-        console.log('Found patients:', patients.length);
+        // Get bookings for each patient
+        const patientsWithStats = await Promise.all(patients.map(async (patient) => {
+            const bookings = await Booking.find({ user: patient._id })
+                .populate('doctor', 'name specialization')
+                .lean();
 
-        // Ensure we're sending an array
-        const patientsArray = Array.isArray(patients) ? patients : [];
+            const activeBookings = bookings.filter(
+                booking => booking.status !== 'cancelled'
+            ).length;
+
+            return {
+                ...patient,
+                totalAppointments: bookings.length,
+                activeAppointments: activeBookings,
+                appointments: bookings // Include bookings for latest appointment info
+            };
+        }));
 
         res.status(200).json({
             success: true,
-            data: patientsArray,
-            message: "Patients fetched successfully"
+            message: "Patients fetched successfully",
+            data: patientsWithStats
         });
     } catch (error) {
-        console.error('Error in getAllPatients:', error);
+        console.error('Error fetching patients:', error);
         res.status(500).json({ 
             success: false, 
-            message: "Internal server error",
-            error: error.message 
+            message: "Internal server error" 
         });
     }
 }; 

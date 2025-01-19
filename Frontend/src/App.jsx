@@ -26,6 +26,7 @@ import DoctorList from './pages/Admin/DoctorList';
 import AddDoctor from './pages/Admin/AddDoctor';
 import Appointments from './pages/Admin/Appointments';
 import PatientList from './pages/Admin/PatientList';
+import BloodGroup from './pages/BloodGroup';
 
 export const App = () => {
   return (
@@ -42,6 +43,7 @@ export const App = () => {
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
+          <Route path='/blood-group' element={<BloodGroup />} />
           
           {/* Auth Routes */}
           <Route path='/login' element={<Login />} />

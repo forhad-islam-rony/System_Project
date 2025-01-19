@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import authRoutes from './Routes/auth.js';
+import authRoute from './Routes/auth.js';
 import userRoutes from './Routes/user.js';
 import doctorRoutes from './Routes/doctor.js';
 import reviewRoutes from './Routes/review.js';
@@ -32,7 +32,7 @@ app.get('/test', (req, res) => {
 });
 
 // Routes
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/doctors', doctorRoutes);
 app.use('/api/v1/reviews', reviewRoutes);

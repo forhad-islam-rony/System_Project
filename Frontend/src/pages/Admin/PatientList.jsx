@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BASE_URL } from '../../config';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../../context/AuthContext';
+import AdminLayout from '../../components/Admin/AdminLayout';
+import { FaUserCircle } from 'react-icons/fa';
+import { format } from 'date-fns';
 
 const PatientList = () => {
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { token } = useContext(AuthContext);
 
     useEffect(() => {
         fetchPatients();
@@ -13,127 +17,175 @@ const PatientList = () => {
 
     const fetchPatients = async () => {
         try {
-            setLoading(true);
-            setError(null);
-            
             const res = await fetch(`${BASE_URL}/api/v1/admin/patients`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${token}`
                 }
             });
 
             if (!res.ok) {
-                if (res.status === 404) {
-                    throw new Error('API endpoint not found');
-                }
-                const errorData = await res.json();
-                throw new Error(errorData.message || 'Failed to fetch patients');
+                throw new Error('Failed to fetch patients');
             }
 
             const result = await res.json();
-            
-            // Add debug logging
-            console.log('API Response:', result);
-
-            if (result.success && Array.isArray(result.data)) {
+            if (result.data && Array.isArray(result.data)) {
                 setPatients(result.data);
             } else {
-                throw new Error('Invalid data format received from server');
+                setPatients([]);
             }
-        } catch (err) {
-            console.error('Error fetching patients:', err);
-            setError(err.message);
-            toast.error(err.message);
-            setPatients([]); // Reset to empty array on error
-        } finally {
+            setLoading(false);
+        } catch (error) {
+            toast.error(error.message);
             setLoading(false);
         }
     };
 
+    const getLatestAppointment = (appointments) => {
+        if (!appointments || appointments.length === 0) return null;
+        return appointments.reduce((latest, current) => {
+            return new Date(current.appointmentDate) > new Date(latest.appointmentDate) ? current : latest;
+        });
+    };
+
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="text-center text-red-500 p-4">
-                Error: {error}
-            </div>
+            <AdminLayout>
+                <div className="flex justify-center items-center h-full">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primaryColor"></div>
+                </div>
+            </AdminLayout>
         );
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h2 className="text-2xl font-bold mb-6">Patient List</h2>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white shadow-md rounded-lg">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Phone
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Blood Type
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Total Bookings
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {patients && patients.length > 0 ? (
-                            patients.map((patient) => (
-                                <tr key={patient._id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            {patient.photo && (
-                                                <img
-                                                    className="h-10 w-10 rounded-full mr-3"
-                                                    src={patient.photo}
-                                                    alt={patient.name}
-                                                />
-                                            )}
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {patient.name}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {patient.email}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {patient.phone}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {patient.bloodType || 'Not specified'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {patient.bookings?.length || 0}
-                                    </td>
+        <AdminLayout>
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-gray-800">
+                        Patients List ({patients.length})
+                    </h2>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Patient Info
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Contact Details
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Medical Info
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Appointments
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Latest Visit
+                                    </th>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
-                                    No patients found
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {patients.length > 0 ? (
+                                    patients.map((patient) => {
+                                        const latestAppointment = getLatestAppointment(patient.appointments);
+                                        return (
+                                            <tr key={patient._id}>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center">
+                                                        <div className="h-10 w-10 flex-shrink-0">
+                                                            {patient.photo ? (
+                                                                <img
+                                                                    className="h-10 w-10 rounded-full object-cover"
+                                                                    src={patient.photo}
+                                                                    alt={patient.name}
+                                                                />
+                                                            ) : (
+                                                                <FaUserCircle className="h-10 w-10 text-gray-400" />
+                                                            )}
+                                                        </div>
+                                                        <div className="ml-4">
+                                                            <div className="text-sm font-medium text-gray-900">
+                                                                {patient.name}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500">
+                                                                {patient.email}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        Phone: {patient.phone || 'N/A'}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        Gender: <span className="capitalize">{patient.gender || 'N/A'}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm text-gray-900">
+                                                            Blood Type: {patient.bloodType || 'N/A'}
+                                                        </span>
+                                                        <span className={`text-xs mt-1 px-2 inline-flex rounded-full ${
+                                                            patient.isDonating 
+                                                                ? 'bg-green-100 text-green-800' 
+                                                                : 'bg-gray-100 text-gray-800'
+                                                        }`}>
+                                                            {patient.isDonating ? 'Blood Donor' : 'Not a Donor'}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        Total: {patient.totalAppointments || 0}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        Active: {patient.activeAppointments || 0}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    {latestAppointment ? (
+                                                        <div className="text-sm">
+                                                            <div className="text-gray-900">
+                                                                {format(new Date(latestAppointment.appointmentDate), 'MMM dd, yyyy')}
+                                                            </div>
+                                                            <div className="text-gray-500">
+                                                                Dr. {latestAppointment.doctor?.name || 'N/A'}
+                                                            </div>
+                                                            <span className={`text-xs px-2 inline-flex rounded-full ${
+                                                                latestAppointment.status === 'finished' 
+                                                                    ? 'bg-green-100 text-green-800'
+                                                                    : latestAppointment.status === 'cancelled'
+                                                                    ? 'bg-red-100 text-red-800'
+                                                                    : 'bg-yellow-100 text-yellow-800'
+                                                            }`}>
+                                                                {latestAppointment.status}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-sm text-gray-500">No visits yet</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                                            No patients found
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        </AdminLayout>
     );
 };
 

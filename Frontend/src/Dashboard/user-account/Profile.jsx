@@ -15,10 +15,27 @@ const Profile = (props) => {
     photo: null,
     gender: '',
     bloodType: '',
-    phone: ''
+    phone: '',
+    district: '',
+    location: '',
+    isDonating: false
   });
 
   const navigate = useNavigate();
+
+  // Bangladesh Districts Array
+  const bangladeshDistricts = [
+    'Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 'Sylhet', 'Rangpur', 'Mymensingh',
+    'Comilla', 'Narayanganj', 'Gazipur', 'Bogra', 'Kushtia', 'Jessore', 'Dinajpur',
+    'Tangail', 'Faridpur', 'Noakhali', 'Feni', 'Brahmanbaria', 'Pabna', 'Narsingdi',
+    'Sirajganj', 'Chandpur', 'Cox\'s Bazar', 'Rangamati', 'Bandarban', 'Khagrachari',
+    'Sunamganj', 'Habiganj', 'Moulvibazar', 'Netrokona', 'Kishoreganj', 'Jamalpur',
+    'Sherpur', 'Munshiganj', 'Gopalganj', 'Shariatpur', 'Madaripur', 'Rajbari',
+    'Magura', 'Jhenaidah', 'Narail', 'Satkhira', 'Bagerhat', 'Chuadanga', 'Meherpur',
+    'Pirojpur', 'Jhalokati', 'Bhola', 'Patuakhali', 'Barguna', 'Panchagarh', 'Thakurgaon',
+    'Nilphamari', 'Lalmonirhat', 'Kurigram', 'Gaibandha', 'Joypurhat', 'Naogaon',
+    'Natore', 'Chapainawabganj', 'Lakshmipur'
+  ].sort();
 
   useEffect(() => {
     fetchUserData();
@@ -47,7 +64,10 @@ const Profile = (props) => {
           photo: result.data.photo || null,
           gender: result.data.gender || '',
           bloodType: result.data.bloodType || '',
-          phone: result.data.phone || ''
+          phone: result.data.phone || '',
+          district: result.data.district || '',
+          location: result.data.location || '',
+          isDonating: result.data.isDonating || false
         }));
       }
     } catch (error) {
@@ -83,7 +103,10 @@ const Profile = (props) => {
           phone: formData.phone,
           photo: formData.photo,
           gender: formData.gender,
-          bloodType: formData.bloodType
+          bloodType: formData.bloodType,
+          district: formData.district,
+          location: formData.location,
+          isDonating: formData.isDonating
         })
       });
 
@@ -207,6 +230,39 @@ const Profile = (props) => {
             <option value="O+">O+</option>
             <option value="O-">O-</option>
           </select>
+        </div>
+
+        <div className="mb-5">
+          <label htmlFor="district" className="block text-headingColor text-[16px] leading-[30px] font-bold mb-2">
+            District
+          </label>
+          <select
+            name="district"
+            value={formData.district}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 border border-solid border-[#0066ff61] focus:outline-none focus:border-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-lg"
+          >
+            <option value="">Select District</option>
+            {bangladeshDistricts.map((district) => (
+              <option key={district} value={district}>
+                {district}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-5">
+          <label htmlFor="location" className="block text-headingColor text-[16px] leading-[30px] font-bold mb-2">
+            Specific Location
+          </label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleInputChange}
+            placeholder="Enter your specific location (e.g., area, street)"
+            className="w-full px-4 py-3 border border-solid border-[#0066ff61] focus:outline-none focus:border-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-lg"
+          />
         </div>
 
         <div className="mb-5">

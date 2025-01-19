@@ -23,6 +23,7 @@
   }
   .header{
     @apply bg-[url('./assets/images/mask.png')] bg-no-repeat bg-cover bg-center w-full h-[100px] leading-[100px];
+    
   }
   .hero_section{
     @apply bg-[url('./assets/images/hero-bg.png')] bg-no-repeat bg-cover bg-center;
@@ -86,4 +87,55 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #a0aec0;
+}
+
+/* Add these styles for the select dropdown */
+select {
+  /* Reset */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Custom styles */
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Style for the dropdown options */
+select option {
+  padding: 8px;
+}
+
+/* For Webkit browsers like Chrome/Safari */
+select::-webkit-scrollbar {
+  width: 8px;
+}
+
+select::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb {
+  background: #0066ff61;
+  border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+  background: #0066ff;
+}
+
+/* Set max-height for dropdown */
+select[size] {
+  max-height: 200px;
+}
+
+/* For Firefox */
+select {
+  scrollbar-width: thin;
+  scrollbar-color: #0066ff61 #f1f1f1;
+}
+
+/* For IE */
+select::-ms-expand {
+  display: none;
 }

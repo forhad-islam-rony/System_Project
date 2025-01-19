@@ -12,29 +12,50 @@ const generateToken = user => {
 
 export const register = async (req, res) => {
     try {
-        const { email, password, name } = req.body;
-        
-        const existingUser = await User.findOne({ email });
-        
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+        const { name, email, password, photo, gender, role } = req.body;
+
+        // Check if role is valid (only patient or doctor allowed)
+        if (role !== 'patient' && role !== 'doctor') {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid role specified' 
+            });
         }
-        
+
+        // Check if email exists
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Email already exists' 
+            });
+        }
+
+        // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
-        
+
         const newUser = new User({
             name,
             email,
             password: hashPassword,
-            role: 'admin' // Temporarily set role to admin
+            photo,
+            gender,
+            role
         });
-        
+
         await newUser.save();
-        
-        res.status(200).json({ message: 'Admin created successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'User successfully created' 
+        });
+
+    } catch (err) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error, Try again' 
+        });
     }
 };
 
@@ -80,5 +101,53 @@ export const login = async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ status: false, message: 'Failed to login' });
+    }
+};
+
+export const searchBloodDonors = async (req, res) => {
+    try {
+        const { bloodGroup, district, location } = req.query;
+        
+        if (!bloodGroup) {
+            return res.status(400).json({
+                success: false,
+                message: "Blood group is required"
+            });
+        }
+
+        // Build query
+        let query = {
+            bloodType: bloodGroup,
+            isDonating: true,
+            role: 'patient'
+        };
+
+        // Add district filter if provided
+        if (district && district.trim()) {
+            query.district = district.trim();
+        }
+
+        // Add location filter if provided (case-insensitive partial match)
+        if (location && location.trim()) {
+            query.location = new RegExp(location.trim(), 'i');
+        }
+
+        // Find matching donors
+        const donors = await User.find(query)
+            .select('name photo bloodType phone gender district location')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            message: "Donors fetched successfully",
+            data: donors
+        });
+
+    } catch (error) {
+        console.error('Error searching donors:', error);
+        res.status(500).json({
+            success: false,
+            message: "Error searching donors. Please try again."
+        });
     }
 };
