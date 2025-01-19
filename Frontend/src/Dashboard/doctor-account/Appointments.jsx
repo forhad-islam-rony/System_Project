@@ -245,19 +245,32 @@ const Appointments = () => {
 
                     <div className="mt-4">
                       <p className="font-semibold mb-2">Update Next Visit Type:</p>
-                      <div className="flex gap-2">
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          onClick={() => updatePatientVisitType(searchResults.email, 'first')}
+                          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                          title="Reset to default first visit price"
+                        >
+                          Default Visit
+                        </button>
                         <button
                           onClick={() => updatePatientVisitType(searchResults.email, 'second')}
-                          className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          title="Apply 25% discount"
                         >
-                          Set as Second Visit
+                          Second Visit
                         </button>
                         <button
                           onClick={() => updatePatientVisitType(searchResults.email, 'free')}
-                          className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                         >
-                          Set as Free Visit
+                          Free Visit
                         </button>
+                      </div>
+                      <div className="mt-2 text-sm text-gray-500">
+                        <p>• Default Visit: Full price</p>
+                        <p>• Second Visit: 25% discount</p>
+                        <p>• Free Visit: No charge</p>
                       </div>
                     </div>
                   </div>

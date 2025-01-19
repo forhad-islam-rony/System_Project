@@ -8,16 +8,36 @@ const initialState = {
   token: localStorage.getItem('token') || null,
 };
 
-const authReducer = (state, action) => {
+export const authReducer = (state, action) => {
   switch (action.type) {
-    case 'LOGIN':
+    case "LOGIN_START":
+      return {
+        user: null,
+        token: null,
+        role: null,
+        loading: true,
+        error: null,
+      };
+
+    case "LOGIN_SUCCESS":
       return {
         user: action.payload.user,
         token: action.payload.token,
-        role: action.payload.user.role,
+        role: action.payload.role,
+        loading: false,
+        error: null,
       };
 
-    case 'LOGOUT':
+    case "LOGIN_FAILURE":
+      return {
+        user: null,
+        token: null,
+        role: null,
+        loading: false,
+        error: action.payload,
+      };
+
+    case "LOGOUT":
       localStorage.removeItem('token');
       localStorage.removeItem('userData');
       localStorage.removeItem('role');
@@ -25,6 +45,16 @@ const authReducer = (state, action) => {
         user: null,
         token: null,
         role: null,
+        loading: false,
+        error: null,
+      };
+
+    case "UPDATE_USER":
+      return {
+        ...state,
+        user: action.payload.user,
+        loading: false,
+        error: null,
       };
 
     default:
@@ -41,10 +71,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('role', userData.role);
 
     dispatch({
-      type: 'LOGIN',
+      type: 'LOGIN_SUCCESS',
       payload: {
         user: userData,
         token,
+        role: userData.role,
       },
     });
   };

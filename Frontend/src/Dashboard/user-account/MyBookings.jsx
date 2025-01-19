@@ -14,6 +14,18 @@ const MyBookings = () => {
     fetchBookings();
   }, []);
 
+  const sortAppointments = (appointments) => {
+    return appointments.sort((a, b) => {
+      // Sort by date in descending order
+      const dateComparison = new Date(b.appointmentDate) - new Date(a.appointmentDate);
+      // If dates are same, sort by time
+      if (dateComparison === 0) {
+        return b.appointmentTime.localeCompare(a.appointmentTime);
+      }
+      return dateComparison;
+    });
+  };
+
   const fetchBookings = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -39,8 +51,9 @@ const MyBookings = () => {
         throw new Error(bookingsData.message || historyData.message);
       }
 
-      setCurrentBookings(bookingsData.data);
-      setBookingHistory(historyData.data);
+      // Sort the bookings before setting state
+      setCurrentBookings(sortAppointments(bookingsData.data));
+      setBookingHistory(sortAppointments(historyData.data));
       setLoading(false);
     } catch (err) {
       setError(err.message);

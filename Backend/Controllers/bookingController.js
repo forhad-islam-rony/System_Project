@@ -3,6 +3,13 @@ import Doctor from '../models/DoctorSchema.js';
 import User from '../models/UserSchema.js';
 import PatientDoctor from '../models/PatientDoctorSchema.js';
 
+// Add this validation in your booking controller
+const validateBookingDate = (appointmentDate) => {
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 2);
+  return new Date(appointmentDate) >= minDate;
+};
+
 export const createBooking = async (req, res) => {
   const { 
     doctor: doctorId,
@@ -12,6 +19,13 @@ export const createBooking = async (req, res) => {
   } = req.body;
 
   try {
+    if (!validateBookingDate(appointmentDate)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Appointments must be booked at least 2 days in advance'
+      });
+    }
+
     // Get doctor details
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
