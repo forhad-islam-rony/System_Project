@@ -10,7 +10,18 @@ export const updateUser = async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { $set: req.body },
+      {
+        $set: {
+          name: req.body.name,
+          phone: req.body.phone,
+          photo: req.body.photo,
+          gender: req.body.gender,
+          bloodType: req.body.bloodType,
+          district: req.body.district,
+          location: req.body.location,
+          isDonating: req.body.isDonating
+        },
+      },
       { new: true }
     ).select("-password");
 
@@ -75,7 +86,9 @@ export const getAllUser = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   const userId = req.userId;
   try {
-    const userData = await User.findById(userId).select("-password");
+    const userData = await User.findById(userId)
+      .select("-password")
+      .lean();
 
     if (!userData) {
       return res.status(404).json({

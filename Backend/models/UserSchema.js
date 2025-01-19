@@ -15,6 +15,14 @@ const UserSchema = new mongoose.Schema({
   bloodType: { type: String, enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
   isDonating: { type: Boolean, default: false },
   appointments: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
+  district: {
+    type: String,
+    required: false
+  },
+  location: {
+    type: String,
+    required: false
+  }
 });
 
 export default mongoose.model("User", UserSchema);

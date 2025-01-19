@@ -8,6 +8,7 @@ import Contact from '../pages/Contact';
 import Services from '../pages/Services';
 import DoctorDetails from '../pages/Doctors/DoctorDetails';
 import DoctorAccount from '../pages/Doctors/DoctorAccount';
+import BloodGroup from '../pages/BloodGroup';
 
 // Admin imports
 import Dashboard from '../pages/Admin/Dashboard';
@@ -15,6 +16,7 @@ import DoctorList from '../pages/Admin/DoctorList';
 import AddDoctor from '../pages/Admin/AddDoctor';
 import AdminLogin from '../pages/Admin/Login';
 import AdminRegister from '../pages/Admin/Register';
+import Appointments from '../pages/Admin/Appointments';
 
 const Routers = () => {
     return (
@@ -72,6 +74,15 @@ const Routers = () => {
                     </ProtectedRoute>
                 }
             />
+            <Route 
+                path="/admin/appointments" 
+                element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <Appointments />
+                    </ProtectedRoute>
+                }
+            />
+            <Route path="/blood-group" element={<BloodGroup />} />
         </Routes>
     );
 };

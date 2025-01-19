@@ -53,6 +53,10 @@ const submitHandler = async (event) => {
   event.preventDefault();
   setLoading(true);
   try{
+    if (formData.role !== 'patient' && formData.role !== 'doctor') {
+      throw new Error('Invalid role selected');
+    }
+
     const res = await fetch (`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
@@ -111,7 +115,7 @@ const submitHandler = async (event) => {
             </div>
 
             <div className='mb-5 flex items-center justify-between'>
-              <label className='text-headingColor font-bold text-[16px] leading-7'>Are you a:
+              <label className='text-headingColor font-bold text-[16px] leading-7'>Register as:
                 <select name="role" 
                 value={formData.role}
                 onChange={handleInputChange}
