@@ -51,8 +51,30 @@ const SidePanel = ({ doctor }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 3);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
+  const getMaxDate = () => {
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 30); // Allow booking up to 30 days in advance
+    return maxDate.toISOString().split('T')[0];
+  };
+
   const handleFormSubmit = e => {
     e.preventDefault();
+    
+    const selectedDate = new Date(formData.appointmentDate);
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2);
+    
+    if (selectedDate < minDate) {
+      toast.error('Please select a date at least 2 days in advance');
+      return;
+    }
+
     setShowModal(true);
   };
 
@@ -63,6 +85,16 @@ const SidePanel = ({ doctor }) => {
       if (!token) {
         toast.error('Please login first');
         navigate('/login');
+        return;
+      }
+
+      const selectedDate = new Date(formData.appointmentDate);
+      const minDate = new Date();
+      minDate.setDate(minDate.getDate() + 2);
+      
+      if (selectedDate < minDate) {
+        toast.error('Please select a date at least 2 days in advance');
+        setLoading(false);
         return;
       }
 
@@ -106,6 +138,13 @@ const SidePanel = ({ doctor }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg max-w-md w-full">
         <h3 className="text-xl font-bold mb-4">Appointment Information</h3>
+        
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <p className="text-sm text-blue-800">
+            Note: Appointments must be booked at least 2 days in advance.
+          </p>
+        </div>
+
         {visitType === 'first' && (
           <p className="mb-4">
             This will be registered as your first visit with Dr. {doctor.name}
@@ -179,10 +218,10 @@ const SidePanel = ({ doctor }) => {
           </p>
           <ul className="mt-3">
             {doctor.timeSlots && doctor.timeSlots.length > 0 ? (
-              doctor.timeSlots[0].split(',').map((timeSlot, index) => (
+              doctor.timeSlots.map((timeSlot, index) => (
                 <li key={index} className="flex items-center justify-between mb-2">
                   <p className="text-[15px] leading-6 text-textColor font-semibold">
-                    {timeSlot.trim()}
+                    {timeSlot}
                   </p>
                   <p className="text-[15px] leading-6 text-textColor font-semibold text-green-500">
                     Available
@@ -199,11 +238,19 @@ const SidePanel = ({ doctor }) => {
 
         <form onSubmit={handleFormSubmit} className="mt-[30px]">
           <div className="mb-5">
+            <label className="text-textColor font-semibold block mb-2">
+              Select Date
+              <span className="text-sm text-gray-500 ml-2">
+                (Minimum 2 days advance booking required)
+              </span>
+            </label>
             <input
               type="date"
               name="appointmentDate"
               value={formData.appointmentDate}
               onChange={handleInputChange}
+              min={getTomorrowDate()}
+              max={getMaxDate()}
               className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer"
               required
             />
@@ -219,9 +266,9 @@ const SidePanel = ({ doctor }) => {
             >
               <option value="">Select Time</option>
               {doctor.timeSlots && doctor.timeSlots.length > 0 && 
-                doctor.timeSlots[0].split(',').map((timeSlot, index) => (
-                  <option key={index} value={timeSlot.trim()}>
-                    {timeSlot.trim()}
+                doctor.timeSlots.map((timeSlot, index) => (
+                  <option key={index} value={timeSlot}>
+                    {timeSlot}
                   </option>
                 ))
               }

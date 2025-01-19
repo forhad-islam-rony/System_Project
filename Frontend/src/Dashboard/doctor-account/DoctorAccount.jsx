@@ -35,7 +35,7 @@ const DoctorAccount = () => {
               <img
                 src={user?.photo || userImg}
                 alt="doctor"
-                className="w-full h-full rounded-full"
+                className="w-full h-full rounded-full object-cover"
               />
             </figure>
             

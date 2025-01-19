@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
-  phone: { type: Number },
+  phone: { type: String },
   photo: { type: String },
   role: {
     type: String,
@@ -12,11 +12,9 @@ const UserSchema = new mongoose.Schema({
     default: "patient",
   },
   gender: { type: String, enum: ["male", "female", "other"] },
-  bloodType: { type: String },
-  bookings: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'Booking'
-  }]
+  bloodType: { type: String, enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] },
+  isDonating: { type: Boolean, default: false },
+  appointments: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
 });
 
 export default mongoose.model("User", UserSchema);

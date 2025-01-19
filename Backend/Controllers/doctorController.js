@@ -142,3 +142,37 @@ export const getDoctorProfile = async (req, res) => {
     });
   }
 };
+
+export const getDoctorById = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id)
+      .select('-password')
+      .populate('reviews')
+      .populate({
+        path: 'reviews',
+        populate: {
+          path: 'user',
+          select: 'name photo'
+        }
+      });
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Doctor not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Doctor found',
+      data: doctor
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching doctor',
+      error: error.message
+    });
+  }
+};
