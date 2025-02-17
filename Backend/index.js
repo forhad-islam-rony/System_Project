@@ -11,6 +11,7 @@ import bookingRoute from './Routes/booking.js';
 import adminRoute from './Routes/admin.js';
 import postRoute from './Routes/posts.js';
 import moderatorRoutes from './Routes/moderator.js';
+import contactRoute from './Routes/contact.js';
 
 dotenv.config();
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/v1/bookings', bookingRoute);
 app.use('/api/v1/admin', adminRoute);
 app.use('/api/v1/posts', postRoute);
 app.use('/api/v1/moderator', moderatorRoutes);
+app.use('/api/v1/contact', contactRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

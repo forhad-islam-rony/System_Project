@@ -258,35 +258,35 @@ export const updateAppointmentStatus = async (req, res) => {
 };
 
 export const updateDoctorApproval = async (req, res) => {
-    const { id } = req.params;
-    const { isApproved } = req.body;
+  const { id } = req.params;
+  const { status } = req.body;
 
-    try {
-        const doctor = await Doctor.findById(id);
+  try {
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      id,
+      { isApproved: status },
+      { new: true }
+    );
 
-        if (!doctor) {
-            return res.status(404).json({ message: "Doctor not found" });
-        }
-
-        // Set the approval status
-        doctor.isApproved = isApproved ? "approved" : "pending";
-        
-        // Automatically set availability to true when approved
-        if (isApproved) {
-            doctor.isAvailable = true;
-        }
-
-        await doctor.save();
-
-        res.status(200).json({ 
-            success: true,
-            message: `Doctor ${isApproved ? 'approved' : 'unapproved'} successfully`,
-            doctor 
-        });
-    } catch (error) {
-        console.error('Error updating doctor approval:', error);
-        res.status(500).json({ message: "Internal server error" });
+    if (!updatedDoctor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Doctor not found'
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      message: `Doctor ${status} successfully`,
+      data: updatedDoctor
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update doctor status',
+      error: error.message
+    });
+  }
 };
 
 export const updateDoctorAvailability = async (req, res) => {

@@ -34,6 +34,7 @@ import ModeratorDashboard from './pages/Moderator/Dashboard';
 import PendingPosts from './pages/Moderator/PendingPosts';
 import AdminLayout from './components/Admin/AdminLayout';
 import AdminDashboard from './pages/Admin/Dashboard';
+import Inquiry from './pages/Admin/Inquiry';
 
 export const App = () => {
   return (
@@ -146,6 +147,14 @@ export const App = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <ManageModerators />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/inquiries" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Inquiry />
               </ProtectedRoute>
             } 
           />

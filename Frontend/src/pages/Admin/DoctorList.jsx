@@ -34,9 +34,37 @@ const DoctorList = () => {
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleApprovalChange = async (doctorId, newStatus) => {
         try {
-            const res = await fetch(`${BASE_URL}/admin/doctors/${id}`, {
+            const res = await fetch(`${BASE_URL}/admin/doctors/${doctorId}/approve`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.message);
+            }
+
+            toast.success(`Doctor ${newStatus} successfully`);
+            fetchDoctors(); // Refresh the list
+        } catch (error) {
+            toast.error(error.message || 'Failed to update doctor status');
+        }
+    };
+
+    const handleDelete = async (doctorId) => {
+        if (!window.confirm('Are you sure you want to delete this doctor?')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${BASE_URL}/admin/doctors/${doctorId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -50,7 +78,7 @@ const DoctorList = () => {
             }
 
             toast.success('Doctor deleted successfully');
-            fetchDoctors(); // Refresh list
+            fetchDoctors();
         } catch (error) {
             toast.error(error.message || 'Failed to delete doctor');
         }
@@ -68,41 +96,53 @@ const DoctorList = () => {
 
     return (
         <AdminLayout>
-            <div className="container mx-auto px-4">
-                <h2 className="text-2xl font-bold mb-6">Doctors List</h2>
+            <div className="container mx-auto">
+                <h2 className="text-2xl font-bold mb-4">Doctors Management</h2>
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
+                        <table className="w-full whitespace-nowrap">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Specialization</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Doctor
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Specialization
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {doctors.map((doctor) => (
-                                    <tr key={doctor._id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                    <tr key={doctor._id} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3">
                                             <div className="flex items-center">
-                                                <div className="h-10 w-10">
+                                                <div className="h-8 w-8">
                                                     <img 
-                                                        className="h-10 w-10 rounded-full" 
+                                                        className="h-8 w-8 rounded-full" 
                                                         src={doctor.photo || '/default-doctor.png'} 
                                                         alt={doctor.name} 
                                                     />
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{doctor.name}</div>
-                                                    <div className="text-sm text-gray-500">{doctor.email}</div>
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {doctor.name}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {doctor.email}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <td className="px-4 py-3">
                                             <div className="text-sm text-gray-900">{doctor.specialization}</div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <td className="px-4 py-3">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 ${doctor.isApproved === 'approved' ? 'bg-green-100 text-green-800' : 
                                                   doctor.isApproved === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
@@ -110,7 +150,16 @@ const DoctorList = () => {
                                                 {doctor.isApproved}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <td className="px-4 py-3 text-sm space-x-2">
+                                            <select
+                                                value={doctor.isApproved}
+                                                onChange={(e) => handleApprovalChange(doctor._id, e.target.value)}
+                                                className="text-sm border rounded p-1 mr-2"
+                                            >
+                                                <option value="pending">Pending</option>
+                                                <option value="approved">Approved</option>
+                                                <option value="rejected">Rejected</option>
+                                            </select>
                                             <button
                                                 onClick={() => handleDelete(doctor._id)}
                                                 className="text-red-600 hover:text-red-900"

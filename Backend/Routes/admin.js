@@ -20,5 +20,6 @@ router.patch('/appointments/:id/status', adminController.updateAppointmentStatus
 router.get('/moderators', adminController.getAllModerators);
 router.post('/moderators', adminController.createModerator);
 router.delete('/moderators/:id', adminController.deleteModerator);
+router.patch('/doctors/:id/approve', adminController.updateDoctorApproval);
 
 export default router; 
