@@ -88,6 +88,14 @@ const SidePanel = ({ doctor }) => {
         return;
       }
 
+      // Check if doctor is still available
+      if (!doctor.isAvailable) {
+        toast.error('Sorry, this doctor is no longer available for appointments');
+        setShowModal(false);
+        setLoading(false);
+        return;
+      }
+
       const selectedDate = new Date(formData.appointmentDate);
       const minDate = new Date();
       minDate.setDate(minDate.getDate() + 2);
@@ -195,6 +203,20 @@ const SidePanel = ({ doctor }) => {
   return (
     <div className="relative">
       <div className="shadow-panelShadow p-3 lg:p-5 rounded-md">
+        {/* Availability Status Banner */}
+        <div className={`mb-4 p-3 rounded-lg text-center ${
+          doctor.isAvailable 
+            ? "bg-green-100 text-green-800"
+            : "bg-red-100 text-red-800"
+        }`}>
+          <p className="font-semibold">
+            {doctor.isAvailable 
+              ? "Doctor is Available for Appointments"
+              : "Doctor is Currently Not Available"
+            }
+          </p>
+        </div>
+
         <div className="flex items-center justify-between">
           <p className="text__para mt-0 font-semibold">
             Appointment Fee: 
@@ -236,67 +258,88 @@ const SidePanel = ({ doctor }) => {
           </ul>
         </div>
 
-        <form onSubmit={handleFormSubmit} className="mt-[30px]">
-          <div className="mb-5">
-            <label className="text-textColor font-semibold block mb-2">
-              Select Date
-              <span className="text-sm text-gray-500 ml-2">
-                (Minimum 2 days advance booking required)
-              </span>
-            </label>
-            <input
-              type="date"
-              name="appointmentDate"
-              value={formData.appointmentDate}
-              onChange={handleInputChange}
-              min={getTomorrowDate()}
-              max={getMaxDate()}
-              className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer"
-              required
-            />
-          </div>
+        {doctor.isAvailable ? (
+          <form onSubmit={handleFormSubmit} className="mt-[30px]">
+            <div className="mb-5">
+              <label className="text-textColor font-semibold block mb-2">
+                Select Date
+                <span className="text-sm text-gray-500 ml-2">
+                  (Minimum 2 days advance booking required)
+                </span>
+              </label>
+              <input
+                type="date"
+                name="appointmentDate"
+                value={formData.appointmentDate}
+                onChange={handleInputChange}
+                min={getTomorrowDate()}
+                max={getMaxDate()}
+                className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer"
+                required
+              />
+            </div>
 
-          <div className="mb-5">
-            <select
-              name="appointmentTime"
-              value={formData.appointmentTime}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor rounded-md cursor-pointer"
-              required
+            <div className="mb-5">
+              <select
+                name="appointmentTime"
+                value={formData.appointmentTime}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor rounded-md cursor-pointer"
+                required
+              >
+                <option value="">Select Time</option>
+                {doctor.timeSlots && doctor.timeSlots.length > 0 && 
+                  doctor.timeSlots.map((timeSlot, index) => (
+                    <option key={index} value={timeSlot}>
+                      {timeSlot}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+
+            <div className="mb-5">
+              <textarea
+                name="problem"
+                value={formData.problem}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="Write your health problem"
+                className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3 hover:bg-blue-600"
             >
-              <option value="">Select Time</option>
-              {doctor.timeSlots && doctor.timeSlots.length > 0 && 
-                doctor.timeSlots.map((timeSlot, index) => (
-                  <option key={index} value={timeSlot}>
-                    {timeSlot}
-                  </option>
-                ))
-              }
-            </select>
+              Book Appointment
+            </button>
+          </form>
+        ) : (
+          <div className="mt-[30px] p-4 bg-gray-50 rounded-lg">
+            <p className="text-center text-gray-600">
+              Sorry, this doctor is currently not available for appointments. 
+              Please check back later or choose another doctor.
+            </p>
           </div>
-
-          <div className="mb-5">
-            <textarea
-              name="problem"
-              value={formData.problem}
-              onChange={handleInputChange}
-              rows={3}
-              placeholder="Write your health problem"
-              className="w-full px-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-md cursor-pointer"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3 hover:bg-blue-600"
-          >
-            Book Appointment
-          </button>
-        </form>
+        )}
       </div>
 
-      {showModal && <Modal />}
+      {showModal && (
+        <Modal>
+          {/* Add availability check in modal */}
+          {!doctor.isAvailable && (
+            <div className="mb-4 p-3 bg-red-100 rounded-lg">
+              <p className="text-sm text-red-800">
+                This doctor is no longer available. Please choose another doctor.
+              </p>
+            </div>
+          )}
+          {/* ... rest of modal content ... */}
+        </Modal>
+      )}
     </div>
   );
 };

@@ -3,12 +3,15 @@ import { FaSearch, FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import { BASE_URL } from '../config';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const categories = [
     'All',
@@ -40,6 +43,10 @@ const Community = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = (postId) => {
+    navigate(`/edit-post/${postId}`);
   };
 
   const filteredPosts = posts.filter(post => {
@@ -164,6 +171,16 @@ const Community = () => {
                       {post.views} views
                     </span>
                   </div>
+
+                  {/* Edit Button */}
+                  {post.user?._id === user?._id && post.status !== "approved" && (
+                    <button
+                      onClick={() => handleEdit(post._id)}
+                      className="text-primaryColor hover:underline"
+                    >
+                      Edit
+                    </button>
+                  )}
                 </div>
               </div>
             ))

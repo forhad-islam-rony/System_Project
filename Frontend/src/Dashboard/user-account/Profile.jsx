@@ -34,6 +34,7 @@ const Profile = (props) => {
   const [editingPostId, setEditingPostId] = useState(null);
 
   const navigate = useNavigate();
+  
 
   // Bangladesh Districts Array
   const bangladeshDistricts = [
@@ -167,65 +168,77 @@ const Profile = (props) => {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (!postFormData.title || !postFormData.content || !postFormData.division || !postFormData.category) {
-      toast.error('Please fill all required fields');
+      toast.error("Please fill all required fields");
       return;
     }
-
+  
     setLoading(true);
-    
+  
     try {
-      // Extract only the URLs from the image objects
-      const imageUrls = postFormData.images.map(img => {
-        // If img is already a string (URL), return it directly
-        if (typeof img === 'string') return img;
-        // If img is an object with url property, return the url
-        return img.url;
-      });
-
+      // Extract URLs from images
+      const imageUrls = postFormData.images.map((img) => (typeof img === "string" ? img : img.url));
+  
       const requestBody = {
         title: postFormData.title,
         content: postFormData.content,
         division: postFormData.division,
         category: postFormData.category,
-        images: imageUrls // Now it's a clean array of strings
+        images: imageUrls,
       };
-
-      const res = await fetch(`${BASE_URL}/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.message || 'Failed to create post');
+  
+      let res, result;
+  
+      if (editingPostId) {
+        // **Update existing post**
+        res = await fetch(`${BASE_URL}/posts/${editingPostId}`, {
+          method: "PUT", // Use PUT for updating
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+      } else {
+        // **Create new post**
+        res = await fetch(`${BASE_URL}/posts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
       }
-
-      toast.success('Post created successfully');
-      
-      // Reset form
+  
+      result = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(result.message || "Failed to submit post");
+      }
+  
+      toast.success(editingPostId ? "Post updated successfully" : "Post created successfully");
+  
+      // Reset form & editing state
       setPostFormData({
-        title: '',
-        content: '',
-        division: '',
-        category: '',
-        images: []
+        title: "",
+        content: "",
+        division: "",
+        category: "",
+        images: [],
       });
-
-      fetchUserPosts();
+      setEditingPostId(null); // Clear editing state
+  
+      fetchUserPosts(); // Refresh posts
     } catch (err) {
-      console.error('Post creation error:', err);
-      toast.error(err.message || 'Failed to create post');
+      console.error("Post submission error:", err);
+      toast.error(err.message || "Failed to submit post");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const fetchUserPosts = async () => {
     try {
@@ -730,20 +743,23 @@ const Profile = (props) => {
                   </div>
                 </div>
                 {/* Post Actions */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEditPost(post)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(post._id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Delete
-                  </button>
-                </div>
+<div className="flex gap-2">
+  {post.status === 'pending' && (
+    <button
+      onClick={() => handleEditPost(post)}
+      className="text-blue-600 hover:text-blue-800"
+    >
+      Edit
+    </button>
+  )}
+  <button
+    onClick={() => handleDeletePost(post._id)}
+    className="text-red-600 hover:text-red-800"
+  >
+    Delete
+  </button>
+</div>
+
               </div>
 
               {/* Post Images */}
