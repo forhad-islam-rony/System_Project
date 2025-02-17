@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getSingleDoctor, getAllDoctor, updateDoctor, deleteDoctor, getDoctorProfile } from "../Controllers/doctorController.js";
+import { getSingleDoctor, getAllDoctor, updateDoctor, deleteDoctor, getDoctorProfile, getDoctorsBySpecialization, createDoctor } from "../Controllers/doctorController.js";
 
 import { authenticate, restrict } from "../auth/verifyToken.js";
 
@@ -16,5 +16,9 @@ DoctorRoute.put('/:id', authenticate, restrict(["doctor"]), updateDoctor);
 DoctorRoute.delete('/:id', authenticate, restrict(["doctor"]), deleteDoctor);
 
 DoctorRoute.get('/profile/me', authenticate, restrict(["doctor"]), getDoctorProfile);
+
+DoctorRoute.get('/specialization/:specialization', getDoctorsBySpecialization);
+
+DoctorRoute.post('/', authenticate, restrict(["admin"]), createDoctor);
 
 export default DoctorRoute;

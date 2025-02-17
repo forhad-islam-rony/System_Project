@@ -14,6 +14,7 @@ import moderatorRoutes from './Routes/moderator.js';
 import medicineRoutes from './Routes/medicineRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import contactRoute from './Routes/contact.js';
 
 dotenv.config();
 const app = express();
@@ -66,6 +67,7 @@ app.get('/api/v1/test', async (req, res) => {
     });
   }
 });
+app.use('/api/v1/contact', contactRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

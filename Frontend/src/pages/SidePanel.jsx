@@ -26,7 +26,7 @@ const SidePanel = ({ doctor }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/check-visit-type/${doctor._id}`, {
+      const res = await fetch(`${BASE_URL}/bookings/check-visit-type/${doctor._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
