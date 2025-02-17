@@ -1,29 +1,75 @@
-import React, { useState } from 'react';
-import { medicines } from '../assets/data/medicines';
+import React, { useState, useEffect } from 'react';
 import { BsSearch, BsCart3 } from 'react-icons/bs';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../config';
+import HashLoader from 'react-spinners/HashLoader';
+import { toast } from 'react-hot-toast';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const Pharmacy = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterMed, setFilterMed] = useState(medicines);
+  const [medicines, setMedicines] = useState([]);
+  const [filterMed, setFilterMed] = useState([]);
   const [category, setCategory] = useState('all');
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(['all']);
+  const [error, setError] = useState(null);
+  const { addToCart } = useCart();
+  const { user } = useAuth();
 
-  const categories = ['all', 'painkillers', 'antibiotics', 'vitamins', 'first-aid'];
+  // Fetch medicines from backend
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/medicines`);
+        
+        console.log('Response status:', response.status); // Debug log
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch medicines');
+        }
+        
+        const data = await response.json();
+        console.log('Fetched data:', data); // Debug log
+        
+        if (!data.data || !Array.isArray(data.data)) {
+          throw new Error('Invalid data format received from server');
+        }
+
+        setMedicines(data.data);
+        setFilterMed(data.data);
+
+        // Extract unique categories from medicines
+        const uniqueCategories = ['all', ...new Set(data.data.map(med => med.category))];
+        setCategories(uniqueCategories);
+      } catch (err) {
+        console.error('Detailed error:', err); // More detailed error logging
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMedicines();
+  }, []);
 
   const applyFilter = (category, searchTerm) => {
     let filtered = medicines;
     
     if (category !== 'all') {
-      filtered = filtered.filter(item => item.category === category);
+      filtered = filtered.filter(item => item.category.toLowerCase() === category.toLowerCase());
     }
     
     if (searchTerm) {
       filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase())
+        item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.text.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -48,6 +94,32 @@ const Pharmacy = () => {
         : [...prev, medicineId]
     );
   };
+
+  const handleAddToCart = async (e, medicine) => {
+    e.stopPropagation(); // Prevent navigation when clicking add to cart
+    if (!user) {
+      toast.error('Please login to add items to cart');
+      navigate('/login');
+      return;
+    }
+    await addToCart(medicine._id);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <HashLoader color="#3498db" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-red-500 text-xl">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -96,63 +168,70 @@ const Pharmacy = () => {
 
         {/* Product Grid */}
         <div className="md:w-3/4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filterMed.map((item) => (
-              <div 
-                key={item.id} 
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
-                onClick={() => navigate(`/pharmacy/${item.id}`)}
-              >
+          {filterMed.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">No medicines found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filterMed.map((item) => (
                 <div 
-                  className="relative cursor-pointer"
+                  key={item._id} 
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
-                  <img
-                    className="w-full h-48 object-cover"
-                    src={item.image}
-                    alt={item.name}
-                  />
-                  <button
-                    onClick={() => toggleFavorite(item.id)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-all"
-                  >
-                    {favorites.includes(item.id) 
-                      ? <FaHeart className="text-red-500" />
-                      : <FaRegHeart className="text-gray-400" />
-                    }
-                  </button>
-                </div>
-                
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold">{item.name}</h3>
-                    <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                      {item.category}
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-600 text-sm mb-4">{item.description}</p>
-                  
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="text-2xl font-bold text-blue-600">${item.price}</span>
-                      {item.dosage && (
-                        <span className="text-sm text-gray-500 block">
-                          {item.dosage}
-                        </span>
-                      )}
-                    </div>
-                    <button 
-                      className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
-                      onClick={() => alert(`${item.name} added to cart!`)}
+                  <div className="relative cursor-pointer">
+                    <img
+                      className="w-full h-48 object-cover"
+                      src={item.photo}
+                      alt={item.productName}
+                      onClick={() => navigate(`/pharmacy/${item._id}`)}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(item._id);
+                      }}
+                      className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-all"
                     >
-                      <BsCart3 />
-                      Add to Cart
+                      {favorites.includes(item._id) 
+                        ? <FaHeart className="text-red-500" />
+                        : <FaRegHeart className="text-gray-400" />
+                      }
                     </button>
                   </div>
+                  
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-semibold">{item.productName}</h3>
+                      <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                        {item.category}
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm mb-4">{item.description.text}</p>
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-2xl font-bold text-blue-600">${item.price}</span>
+                        {item.dosageMg && (
+                          <span className="text-sm text-gray-500 block">
+                            {item.dosageMg}mg
+                          </span>
+                        )}
+                      </div>
+                      <button 
+                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
+                        onClick={(e) => handleAddToCart(e, item)}
+                      >
+                        <BsCart3 />
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

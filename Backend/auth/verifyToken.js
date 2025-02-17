@@ -3,29 +3,38 @@ import Doctor from '../models/DoctorSchema.js';
 import User from '../models/UserSchema.js';
 
 export const authenticate = async (req, res, next) => {
-  // Get token from header
-  const authToken = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  // Check if token exists
-  if (!authToken || !authToken.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, message: 'No token, authorization denied' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authorization header missing or invalid format' 
+    });
   }
 
   try {
-    const token = authToken.split(' ')[1];
-
+    const token = authHeader.split(' ')[1];
+    
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
+    
+    // Add user ID to request
     req.userId = decoded.id;
     req.role = decoded.role;
 
     next();
-  } catch (err) {
-    if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ success: false, message: 'Token expired' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token expired'
+      });
     }
-    return res.status(401).json({ success: false, message: 'Invalid token' });
+    
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid token'
+    });
   }
 };
 
