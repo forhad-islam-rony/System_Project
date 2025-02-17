@@ -11,6 +11,9 @@ import bookingRoute from './Routes/booking.js';
 import adminRoute from './Routes/admin.js';
 import postRoute from './Routes/posts.js';
 import moderatorRoutes from './Routes/moderator.js';
+import medicineRoutes from './Routes/medicineRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 import contactRoute from './Routes/contact.js';
 
 dotenv.config();
@@ -18,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: true, // For development, you might want to allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -43,6 +46,27 @@ app.use('/api/v1/bookings', bookingRoute);
 app.use('/api/v1/admin', adminRoute);
 app.use('/api/v1/posts', postRoute);
 app.use('/api/v1/moderator', moderatorRoutes);
+app.use('/api/v1/medicines', medicineRoutes);
+app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', orderRoutes);
+
+// Add this test route
+app.get('/api/v1/test', async (req, res) => {
+  try {
+    // Test database connection
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    res.json({ 
+      message: 'Server is running',
+      dbConnected: mongoose.connection.readyState === 1,
+      collections: collections.map(c => c.name)
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+});
 app.use('/api/v1/contact', contactRoute);
 
 // Error handling middleware
