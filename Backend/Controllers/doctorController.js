@@ -176,3 +176,67 @@ export const getDoctorById = async (req, res) => {
     });
   }
 };
+
+// Add this new function to get doctors by specialization
+export const getDoctorsBySpecialization = async (req, res) => {
+  const { specialization } = req.params;
+
+  try {
+    // Create an array of possible specialization variations
+    const specializationVariants = [
+      specialization,
+      specialization.toLowerCase(),
+      specialization.toUpperCase(),
+      specialization.replace('ist', 'y'), // Convert Neurologist to Neurology
+      specialization.replace('y', 'ist')  // Convert Neurology to Neurologist
+    ];
+
+    const doctors = await Doctor.find({ 
+      specialization: { $in: specializationVariants },
+      isApproved: "approved" 
+    }).select("-password");
+
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No doctors found with this specialization'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Doctors found',
+      data: doctors
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error finding doctors',
+      error: err.message
+    });
+  }
+};
+
+export const createDoctor = async (req, res) => {
+  try {
+    const newDoctor = new Doctor({
+      ...req.body,
+      qualifications: req.body.qualifications.split(',').map(q => q.trim()),
+      experiences: req.body.experiences.split(',').map(e => e.trim()),
+    });
+
+    await newDoctor.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Doctor created successfully',
+      data: newDoctor
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create doctor',
+      error: err.message
+    });
+  }
+};

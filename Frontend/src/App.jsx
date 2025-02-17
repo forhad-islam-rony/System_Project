@@ -39,6 +39,7 @@ import { CartProvider } from './context/CartContext';
 import ConditionalCartIcon from './components/Cart/ConditionalCartIcon';
 import ManageOrders from './pages/Admin/ManageOrders';
 
+import Inquiry from './pages/Admin/Inquiry';
 
 export const App = () => {
   return (
@@ -176,6 +177,14 @@ export const App = () => {
                 </ProtectedRoute>
               } 
             />
+          <Route 
+            path="/admin/inquiries" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Inquiry />
+              </ProtectedRoute>
+            } 
+          />
 
             {/* Moderator Routes */}
             <Route path="/moderator/login" element={<ModeratorLogin />} />

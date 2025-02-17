@@ -1,63 +1,50 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineDashboard } from 'react-icons/ai';
-import { MdPendingActions } from 'react-icons/md';
-import { BiLogOut } from 'react-icons/bi';
+import { FaHospital, FaUserMd } from 'react-icons/fa';
 
 const ModeratorNav = () => {
     const location = useLocation();
-    const navigate = useNavigate();
-    const moderatorInfo = JSON.parse(localStorage.getItem('user'));
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('role');
-        navigate('/moderator/login');
-    };
-
-    const menuItems = [
+    const moderatorMenus = [
         {
-            path: '/moderator/dashboard',
-            name: 'Dashboard',
-            icon: <AiOutlineDashboard size={20} />
+            path: '/moderator',
+            display: 'Dashboard',
+            icon: <AiOutlineDashboard className="text-xl" />
         },
         {
-            path: '/moderator/pending-posts',
-            name: 'Pending Posts',
-            icon: <MdPendingActions size={20} />
+            path: '/moderator/hospitals',
+            display: 'Hospitals',
+            icon: <FaHospital className="text-xl" />
+        },
+        {
+            path: '/moderator/doctors',
+            display: 'Doctors',
+            icon: <FaUserMd className="text-xl" />
         }
     ];
 
     return (
-        <div className="fixed left-0 top-0 h-screen w-64 bg-white shadow-lg">
+        <div className="h-screen bg-white shadow-md w-64 fixed left-0 top-0">
             <div className="p-4 border-b">
-                <h2 className="text-xl font-bold text-primaryColor">Moderator Panel</h2>
-                <p className="text-sm text-gray-600 mt-1">{moderatorInfo?.division} Division</p>
+                <h2 className="text-2xl font-bold text-primaryColor">Moderator Panel</h2>
             </div>
-            
-            <nav className="mt-6">
-                {menuItems.map((item) => (
+            <div className="py-4">
+                {moderatorMenus.map((item, index) => (
                     <Link
-                        key={item.path}
+                        key={index}
                         to={item.path}
-                        className={`flex items-center gap-3 px-6 py-3 hover:bg-gray-100 transition-colors ${
-                            location.pathname === item.path ? 'bg-blue-50 text-primaryColor border-r-4 border-primaryColor' : 'text-gray-700'
+                        className={`flex items-center gap-3 px-6 py-3 hover:bg-blue-50 transition-colors ${
+                            location.pathname === item.path
+                                ? 'bg-blue-50 text-primaryColor border-r-4 border-primaryColor'
+                                : 'text-gray-700'
                         }`}
                     >
                         {item.icon}
-                        <span>{item.name}</span>
+                        <span className="font-medium">{item.display}</span>
                     </Link>
                 ))}
-            </nav>
-
-            <button
-                onClick={handleLogout}
-                className="absolute bottom-8 left-0 w-full px-6 py-3 flex items-center gap-3 text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-                <BiLogOut size={20} />
-                <span>Logout</span>
-            </button>
+            </div>
         </div>
     );
 };
