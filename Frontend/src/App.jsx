@@ -34,148 +34,177 @@ import ModeratorDashboard from './pages/Moderator/Dashboard';
 import PendingPosts from './pages/Moderator/PendingPosts';
 import AdminLayout from './components/Admin/AdminLayout';
 import AdminDashboard from './pages/Admin/Dashboard';
+import ManageMedicines from './pages/Admin/ManageMedicines';
+import { CartProvider } from './context/CartContext';
+import ConditionalCartIcon from './components/Cart/ConditionalCartIcon';
+import ManageOrders from './pages/Admin/ManageOrders';
+
 
 export const App = () => {
   return (
     <AuthProvider>
-      <Toaster position="top-center" reverseOrder={false} />
-      <div className='mx-4 sm:max-[10%]'>
-        <Routes>
-          <Route path="/admin/*" element={null} />
-          <Route path="/moderator/*" element={null} />
-          <Route path="*" element={<Navbar />} />
-        </Routes>
+      <CartProvider>
+        <Toaster position="top-center" reverseOrder={false} />
+        <div className='mx-4 sm:max-[10%]'>
+          <Routes>
+            <Route path="/admin/*" element={null} />
+            <Route path="/moderator/*" element={null} />
+            <Route path="*" element={<Navbar />} />
+          </Routes>
 
-        <Routes>
-          {/* Public Routes */}
-          <Route path='/' element={<Home />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/blood-group' element={<BloodGroup />} />
-          <Route path='/community' element={<Community />} />
-          {/* Auth Routes */}
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          
-          {/* Doctor Routes */}
-          <Route path='/doctors' element={<Doctors />} />
-          <Route path="/doctors/:id" element={<DoctorsDetails />} />
-          <Route path='/doctors/speciality/:speciality' element={<Doctors />} />
-          <Route path='/appointment/:docId' element={<Appointment />} />
-          
-          {/* Protected Doctor Route */}
-          <Route 
-            path='/doctors/profile/me' 
-            element={
-              <ProtectedRoute allowedRoles={['doctor']}>
-                <DoctorAccount />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Protected User Route */}
-          <Route 
-            path='/users/profile/me' 
-            element={
-              <ProtectedRoute allowedRoles={['patient']}>
-                <MyAccount />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* User Routes */}
-          <Route path='/myprofile' element={<Myprofile />} />
-          <Route path='/myappointments' element={<Myappointments />} />
-          
-          {/* Pharmacy Route */}
-          <Route path="/pharmacy" element={<Pharmacy />} />
-          <Route path="/pharmacy/:id" element={<MedicineDetails />} />
+          <Routes>
+            {/* Public Routes */}
+            <Route path='/' element={<Home />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/blood-group' element={<BloodGroup />} />
+            <Route path='/community' element={<Community />} />
+            {/* Auth Routes */}
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            
+            {/* Doctor Routes */}
+            <Route path='/doctors' element={<Doctors />} />
+            <Route path="/doctors/:id" element={<DoctorsDetails />} />
+            <Route path='/doctors/speciality/:speciality' element={<Doctors />} />
+            <Route path='/appointment/:docId' element={<Appointment />} />
+            
+            {/* Protected Doctor Route */}
+            <Route 
+              path='/doctors/profile/me' 
+              element={
+                <ProtectedRoute allowedRoles={['doctor']}>
+                  <DoctorAccount />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Protected User Route */}
+            <Route 
+              path='/users/profile/me' 
+              element={
+                <ProtectedRoute allowedRoles={['patient']}>
+                  <MyAccount />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* User Routes */}
+            <Route path='/myprofile' element={<Myprofile />} />
+            <Route path='/myappointments' element={<Myappointments />} />
+            
+            {/* Pharmacy Route */}
+            <Route path="/pharmacy" element={<Pharmacy />} />
+            <Route path="/pharmacy/:id" element={<MedicineDetails />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/dashboard" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/doctors" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <DoctorList />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/add-doctor" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AddDoctor />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/appointments" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <Appointments />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/patients" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <PatientList />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/moderators" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <ManageModerators />
-              </ProtectedRoute>
-            } 
-          />
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+          
+            <Route 
+              path="/admin/doctors" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <DoctorList />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/add-doctor" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AddDoctor />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/appointments" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <Appointments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/patients" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <PatientList />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/moderators" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <ManageModerators />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/medicines" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <ManageMedicines />
+                  </AdminLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/orders" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <ManageOrders />
+                  </AdminLayout>
+                </ProtectedRoute>
+              } 
+            />
 
-          {/* Moderator Routes */}
-          <Route path="/moderator/login" element={<ModeratorLogin />} />
-          <Route 
-            path="/moderator/dashboard" 
-            element={
-              <ProtectedRoute allowedRoles={['moderator']}>
-                <ModeratorDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/moderator/pending-posts" 
-            element={
-              <ProtectedRoute allowedRoles={['moderator']}>
-                <PendingPosts />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
+            {/* Moderator Routes */}
+            <Route path="/moderator/login" element={<ModeratorLogin />} />
+            <Route 
+              path="/moderator/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={['moderator']}>
+                  <ModeratorDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/moderator/pending-posts" 
+              element={
+                <ProtectedRoute allowedRoles={['moderator']}>
+                  <PendingPosts />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
 
-        <Routes>
-          <Route path="/admin/*" element={null} />
-          <Route path="/moderator/*" element={null} />
-          <Route path="*" element={<Footer />} />
-        </Routes>
-      </div>
+          <Routes>
+            <Route path="/admin/*" element={null} />
+            <Route path="/moderator/*" element={null} />
+            <Route path="*" element={<Footer />} />
+          </Routes>
+        </div>
+        <ConditionalCartIcon />
+      </CartProvider>
     </AuthProvider>
   );
 };

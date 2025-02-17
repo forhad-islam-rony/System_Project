@@ -11,6 +11,7 @@ import DoctorAccount from '../pages/Doctors/DoctorAccount';
 import BloodGroup from '../pages/BloodGroup';
 import Community from '../pages/Community';
 import ManageModerators from '../pages/Admin/ManageModerators';
+import ManageMedicines from '../pages/Admin/ManageMedicines';
 
 // Admin imports
 import Dashboard from '../pages/Admin/Dashboard';
@@ -89,6 +90,14 @@ const Routers = () => {
                 element={
                     <ProtectedRoute allowedRoles={['admin']}>
                         <ManageModerators />
+                    </ProtectedRoute>
+                }
+            />
+            <Route 
+                path="/admin/medicines" 
+                element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <ManageMedicines />
                     </ProtectedRoute>
                 }
             />
