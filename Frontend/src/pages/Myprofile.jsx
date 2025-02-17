@@ -68,7 +68,7 @@ const MyProfile = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/users/${user._id}`, {
+      const res = await fetch(`${BASE_URL}/users/profile/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -77,10 +77,10 @@ const MyProfile = () => {
         body: JSON.stringify(formData)
       });
 
-      const { data } = await res.json();
+      const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message);
+        throw new Error(result.message);
       }
 
       setLoading(false);
@@ -90,7 +90,7 @@ const MyProfile = () => {
       dispatch({
         type: 'UPDATE_USER',
         payload: {
-          user: data,
+          user: result.data,
           token
         }
       });

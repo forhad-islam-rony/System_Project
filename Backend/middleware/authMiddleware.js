@@ -8,24 +8,31 @@ export const authenticate = async (req, res, next) => {
 
     // Check if token exists
     if (!authToken || !authToken.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'No token, authorization denied' });
+        return res.status(401).json({
+            success: false,
+            message: 'No token, authorization denied'
+        });
     }
 
     try {
-        const token = authToken.split(' ')[1];
-        
         // Verify token
+        const token = authToken.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        
+
+        // Add user info to request
         req.userId = decoded.id;
         req.role = decoded.role;
+        req.division = decoded.division;
+
+        console.log('Auth Middleware - Division:', decoded.division);
 
         next();
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ message: 'Token expired' });
-        }
-        return res.status(401).json({ message: 'Invalid token' });
+    } catch (error) {
+        console.error('Auth Error:', error);
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid token'
+        });
     }
 };
 

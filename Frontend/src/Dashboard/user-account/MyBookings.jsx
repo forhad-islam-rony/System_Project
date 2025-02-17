@@ -31,14 +31,14 @@ const MyBookings = () => {
       const token = localStorage.getItem('token');
       
       // Fetch current bookings
-      const bookingsRes = await fetch(`${BASE_URL}/api/v1/users/appointments/my-bookings`, {
+      const bookingsRes = await fetch(`${BASE_URL}/users/appointments/my-bookings`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       // Fetch booking history
-      const historyRes = await fetch(`${BASE_URL}/api/v1/users/appointments/history`, {
+      const historyRes = await fetch(`${BASE_URL}/users/appointments/history`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

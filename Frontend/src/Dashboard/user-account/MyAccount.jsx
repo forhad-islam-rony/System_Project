@@ -16,7 +16,7 @@ const MyAccount = () => {
 
   const fetchUserData = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/users/profile/me`, {
+      const res = await fetch(`${BASE_URL}/users/profile/me`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -62,7 +62,7 @@ const MyAccount = () => {
 
   const toggleDonating = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/users/${user._id}`, {
+        const res = await fetch(`${BASE_URL}/users/${user._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -3,12 +3,14 @@ import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import Signup from '../pages/Signup';
+import Register from '../pages/Register';
 import Contact from '../pages/Contact';
 import Services from '../pages/Services';
 import DoctorDetails from '../pages/Doctors/DoctorDetails';
 import DoctorAccount from '../pages/Doctors/DoctorAccount';
 import BloodGroup from '../pages/BloodGroup';
+import Community from '../pages/Community';
+import ManageModerators from '../pages/Admin/ManageModerators';
 
 // Admin imports
 import Dashboard from '../pages/Admin/Dashboard';
@@ -25,7 +27,7 @@ const Routers = () => {
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Signup />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/services" element={<Services />} />
             <Route path="/doctors/:id" element={<DoctorDetails />} />
@@ -82,7 +84,16 @@ const Routers = () => {
                     </ProtectedRoute>
                 }
             />
+            <Route 
+                path="/admin/moderators" 
+                element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                        <ManageModerators />
+                    </ProtectedRoute>
+                }
+            />
             <Route path="/blood-group" element={<BloodGroup />} />
+            <Route path="/community" element={<Community />} />
         </Routes>
     );
 };

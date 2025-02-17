@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineDashboard, AiOutlineUserAdd } from 'react-icons/ai';
-import { FaUserMd, FaHospital, FaUsers } from 'react-icons/fa';
+import { FaUserMd, FaHospital, FaUsers, FaUserShield } from 'react-icons/fa';
 import { BsCalendarCheck } from 'react-icons/bs';
 
 const AdminNav = () => {
@@ -32,6 +32,11 @@ const AdminNav = () => {
             path: '/admin/patients',
             display: 'Patients List',
             icon: <FaUsers className="text-xl" />
+        },
+        {
+            path: '/admin/moderators',
+            display: 'Manage Moderators',
+            icon: <FaUserShield className="text-xl" />
         },
     ];
 

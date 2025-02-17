@@ -83,14 +83,37 @@ export const getAllUser = async (req, res) => {
   }
 }
 
-export const getUserProfile = async (req, res) => {
-  const userId = req.userId;
+export const updateProfile = async (req, res) => {
+  const id = req.userId; // Get ID from authenticated user
+  
   try {
-    const userData = await User.findById(userId)
-      .select("-password")
-      .lean();
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    ).select('-password');
 
-    if (!userData) {
+    res.status(200).json({
+      success: true,
+      message: 'Successfully updated',
+      data: updatedUser
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update',
+      error: err.message
+    });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  const id = req.userId;
+
+  try {
+    const user = await User.findById(id).select('-password');
+
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
@@ -99,16 +122,14 @@ export const getUserProfile = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Profile info retrieved successfully',
-      data: userData
+      message: 'Profile info fetched successfully',
+      data: user
     });
-
-  } catch (error) {
-    console.error('Error in getUserProfile:', error);
+  } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Something went wrong, cannot get profile info',
-      error: error.message
+      message: 'Failed to fetch profile',
+      error: err.message
     });
   }
 };

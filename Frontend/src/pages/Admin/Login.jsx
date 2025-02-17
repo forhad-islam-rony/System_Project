@@ -22,7 +22,9 @@ const AdminLogin = () => {
         setLoading(true);
 
         try {
-            const res = await fetch(`${BASE_URL}/api/v1/admin/login`, {
+            console.log('Attempting admin login with:', formData);
+
+            const res = await fetch(`${BASE_URL}/admin/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,35 +33,39 @@ const AdminLogin = () => {
             });
 
             const result = await res.json();
+            console.log('Admin login response:', result);
 
             if (!res.ok) {
                 throw new Error(result.message);
             }
 
-            // Check if the user is an admin
+            // Verify admin role
             if (result.data.role !== 'admin') {
                 throw new Error('Unauthorized - Admin access only');
             }
 
+            // Update auth context
             dispatch({
                 type: 'LOGIN_SUCCESS',
                 payload: {
                     user: result.data,
                     token: result.token,
-                    role: result.data.role
+                    role: 'admin'
                 }
             });
 
             // Store admin info in localStorage
             localStorage.setItem('token', result.token);
-            localStorage.setItem('role', result.data.role);
+            localStorage.setItem('role', 'admin');
+            localStorage.setItem('user', JSON.stringify(result.data));
 
-            setLoading(false);
             toast.success('Successfully logged in as admin');
-            navigate('/admin'); // Redirect to admin dashboard
+            navigate('/admin/dashboard');
 
         } catch (err) {
-            toast.error(err.message);
+            console.error('Admin login error:', err);
+            toast.error(err.message || 'Failed to login');
+        } finally {
             setLoading(false);
         }
     };
@@ -99,7 +105,7 @@ const AdminLogin = () => {
                     <div className="mt-7">
                         <button
                             type="submit"
-                            className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3 hover:bg-blue-600 transition-colors"
+                            className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
                             disabled={loading}
                         >
                             {loading ? <span>Loading...</span> : <span>Login</span>}

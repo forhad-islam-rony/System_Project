@@ -27,6 +27,13 @@ import AddDoctor from './pages/Admin/AddDoctor';
 import Appointments from './pages/Admin/Appointments';
 import PatientList from './pages/Admin/PatientList';
 import BloodGroup from './pages/BloodGroup';
+import Community from './pages/Community';
+import ModeratorLogin from './pages/Moderator/Login';
+import ManageModerators from './pages/Admin/ManageModerators';
+import ModeratorDashboard from './pages/Moderator/Dashboard';
+import PendingPosts from './pages/Moderator/PendingPosts';
+import AdminLayout from './components/Admin/AdminLayout';
+import AdminDashboard from './pages/Admin/Dashboard';
 
 export const App = () => {
   return (
@@ -35,6 +42,7 @@ export const App = () => {
       <div className='mx-4 sm:max-[10%]'>
         <Routes>
           <Route path="/admin/*" element={null} />
+          <Route path="/moderator/*" element={null} />
           <Route path="*" element={<Navbar />} />
         </Routes>
 
@@ -44,7 +52,7 @@ export const App = () => {
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/blood-group' element={<BloodGroup />} />
-          
+          <Route path='/community' element={<Community />} />
           {/* Auth Routes */}
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
@@ -85,12 +93,19 @@ export const App = () => {
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/register" element={<AdminRegister />} />
           <Route 
             path="/admin" 
             element={
               <ProtectedRoute allowedRoles={['admin']}>
-                <Dashboard />
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
               </ProtectedRoute>
             } 
           />
@@ -110,11 +125,14 @@ export const App = () => {
               </ProtectedRoute>
             } 
           />
-          <Route path="/admin/appointments" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <Appointments />
-            </ProtectedRoute>
-          } />
+          <Route 
+            path="/admin/appointments" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Appointments />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/admin/patients" 
             element={
@@ -123,10 +141,38 @@ export const App = () => {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/admin/moderators" 
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <ManageModerators />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Moderator Routes */}
+          <Route path="/moderator/login" element={<ModeratorLogin />} />
+          <Route 
+            path="/moderator/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={['moderator']}>
+                <ModeratorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/moderator/pending-posts" 
+            element={
+              <ProtectedRoute allowedRoles={['moderator']}>
+                <PendingPosts />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
 
         <Routes>
           <Route path="/admin/*" element={null} />
+          <Route path="/moderator/*" element={null} />
           <Route path="*" element={<Footer />} />
         </Routes>
       </div>

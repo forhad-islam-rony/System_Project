@@ -20,7 +20,7 @@ const DoctorsDetails = () => {
     const fetchDoctor = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BASE_URL}/api/v1/doctors/${id}`);
+        const response = await fetch(`${BASE_URL}/doctors/${id}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch doctor details');
