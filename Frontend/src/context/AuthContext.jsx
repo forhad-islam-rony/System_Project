@@ -1,9 +1,10 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
+// Create the context
 export const AuthContext = createContext();
 
 const initialState = {
-  user: localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')) : null,
+  user: localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null,
   role: localStorage.getItem('role') || null,
   token: localStorage.getItem('token') || null,
 };
@@ -39,7 +40,7 @@ export const authReducer = (state, action) => {
 
     case "LOGOUT":
       localStorage.removeItem('token');
-      localStorage.removeItem('userData');
+      localStorage.removeItem('user');
       localStorage.removeItem('role');
       return {
         user: null,
@@ -65,9 +66,15 @@ export const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  useEffect(() => {
+    localStorage.setItem('user', JSON.stringify(state.user));
+    localStorage.setItem('token', state.token);
+    localStorage.setItem('role', state.role);
+  }, [state]);
+
   const login = (userData, token) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('role', userData.role);
 
     dispatch({
@@ -81,6 +88,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear cart data for the user
+    const userId = state.user?._id;
+    if (userId) {
+      localStorage.removeItem(`cart_${userId}`);
+    }
+
+    // Clear auth data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    
     dispatch({ type: 'LOGOUT' });
   };
 
