@@ -8,7 +8,7 @@ import { BiLogOut } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
-const Dashboard = () => {
+const AdminDashboard = () => {
     const [stats, setStats] = useState({
         totalPatients: 0,
         totalDoctors: 0,
@@ -26,21 +26,25 @@ const Dashboard = () => {
 
     const fetchDashboardStats = async () => {
         try {
-            const res = await fetch(`${BASE_URL}/api/v1/admin/dashboard-stats`, {
+            console.log('Fetching dashboard stats...');
+            const res = await fetch(`${BASE_URL}/admin/dashboard-stats`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
+            const result = await res.json();
+            console.log('Dashboard stats response:', result);
+
             if (!res.ok) {
-                throw new Error('Failed to fetch dashboard stats');
+                throw new Error(result.message);
             }
 
-            const data = await res.json();
-            setStats(data.data);
-            setLoading(false);
+            setStats(result.data);
         } catch (error) {
-            toast.error(error.message);
+            console.error('Error fetching stats:', error);
+            toast.error(error.message || 'Failed to fetch dashboard stats');
+        } finally {
             setLoading(false);
         }
     };
@@ -185,4 +189,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard; 
+export default AdminDashboard; 

@@ -29,7 +29,7 @@ function Doctors() {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      let url = `${BASE_URL}/api/v1/doctors`;
+      let url = `${BASE_URL}/doctors`;
       
       // Add query parameters if they exist
       const params = new URLSearchParams();

@@ -8,14 +8,16 @@ import userRoutes from './Routes/user.js';
 import doctorRoutes from './Routes/doctor.js';
 import reviewRoutes from './Routes/review.js';
 import bookingRoute from './Routes/booking.js';
-import adminRoutes from './Routes/admin.js';
+import adminRoute from './Routes/admin.js';
+import postRoute from './Routes/posts.js';
+import moderatorRoutes from './Routes/moderator.js';
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: true,
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -37,31 +39,45 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/doctors', doctorRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/bookings', bookingRoute);
-app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/admin', adminRoute);
+app.use('/api/v1/posts', postRoute);
+app.use('/api/v1/moderator', moderatorRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong!";
+  return res.status(errorStatus).json({
     success: false,
-    message: 'Internal server error',
-    error: err.message
+    status: errorStatus,
+    message: errorMessage,
+    stack: err.stack,
   });
 });
+
+// MongoDB connection
+mongoose.set('strictQuery', false);
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log('MongoDB database connected');
+  } catch (err) {
+    console.log('MongoDB database connection failed:', err.message);
+  }
+};
 
 // Start server
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL);
-    console.log('MongoDB connected');
-    
+    await connectDB();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
+  } catch (err) {
+    console.log('Failed to start server:', err);
   }
 };
 
 startServer();
+
+export default app;

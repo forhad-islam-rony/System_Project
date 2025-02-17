@@ -12,6 +12,10 @@ const navLinks = [
     display: 'Home',
   },
   {
+    path: '/community',
+    display: 'Community',
+  },
+  {
     path: '/doctors',
     display: 'Find a Doctor',
   },
