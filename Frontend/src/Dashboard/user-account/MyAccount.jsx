@@ -95,6 +95,10 @@ const MyAccount = () => {
     }
   };
 
+  const handleEdit = (postId) => {
+    navigate(`/edit-post/${postId}`);
+  };
+
   return (
     <section>
       <div className="max-w-[1170px] px-5 mx-auto">
@@ -197,23 +201,22 @@ const MyAccount = () => {
                 onClick={() => setTab("bookings")}
                 className={`${
                   tab === "bookings" && "bg-primaryColor text-white font-normal"
-                }
-             p-2 mr-5 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
-             border border-solid border-primaryColor`}
+                } p-2 mr-5 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                border border-solid border-primaryColor`}
               >
                 My Bookings
               </button>
               <button
                 onClick={() => setTab("settings")}
-                className={` ${
+                className={`${
                   tab === "settings" && "bg-primaryColor text-white font-normal"
-                }
-             py-2  px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
-             border border-solid border-primaryColor`}
+                } py-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                border border-solid border-primaryColor`}
               >
                 Profile settings
               </button>
             </div>
+
             {tab === "bookings" && <MyBookings />}
             {tab === "settings" && <Profile onUpdate={fetchUserData} />}
           </div>

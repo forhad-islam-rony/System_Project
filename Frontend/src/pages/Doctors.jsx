@@ -14,6 +14,17 @@ function Doctors() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const normalizeSpecialization = (spec) => {
+    if (!spec) return "";
+    spec = spec.toLowerCase();
+    if (spec.includes('neuro')) return 'neurology';
+    if (spec.includes('cardio')) return 'cardiology';
+    if (spec.includes('derma')) return 'dermatology';
+    if (spec.includes('gastro')) return 'gastroenterology';
+    if (spec.includes('surg')) return 'surgery';
+    return spec;
+  };
+
   const specialities = [
     { name: "Surgery", icon: "🔪" },
     { name: "Neurology", icon: "🧠" },
@@ -34,7 +45,11 @@ function Doctors() {
       // Add query parameters if they exist
       const params = new URLSearchParams();
       if (searchTerm) params.append('query', searchTerm);
-      if (selectedSpeciality) params.append('specialization', selectedSpeciality);
+      if (selectedSpeciality) {
+        // Normalize the specialization before sending to API
+        const normalizedSpec = normalizeSpecialization(selectedSpeciality);
+        params.append('specialization', normalizedSpec);
+      }
       params.append('isApproved', 'approved');
       
       if (params.toString()) {
@@ -53,8 +68,9 @@ function Doctors() {
       console.log('API Response:', result);
       
       if (result.success) {
-        setDoctors(result.data);
-        setFilterDoc(result.data);
+        const allDoctors = result.data;
+        setDoctors(allDoctors);
+        setFilterDoc(allDoctors); // No need to filter here as backend handles it
       }
     } catch (err) {
       console.error('Error fetching doctors:', err);

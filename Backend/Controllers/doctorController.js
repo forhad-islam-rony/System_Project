@@ -74,37 +74,67 @@ export const getSingleDoctor = async (req, res) => {
 
 export const getAllDoctor = async (req, res) => {
   try {
-    const { query, specialization, isApproved } = req.query;
+    const { query, specialization } = req.query;
     
     let filter = {};
 
-    // Add specialization filter if provided
-    if (specialization) {
-      filter.specialization = specialization;
-    }
+    // Helper function to normalize specialization
+    const normalizeSpecialization = (spec) => {
+      if (!spec) return "";
+      spec = spec.toLowerCase().trim();
+      
+      // Create base word mappings
+      const baseWords = {
+        'neuro': ['neurology', 'neurologist'],
+        'cardio': ['cardiology', 'cardiologist'],
+        'derma': ['dermatology', 'dermatologist'],
+        'gastro': ['gastroenterology', 'gastroenterologist'],
+        'surg': ['surgery', 'surgeon']
+      };
 
-    // Add search query filter if provided
+      // Check each base word
+      for (const [base, variations] of Object.entries(baseWords)) {
+        if (spec.includes(base)) {
+          return variations; // Return array of possible variations
+        }
+      }
+      
+      return [spec]; // Return array with original spec if no match
+    };
+
+    // Add query filter if provided
     if (query) {
       filter.$or = [
-        { name: { $regex: query, $options: "i" } },
-        { specialization: { $regex: query, $options: "i" } },
+        { name: { $regex: query, $options: 'i' } },
+        { specialization: { $regex: query, $options: 'i' } }
       ];
     }
 
-    // Add isApproved filter
-    if (isApproved) {
-      filter.isApproved = isApproved;
+    // Add specialization filter if provided
+    if (specialization) {
+      const possibleSpecializations = normalizeSpecialization(specialization);
+      filter.specialization = {
+        $in: possibleSpecializations.map(s => new RegExp(s, 'i'))
+      };
     }
 
-    // Get doctors and sort them
-    const doctors = await Doctor.find(filter)
-      .select("-password");
+    // Add approved filter
+    filter.isApproved = "approved";
+
+    const doctors = await Doctor.find(filter).select("-password");
+
+    // Add availability status to each doctor in response
+    const doctorsWithAvailability = doctors.map(doctor => ({
+      ...doctor._doc,
+      isAvailable: doctor.isAvailable || false
+    }));
 
     res.status(200).json({
       success: true,
-      message: "Doctors found successfully",
-      data: doctors,
+      message: "Doctors found",
+      data: doctorsWithAvailability
     });
+
   } catch (error) {
     console.error('Error in getAllDoctor:', error);
     res.status(500).json({
@@ -236,6 +266,40 @@ export const createDoctor = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create doctor',
+      error: err.message
+    });
+  }
+};
+
+export const updateAvailability = async (req, res) => {
+  const { id } = req.params;
+  const { isAvailable } = req.body;
+
+  try {
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      id,
+      { 
+        isAvailable: isAvailable 
+      },
+      { new: true }
+    ).select("-password");
+
+    if (!updatedDoctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Availability updated successfully",
+      data: updatedDoctor
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update availability",
       error: err.message
     });
   }
