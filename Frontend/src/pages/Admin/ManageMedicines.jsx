@@ -124,179 +124,242 @@ const ManageMedicines = () => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-primaryColor mb-6">Add New Medicine</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="mb-5">
-                    <label className="block text-sm font-medium text-gray-700">Medicine Image</label>
-                    <div className="mt-2 flex items-center gap-4">
-                        <input
-                            type="file"
-                            name="photo"
-                            id="photo"
-                            accept=".jpg,.jpeg,.png"
-                            onChange={handleFileInputChange}
-                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primaryColor file:text-white hover:file:bg-primaryDark"
-                        />
-                        {previewURL && (
-                            <img
-                                src={previewURL}
-                                alt="preview"
-                                className="w-32 h-32 object-cover rounded-lg"
-                            />
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Product Name</label>
-                        <input
-                            type="text"
-                            name="productName"
-                            value={formData.productName}
-                            onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Generic Name</label>
-                        <input
-                            type="text"
-                            name="genericName"
-                            value={formData.genericName}
-                            onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        />
+        <div className="max-w-[1170px] mx-auto">
+            <div className="bg-white rounded-2xl shadow-md p-8 mb-10">
+                <h2 className="text-3xl font-bold text-primaryColor mb-8 border-b pb-4">
+                    Add New Medicine
+                </h2>
+                
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* Image Upload Section */}
+                    <div className="bg-[#F8F9FA] p-6 rounded-xl">
+                        <label className="block text-lg font-semibold text-gray-800 mb-4">
+                            Medicine Image
+                        </label>
+                        <div className="flex items-center gap-6">
+                            <div className="flex-1">
+                                <input
+                                    type="file"
+                                    name="photo"
+                                    id="photo"
+                                    accept=".jpg,.jpeg,.png"
+                                    onChange={handleFileInputChange}
+                                    className="file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 
+                                    file:text-sm file:font-semibold file:bg-primaryColor file:text-white 
+                                    hover:file:bg-primaryDark transition-all w-full
+                                    text-gray-600 rounded-lg border border-gray-300"
+                                />
+                                <p className="text-sm text-gray-500 mt-2">
+                                    Supported formats: JPG, JPEG, PNG
+                                </p>
+                            </div>
+                            {previewURL && (
+                                <div className="relative w-40 h-40">
+                                    <img
+                                        src={previewURL}
+                                        alt="preview"
+                                        className="w-full h-full object-cover rounded-xl shadow-md"
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Category</label>
-                        <input
-                            type="text"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        />
+                    {/* Basic Information Section */}
+                    <div className="bg-[#F8F9FA] p-6 rounded-xl">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                            Basic Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Product Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="productName"
+                                    value={formData.productName}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Generic Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="genericName"
+                                    value={formData.genericName}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Category
+                                </label>
+                                <input
+                                    type="text"
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Price
+                                </label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Dosage (mg)
+                                </label>
+                                <input
+                                    type="number"
+                                    name="dosageMg"
+                                    value={formData.dosageMg}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Price</label>
-                        <input
-                            type="number"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        />
+                    {/* Description Section */}
+                    <div className="bg-[#F8F9FA] p-6 rounded-xl">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                            Detailed Information
+                        </h3>
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Description
+                                </label>
+                                <textarea
+                                    name="description.text"
+                                    value={formData.description.text}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Key Benefits
+                                </label>
+                                <textarea
+                                    name="description.keyBenefits"
+                                    value={formData.description.keyBenefits}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Recommended For
+                                </label>
+                                <textarea
+                                    name="description.recommendedFor"
+                                    value={formData.description.recommendedFor}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Usage Instructions
+                                </label>
+                                <textarea
+                                    name="usageInstruction"
+                                    value={formData.usageInstruction}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Side Effects
+                                </label>
+                                <textarea
+                                    name="sideEffects"
+                                    value={formData.sideEffects}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Storage Instructions
+                                </label>
+                                <textarea
+                                    name="storage"
+                                    value={formData.storage}
+                                    onChange={handleChange}
+                                    rows="2"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
+                                    focus:ring-primaryColor focus:border-transparent transition-all"
+                                    required
+                                ></textarea>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Dosage (mg)</label>
-                        <input
-                            type="number"
-                            name="dosageMg"
-                            value={formData.dosageMg}
-                            onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        />
+                    <div className="flex justify-end pt-4">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`bg-primaryColor text-white px-8 py-3 rounded-lg 
+                            hover:bg-primaryDark transition-all duration-300 font-semibold
+                            ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'}`}
+                        >
+                            {loading ? (
+                                <span className="flex items-center gap-2">
+                                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                    </svg>
+                                    Adding Medicine...
+                                </span>
+                            ) : (
+                                'Add Medicine'
+                            )}
+                        </button>
                     </div>
-                </div>
-
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea
-                            name="description.text"
-                            value={formData.description.text}
-                            onChange={handleChange}
-                            rows="3"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Key Benefits</label>
-                        <textarea
-                            name="description.keyBenefits"
-                            value={formData.description.keyBenefits}
-                            onChange={handleChange}
-                            rows="3"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Recommended For</label>
-                        <textarea
-                            name="description.recommendedFor"
-                            value={formData.description.recommendedFor}
-                            onChange={handleChange}
-                            rows="3"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Usage Instructions</label>
-                        <textarea
-                            name="usageInstruction"
-                            value={formData.usageInstruction}
-                            onChange={handleChange}
-                            rows="3"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Side Effects</label>
-                        <textarea
-                            name="sideEffects"
-                            value={formData.sideEffects}
-                            onChange={handleChange}
-                            rows="3"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Storage Instructions</label>
-                        <textarea
-                            name="storage"
-                            value={formData.storage}
-                            onChange={handleChange}
-                            rows="2"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primaryColor focus:ring-primaryColor"
-                            required
-                        ></textarea>
-                    </div>
-                </div>
-
-                <div className="flex justify-end">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`bg-primaryColor text-white px-6 py-2 rounded-md hover:bg-primaryDark transition-colors ${
-                            loading ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                    >
-                        {loading ? 'Adding...' : 'Add Medicine'}
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };
