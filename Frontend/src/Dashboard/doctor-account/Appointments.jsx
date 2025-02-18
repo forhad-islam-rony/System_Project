@@ -16,7 +16,7 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/doctor-appointments`, {
+      const res = await fetch(`${BASE_URL}/bookings/doctor-appointments`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -43,7 +43,7 @@ const Appointments = () => {
 
   const updateVisitType = async (bookingId, visitType) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/${bookingId}/visit-type`, {
+      const res = await fetch(`${BASE_URL}/bookings/${bookingId}/visit-type`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const Appointments = () => {
 
   const updateAppointmentStatus = async (bookingId, status) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/${bookingId}/status`, {
+      const res = await fetch(`${BASE_URL}/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const Appointments = () => {
 
   const searchPatients = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/search-patients?email=${searchEmail}`, {
+      const res = await fetch(`${BASE_URL}/bookings/search-patients?email=${searchEmail}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -117,7 +117,7 @@ const Appointments = () => {
 
   const updatePatientVisitType = async (email, visitType) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/update-patient-visit-type`, {
+      const res = await fetch(`${BASE_URL}/bookings/update-patient-visit-type`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ const Appointments = () => {
 
   const markAsViewed = async (appointmentId) => {
     try {
-      await fetch(`${BASE_URL}/api/v1/bookings/${appointmentId}/mark-viewed`, {
+      await fetch(`${BASE_URL}/bookings/${appointmentId}/mark-viewed`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`

@@ -197,12 +197,12 @@ const MyAccount = () => {
           </div>
 
           <div className="md:col-span-2 md:px-[30px]">
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6">
               <button
                 onClick={() => setTab("bookings")}
                 className={`${
                   tab === "bookings" && "bg-primaryColor text-white font-normal"
-                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-1.5 px-3 text-sm rounded-md text-headingColor font-semibold leading-6
                 border border-solid border-primaryColor`}
               >
                 My Bookings
@@ -211,7 +211,7 @@ const MyAccount = () => {
                 onClick={() => setTab("orders")}
                 className={`${
                   tab === "orders" && "bg-primaryColor text-white font-normal"
-                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-1.5 px-3 text-sm rounded-md text-headingColor font-semibold leading-6
                 border border-solid border-primaryColor`}
               >
                 My Orders
@@ -220,7 +220,7 @@ const MyAccount = () => {
                 onClick={() => setTab("create-post")}
                 className={`${
                   tab === "create-post" && "bg-primaryColor text-white font-normal"
-                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-1.5 px-3 text-sm rounded-md text-headingColor font-semibold leading-6
                 border border-solid border-primaryColor`}
               >
                 Create Post
@@ -229,7 +229,7 @@ const MyAccount = () => {
                 onClick={() => setTab("posts")}
                 className={`${
                   tab === "posts" && "bg-primaryColor text-white font-normal"
-                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-1.5 px-3 text-sm rounded-md text-headingColor font-semibold leading-6
                 border border-solid border-primaryColor`}
               >
                 Your Posts
@@ -238,7 +238,7 @@ const MyAccount = () => {
                 onClick={() => setTab("settings")}
                 className={`${
                   tab === "settings" && "bg-primaryColor text-white font-normal"
-                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-1.5 px-3 text-sm rounded-md text-headingColor font-semibold leading-6
                 border border-solid border-primaryColor`}
               >
                 Profile settings

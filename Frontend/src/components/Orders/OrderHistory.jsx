@@ -68,7 +68,7 @@ const OrderHistory = () => {
                     <p className="text-gray-500">No orders found</p>
                 </div>
             ) : (
-                <div className="space-y-6">
+                <div className="space-y-6 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
                     {orders.map((order) => (
                         <div key={order._id} className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex justify-between items-start mb-4">
