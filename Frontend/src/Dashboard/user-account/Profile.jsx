@@ -7,7 +7,7 @@ import HashLoader from 'react-spinners/HashLoader';
 import { FaImage, FaMapMarkerAlt } from 'react-icons/fa';
 import { MdCreate, MdHistory } from 'react-icons/md';
 
-const Profile = (props) => {
+const Profile = ({ activeTab = 'profile', onUpdate }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -22,7 +22,6 @@ const Profile = (props) => {
     location: '',
     isDonating: false
   });
-  const [activeTab, setActiveTab] = useState('profile');
   const [postFormData, setPostFormData] = useState({
     title: '',
     content: '',
@@ -156,8 +155,8 @@ const Profile = (props) => {
       toast.success('Profile updated successfully');
       
       // Call the onUpdate prop to refresh parent component
-      if (props.onUpdate) {
-        props.onUpdate();
+      if (onUpdate) {
+        onUpdate();
       }
 
     } catch (err) {
@@ -339,7 +338,6 @@ const Profile = (props) => {
       category: post.category,
       images: post.images
     });
-    setActiveTab('create-post'); // Switch to the create/edit tab
     setEditingPostId(post._id); // Add this state to track which post is being edited
   };
 
@@ -369,40 +367,6 @@ const Profile = (props) => {
 
   return (
     <div className='mt-10'>
-      {/* Tab Navigation */}
-      <div className="flex gap-4 mb-8">
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 rounded-lg ${
-            activeTab === 'profile' 
-              ? 'bg-primaryColor text-white' 
-              : 'bg-gray-200 text-gray-700'
-          }`}
-        >
-          Profile Settings
-        </button>
-        <button
-          onClick={() => setActiveTab('create-post')}
-          className={`px-4 py-2 rounded-lg ${
-            activeTab === 'create-post' 
-              ? 'bg-primaryColor text-white' 
-              : 'bg-gray-200 text-gray-700'
-          }`}
-        >
-          Create Post
-        </button>
-        <button
-          onClick={() => setActiveTab('posts')}
-          className={`px-4 py-2 rounded-lg ${
-            activeTab === 'posts' 
-              ? 'bg-primaryColor text-white' 
-              : 'bg-gray-200 text-gray-700'
-          }`}
-        >
-          Your Posts
-        </button>
-      </div>
-
       {/* Profile Settings Section */}
       {activeTab === 'profile' && (
         <form onSubmit={submitHandler}>

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 import MyBookings from "./MyBookings";
 import Profile from "./Profile";
+import OrderHistory from "../../components/Orders/OrderHistory";
 
 const MyAccount = () => {
   const [tab, setTab] = React.useState("bookings");
@@ -196,21 +197,48 @@ const MyAccount = () => {
           </div>
 
           <div className="md:col-span-2 md:px-[30px]">
-            <div>
+            <div className="flex flex-wrap gap-3 mb-6">
               <button
                 onClick={() => setTab("bookings")}
                 className={`${
                   tab === "bookings" && "bg-primaryColor text-white font-normal"
-                } p-2 mr-5 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
                 border border-solid border-primaryColor`}
               >
                 My Bookings
               </button>
               <button
+                onClick={() => setTab("orders")}
+                className={`${
+                  tab === "orders" && "bg-primaryColor text-white font-normal"
+                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                border border-solid border-primaryColor`}
+              >
+                My Orders
+              </button>
+              <button
+                onClick={() => setTab("create-post")}
+                className={`${
+                  tab === "create-post" && "bg-primaryColor text-white font-normal"
+                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                border border-solid border-primaryColor`}
+              >
+                Create Post
+              </button>
+              <button
+                onClick={() => setTab("posts")}
+                className={`${
+                  tab === "posts" && "bg-primaryColor text-white font-normal"
+                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                border border-solid border-primaryColor`}
+              >
+                Your Posts
+              </button>
+              <button
                 onClick={() => setTab("settings")}
                 className={`${
                   tab === "settings" && "bg-primaryColor text-white font-normal"
-                } py-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
+                } p-2 px-5 rounded-md text-headingColor font-semibold text-[16px] leading-7
                 border border-solid border-primaryColor`}
               >
                 Profile settings
@@ -218,7 +246,10 @@ const MyAccount = () => {
             </div>
 
             {tab === "bookings" && <MyBookings />}
-            {tab === "settings" && <Profile onUpdate={fetchUserData} />}
+            {tab === "orders" && <OrderHistory />}
+            {tab === "create-post" && <Profile activeTab="create-post" onUpdate={fetchUserData} />}
+            {tab === "posts" && <Profile activeTab="posts" onUpdate={fetchUserData} />}
+            {tab === "settings" && <Profile activeTab="profile" onUpdate={fetchUserData} />}
           </div>
         </div>
       </div>
