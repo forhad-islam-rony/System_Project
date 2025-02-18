@@ -683,100 +683,101 @@ const Profile = ({ activeTab = 'profile', onUpdate }) => {
 
       {/* Your Posts Section */}
       {activeTab === 'posts' && (
-        <div className="space-y-6">
-          {userPosts.map((post) => (
-            <div key={post._id} className="bg-white rounded-lg p-6 shadow-md">
-              {/* Post Header with Status */}
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bold">{post.title}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-gray-500">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </span>
-                    {/* Post Status Badge */}
-                    <span className={`text-sm px-3 py-1 rounded-full ${
-                      post.status === 'approved' 
-                        ? 'bg-green-100 text-green-800'
-                        : post.status === 'rejected'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
-                    </span>
+        <div className="max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+          <div className="space-y-6">
+            {userPosts.map((post) => (
+              <div key={post._id} className="bg-white rounded-lg p-6 shadow-md">
+                {/* Post Header with Status */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold">{post.title}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm text-gray-500">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                      {/* Post Status Badge */}
+                      <span className={`text-sm px-3 py-1 rounded-full ${
+                        post.status === 'approved' 
+                          ? 'bg-green-100 text-green-800'
+                          : post.status === 'rejected'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Post Actions */}
+                  <div className="flex gap-2">
+                    {post.status === 'pending' && (
+                      <button
+                        onClick={() => handleEditPost(post)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        Edit
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDeletePost(post._id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-                {/* Post Actions */}
-<div className="flex gap-2">
-  {post.status === 'pending' && (
-    <button
-      onClick={() => handleEditPost(post)}
-      className="text-blue-600 hover:text-blue-800"
-    >
-      Edit
-    </button>
-  )}
-  <button
-    onClick={() => handleDeletePost(post._id)}
-    className="text-red-600 hover:text-red-800"
-  >
-    Delete
-  </button>
-</div>
 
-              </div>
+                {/* Post Images */}
+                {post.images && post.images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    {post.images.map((url, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={url}
+                          alt={`Image ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Post Images */}
-              {post.images && post.images.length > 0 && (
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  {post.images.map((url, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={url}
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
+                {/* Post Content */}
+                <p className="text-gray-700 mb-4">{post.content}</p>
+                
+                {/* Post Metadata */}
+                <div className="flex flex-wrap items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1 text-gray-500">
+                    <FaMapMarkerAlt />
+                    {post.division}
+                  </span>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                    {post.category}
+                  </span>
+                  <span className="text-gray-500 flex items-center gap-1">
+                    <i className="far fa-eye"></i> {post.views} views
+                  </span>
+                  <span className="text-gray-500 flex items-center gap-1">
+                    <i className="far fa-comment"></i> {post.comments?.length || 0} comments
+                  </span>
+                  <span className="text-gray-500 flex items-center gap-1">
+                    <i className="far fa-heart"></i> {post.likes?.length || 0} likes
+                  </span>
                 </div>
-              )}
 
-              {/* Post Content */}
-              <p className="text-gray-700 mb-4">{post.content}</p>
-              
-              {/* Post Metadata */}
-              <div className="flex flex-wrap items-center gap-4 text-sm">
-                <span className="flex items-center gap-1 text-gray-500">
-                  <FaMapMarkerAlt />
-                  {post.division}
-                </span>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                  {post.category}
-                </span>
-                <span className="text-gray-500 flex items-center gap-1">
-                  <i className="far fa-eye"></i> {post.views} views
-                </span>
-                <span className="text-gray-500 flex items-center gap-1">
-                  <i className="far fa-comment"></i> {post.comments?.length || 0} comments
-                </span>
-                <span className="text-gray-500 flex items-center gap-1">
-                  <i className="far fa-heart"></i> {post.likes?.length || 0} likes
-                </span>
+                {/* Rejection Message if any */}
+                {post.status === 'rejected' && post.rejectionReason && (
+                  <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg">
+                    <strong>Rejection Reason:</strong> {post.rejectionReason}
+                  </div>
+                )}
               </div>
-
-              {/* Rejection Message if any */}
-              {post.status === 'rejected' && post.rejectionReason && (
-                <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg">
-                  <strong>Rejection Reason:</strong> {post.rejectionReason}
-                </div>
-              )}
-            </div>
-          ))}
-          {userPosts.length === 0 && (
-            <div className="text-center text-gray-500 py-8">
-              You haven't created any posts yet.
-            </div>
-          )}
+            ))}
+            {userPosts.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                You haven't created any posts yet.
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

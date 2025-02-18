@@ -16,7 +16,7 @@ const Appointments = () => {
 
     const fetchAppointments = async () => {
         try {
-            const res = await fetch(`${BASE_URL}/api/v1/admin/appointments`, {
+            const res = await fetch(`${BASE_URL}/admin/appointments`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -28,19 +28,58 @@ const Appointments = () => {
 
             const result = await res.json();
             
-            // Check if data exists and is in the correct format
             if (result.data && Array.isArray(result.data)) {
                 setAppointments(result.data);
             } else {
-                setAppointments([]); // Set empty array if no valid data
+                setAppointments([]);
                 console.log('Invalid data format:', result);
             }
             
             setLoading(false);
         } catch (error) {
             toast.error(error.message);
-            setAppointments([]); // Set empty array on error
+            setAppointments([]);
             setLoading(false);
+        }
+    };
+
+    const handleStatusChange = async (appointmentId, status) => {
+        try {
+            const res = await fetch(`${BASE_URL}/admin/appointments/${appointmentId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ status })
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to update appointment status');
+            }
+
+            const result = await res.json();
+            if (result.success) {
+                toast.success('Appointment status updated successfully');
+                fetchAppointments(); // Refresh the appointments list
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch(status.toLowerCase()) {
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'confirmed':
+                return 'bg-green-100 text-green-800';
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
+            case 'completed':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -116,8 +155,7 @@ const Appointments = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                ${getStatusColor(appointment.status)}`}>
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
                                                 {appointment.status}
                                             </span>
                                         </td>

@@ -106,7 +106,7 @@ const SidePanel = ({ doctor }) => {
         return;
       }
 
-      const res = await fetch(`${BASE_URL}/api/v1/bookings/checkout-session/${doctor._id}`, {
+      const res = await fetch(`${BASE_URL}/bookings/checkout-session/${doctor._id}`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +114,9 @@ const SidePanel = ({ doctor }) => {
         },
         body: JSON.stringify({
           ...formData,
-          doctor: doctor._id
+          doctor: doctor._id,
+          visitType: visitType,
+          price: price
         })
       });
 

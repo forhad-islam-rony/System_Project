@@ -67,7 +67,7 @@
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f7fafc;
+  scrollbar-color: #0067FF #F5F5F5;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -75,18 +75,17 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f7fafc;
+  background: #F5F5F5;
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e0;
+  background-color: #0067FF;
   border-radius: 3px;
-  border: 2px solid #f7fafc;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #a0aec0;
+  background-color: #0052CC;
 }
 
 /* Add these styles for the select dropdown */
