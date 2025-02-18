@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import MyBookings from "./MyBookings";
 import Profile from "./Profile";
 import OrderHistory from "../../components/Orders/OrderHistory";
+import uploadImageToCloudinary from "../../utils/uploadCloudinary";
 
 const MyAccount = () => {
   const [tab, setTab] = React.useState("bookings");
@@ -98,6 +99,39 @@ const MyAccount = () => {
 
   const handleEdit = (postId) => {
     navigate(`/edit-post/${postId}`);
+  };
+
+  const handleCreatePost = async (postData, photo) => {
+    try {
+      let photoUrl = null;
+      if (photo) {
+        const uploadResult = await uploadImageToCloudinary(photo);
+        photoUrl = uploadResult.url;
+      }
+
+      const res = await fetch(`${BASE_URL}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...postData,
+          photo: photoUrl
+        })
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message);
+      }
+
+      toast.success('Post created successfully');
+      setTab("posts"); // Switch to posts tab after successful creation
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -247,7 +281,13 @@ const MyAccount = () => {
 
             {tab === "bookings" && <MyBookings />}
             {tab === "orders" && <OrderHistory />}
-            {tab === "create-post" && <Profile activeTab="create-post" onUpdate={fetchUserData} />}
+            {tab === "create-post" && (
+              <Profile 
+                activeTab="create-post" 
+                onUpdate={fetchUserData} 
+                onCreatePost={handleCreatePost}
+              />
+            )}
             {tab === "posts" && <Profile activeTab="posts" onUpdate={fetchUserData} />}
             {tab === "settings" && <Profile activeTab="profile" onUpdate={fetchUserData} />}
           </div>
