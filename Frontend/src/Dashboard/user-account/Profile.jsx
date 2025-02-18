@@ -176,15 +176,15 @@ const Profile = ({ activeTab = 'profile', onUpdate }) => {
     setLoading(true);
   
     try {
-      // Extract URLs from images
-      const imageUrls = postFormData.images.map((img) => (typeof img === "string" ? img : img.url));
+      // Extract only the URLs from the images array
+      const imageUrls = postFormData.images.map(img => img.url);
   
       const requestBody = {
         title: postFormData.title,
         content: postFormData.content,
         division: postFormData.division,
         category: postFormData.category,
-        images: imageUrls,
+        images: imageUrls, // Send only the URLs
       };
   
       let res, result;
@@ -277,38 +277,23 @@ const Profile = ({ activeTab = 'profile', onUpdate }) => {
     try {
       setLoading(true);
       
-      // Create preview URL
-      const previewUrl = URL.createObjectURL(file);
+      // Upload to Cloudinary first
+      const result = await uploadImageToCloudinary(file);
       
-      // Add preview immediately with loading state
+      if (!result || !result.url) {
+        throw new Error('Failed to get upload URL');
+      }
+
+      // Add the cloudinary URL to images array
       setPostFormData(prev => ({
         ...prev,
-        images: [...prev.images, { url: previewUrl, isPreview: true }]
-      }));
-
-      // Upload to Cloudinary
-      const cloudinaryUrl = await uploadImageToCloudinary(file);
-
-      // Replace preview with cloudinary URL
-      setPostFormData(prev => ({
-        ...prev,
-        images: prev.images.map(img => 
-          img.url === previewUrl 
-            ? { url: cloudinaryUrl, isPreview: false }
-            : img
-        )
+        images: [...prev.images, { url: result.url, isPreview: false }]
       }));
 
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');
-      
-      // Remove failed upload preview
-      setPostFormData(prev => ({
-        ...prev,
-        images: prev.images.filter(img => img.url !== previewUrl)
-      }));
     } finally {
       setLoading(false);
     }
