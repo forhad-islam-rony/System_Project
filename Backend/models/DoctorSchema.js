@@ -31,10 +31,13 @@ const DoctorSchema = new mongoose.Schema({
   averageRating: {
     type: Number,
     default: 0,
+    min: 0,
+    max: 5
   },
   totalRating: {
     type: Number,
     default: 0,
+    min: 0
   },
   isApproved: {
     type: String,

@@ -12,46 +12,70 @@ import "react-toastify/dist/ReactToastify.css"; // Ensure styles are imported
 
 const DoctorsDetails = () => {
   const [tab, setTab] = useState("about");
-  const [doctors, setDoctors] = useState([]);
+  const [doctor, setDoctor] = useState(null);
+  const [doctors, setDoctors] = useState([]); // Keep this for specialization view
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        let url;
-        
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-          url = `${BASE_URL}/doctors/${id}`;
-        } else {
-          url = `${BASE_URL}/doctors/specialization/${encodeURIComponent(id)}`;
-        }
+  const fetchDoctorDetails = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/doctors/${id}`);
+      const result = await res.json();
 
-        const res = await fetch(url);
-        const result = await res.json();
-
-        if (!res.ok) {
-          throw new Error(result.message);
-        }
-
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-          setDoctors([result.data]);
-        } else {
-          setDoctors(result.data);
-        }
-        
-        setLoading(false);
-      } catch (err) {
-        setLoading(false);
-        setError(err.message);
-        toast.error(err.message);
+      if (!res.ok) {
+        throw new Error(result.message);
       }
-    };
 
-    fetchDoctors();
+      setDoctor(result.data);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message);
+      toast.error(err.message);
+    }
+  };
+
+  const fetchDoctorsBySpecialization = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/doctors/specialization/${encodeURIComponent(id)}`);
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message);
+      }
+
+      setDoctors(result.data);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message);
+      toast.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      fetchDoctorDetails();
+    } else {
+      fetchDoctorsBySpecialization();
+    }
   }, [id]);
+
+  const handleReviewSubmit = (doctorData) => {
+    if (doctorData) {
+      // Update just the rating fields without a full refetch
+      setDoctor(prev => ({
+        ...prev,
+        averageRating: doctorData.averageRating,
+        totalRating: doctorData.totalRating
+      }));
+    } else {
+      // Fallback to full refetch
+      fetchDoctorDetails();
+    }
+  };
 
   if (loading) {
     return (
@@ -69,16 +93,16 @@ const DoctorsDetails = () => {
     );
   }
 
-  if (doctors.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl text-gray-600">No doctors found for this specialization.</p>
-      </div>
-    );
-  }
-
+  // For single doctor view
   if (id.match(/^[0-9a-fA-F]{24}$/)) {
-    const doctor = doctors[0];
+    if (!doctor) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-xl text-gray-600">Doctor not found.</p>
+        </div>
+      );
+    }
+
     return (
       <section>
         <div className="max-w-[1170px] px-5 mx-auto">
@@ -102,7 +126,7 @@ const DoctorsDetails = () => {
                     <span className="flex items-center gap-[6px] text-[14px] leading-5 lg:text-[16px] lg:leading-7 
                               font-semibold text-headingColor">
                       <img src={starIcon} alt="" />
-                      {doctor.averageRating || 0}
+                      {Number(doctor.averageRating || 0).toFixed(1)}
                     </span>
                     <span className="text-[14px] leading-5 lg:text-[16px] lg:leading-7 font-[400]
                               text-textColor">
@@ -137,7 +161,12 @@ const DoctorsDetails = () => {
 
               <div className="mt-[50px]">
                 {tab === "about" && <DoctorAbout doctor={doctor} />}
-                {tab === "feedback" && <Feedback doctor={doctor} />}
+                {tab === "feedback" && (
+                  <Feedback 
+                    doctorId={doctor._id} 
+                    onReviewSubmit={handleReviewSubmit}
+                  />
+                )}
               </div>
             </div>
 
@@ -147,6 +176,15 @@ const DoctorsDetails = () => {
           </div>
         </div>
       </section>
+    );
+  }
+
+  // For specialization view
+  if (doctors.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl text-gray-600">No doctors found for this specialization.</p>
+      </div>
     );
   }
 
