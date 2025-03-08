@@ -89,12 +89,12 @@ const OrderHistory = () => {
                                 {order.items.map((item) => (
                                     <div key={item._id} className="flex items-center gap-4 border-b pb-4">
                                         <img
-                                            src={item.medicine.photo}
-                                            alt={item.medicine.productName}
+                                            src={item.medicine?.photo || '/placeholder-medicine.png'}
+                                            alt={item.medicine?.productName || 'Medicine'}
                                             className="w-16 h-16 object-cover rounded"
                                         />
                                         <div className="flex-1">
-                                            <h4 className="font-medium">{item.medicine.productName}</h4>
+                                            <h4 className="font-medium">{item.medicine?.productName || 'Unknown Product'}</h4>
                                             <p className="text-gray-600">
                                                 {item.quantity} x ${item.price} = ${item.quantity * item.price}
                                             </p>
