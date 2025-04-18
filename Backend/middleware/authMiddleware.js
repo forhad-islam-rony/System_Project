@@ -5,9 +5,11 @@ import Doctor from '../models/DoctorSchema.js';
 export const authenticate = async (req, res, next) => {
     // Get token from header
     const authToken = req.headers.authorization;
+    console.log('Auth Middleware - Token:', authToken ? 'Token provided' : 'No token');
 
     // Check if token exists
     if (!authToken || !authToken.startsWith('Bearer ')) {
+        console.log('Auth Middleware - Authentication failed: No bearer token');
         return res.status(401).json({
             success: false,
             message: 'No token, authorization denied'
@@ -18,23 +20,24 @@ export const authenticate = async (req, res, next) => {
         // Verify token
         const token = authToken.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        console.log('Auth Middleware - User authenticated:', { id: decoded.id, role: decoded.role });
 
         // Add user info to request
         req.userId = decoded.id;
         req.role = decoded.role;
-        req.division = decoded.division;
-
-        console.log('Auth Middleware - Division:', decoded.division);
 
         next();
     } catch (error) {
-        console.error('Auth Error:', error);
+        console.error('Auth Middleware - Token verification error:', error);
         return res.status(401).json({
             success: false,
             message: 'Invalid token'
         });
     }
 };
+
+// Alias for backward compatibility
+export const protect = authenticate;
 
 export const restrict = roles => async (req, res, next) => {
     const userId = req.userId;

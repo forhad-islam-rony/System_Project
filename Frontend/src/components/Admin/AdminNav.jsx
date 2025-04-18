@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineDashboard, AiOutlineUserAdd } from 'react-icons/ai';
-import { FaUserMd, FaUsers, FaUserShield } from 'react-icons/fa';
+import { FaUserMd, FaUsers, FaUserShield, FaAmbulance } from 'react-icons/fa';
 import { BsCalendarCheck } from 'react-icons/bs';
 import { RiMedicineBottleLine } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -49,6 +49,11 @@ const AdminNav = () => {
             path: '/admin/orders',
             display: 'Orders',
             icon: <TbTruckDelivery className="text-xl" />
+        },
+        {
+            path: '/admin/ambulance',
+            display: 'Ambulance Service',
+            icon: <FaAmbulance className="text-xl" />
         },
     ];
 
