@@ -38,8 +38,11 @@ import ManageMedicines from './pages/Admin/ManageMedicines';
 import { CartProvider } from './context/CartContext';
 import ConditionalCartIcon from './components/Cart/ConditionalCartIcon';
 import ManageOrders from './pages/Admin/ManageOrders';
-
 import Inquiry from './pages/Admin/Inquiry';
+import Ambulance from './pages/Ambulance';
+import AmbulanceStatus from './pages/AmbulanceStatus';
+import AdminAmbulanceDashboard from './pages/Admin/AdminAmbulanceDashboard';
+import ManageDriversPage from './pages/Admin/ManageDriversPage';
 
 export const App = () => {
   return (
@@ -60,6 +63,9 @@ export const App = () => {
             <Route path='/contact' element={<Contact />} />
             <Route path='/blood-group' element={<BloodGroup />} />
             <Route path='/community' element={<Community />} />
+            <Route path='/ambulance' element={<Ambulance />} />
+            <Route path='/ambulance-status' element={<AmbulanceStatus />} />
+            
             {/* Auth Routes */}
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
@@ -177,14 +183,34 @@ export const App = () => {
                 </ProtectedRoute>
               } 
             />
-          <Route 
-            path="/admin/inquiries" 
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <Inquiry />
-              </ProtectedRoute>
-            } 
-          />
+            <Route 
+              path="/admin/ambulance" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <AdminAmbulanceDashboard />
+                  </AdminLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/ambulance/drivers" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout>
+                    <ManageDriversPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/inquiries" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <Inquiry />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* Moderator Routes */}
             <Route path="/moderator/login" element={<ModeratorLogin />} />
