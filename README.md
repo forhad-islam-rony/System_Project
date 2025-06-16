@@ -85,3 +85,9 @@ System_Project/
 - ML-based doctor review ranking
 - Push notifications for appointments
 - Admin dashboard analytics 
+
+## 👨‍💻 Author
+**Ekramul Alam**  
+**Forhad Islam Rony**
+Computer Science and Engineering  
+Khulna University of Engineering & Technology (KUET)
