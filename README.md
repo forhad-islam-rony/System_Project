@@ -87,7 +87,7 @@ System_Project/
 - Admin dashboard analytics 
 
 ## 👨‍💻 Author
-**Ekramul Alam**  
-**Forhad Islam Rony**
+**Ekramul Alam** <br>
+**Forhad Islam Rony** <br>
 Computer Science and Engineering  
 Khulna University of Engineering & Technology (KUET)
