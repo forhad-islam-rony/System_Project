@@ -55,30 +55,30 @@ System_Project/
 ## 📸 Screenshots
 
 ### Home Page & Navigation
-<img src="screenshots/Screenshot%202025-06-16%20195142.png" width="400" alt="Home Page">
-<img src="screenshots/Screenshot%202025-06-16%20195155.png" width="400" alt="Navigation">
+<img src="Screenshots/Screenshot%202025-06-16%20195142.png" width="400" alt="Home Page">
+<img src="Screenshots/Screenshot%202025-06-16%20195155.png" width="400" alt="Navigation">
 
 ### Doctor Appointment System
-<img src="screenshots/Screenshot%202025-06-16%20195211.png" width="400" alt="Doctor List">
-<img src="screenshots/Screenshot%202025-06-16%20195253.png" width="400" alt="Appointment Booking">
-<img src="screenshots/Screenshot%202025-06-16%20195309.png" width="400" alt="Appointment Details">
+<img src="Screenshots/Screenshot%202025-06-16%20195211.png" width="400" alt="Doctor List">
+<img src="Screenshots/Screenshot%202025-06-16%20195253.png" width="400" alt="Appointment Booking">
+<img src="Screenshots/Screenshot%202025-06-16%20195309.png" width="400" alt="Appointment Details">
 
 ### Blood Donation and Medical Community
-<img src="screenshots/Screenshot%202025-06-16%20195322.png" width="400" alt="Pharmacy Home">
-<img src="screenshots/Screenshot%202025-06-16%20195335.png" width="400" alt="Shopping Cart">
-<img src="screenshots/Screenshot%202025-06-16%20195350.png" width="400" alt="Checkout">
+<img src="Screenshots/Screenshot%202025-06-16%20195322.png" width="400" alt="Pharmacy Home">
+<img src="Screenshots/Screenshot%202025-06-16%20195335.png" width="400" alt="Shopping Cart">
+<img src="Screenshots/Screenshot%202025-06-16%20195350.png" width="400" alt="Checkout">
 
 ### Pharmacy & Shopping
-<img src="screenshots/Screenshot%202025-06-16%20195415.png" width="400" alt="Blood Donor Search">
-<img src="screenshots/Screenshot%202025-06-16%20195436.png" width="400" alt="Donor List">
+<img src="Screenshots/Screenshot%202025-06-16%20195415.png" width="400" alt="Blood Donor Search">
+<img src="Screenshots/Screenshot%202025-06-16%20195436.png" width="400" alt="Donor List">
 
 ### Emergency Services
-<img src="screenshots/Screenshot%202025-06-16%20195519.png" width="400" alt="Health Feed">
+<img src="Screenshots/Screenshot%202025-06-16%20195519.png" width="400" alt="Health Feed">
 
 ### Admin Panel
-<img src="screenshots/Screenshot%202025-06-16%20195633.png" width="400" alt="Post Creation">
-<img src="screenshots/Screenshot%202025-06-16%20195647.png" width="400" alt="Emergency Services">
-<img src="screenshots/Screenshot%202025-06-16%20195723.png" width="400" alt="Ambulance Request">
+<img src="Screenshots/Screenshot%202025-06-16%20195633.png" width="400" alt="Post Creation">
+<img src="Screenshots/Screenshot%202025-06-16%20195647.png" width="400" alt="Emergency Services">
+<img src="Screenshots/Screenshot%202025-06-16%20195723.png" width="400" alt="Ambulance Request">
 
 ## ✅ To-Do (For Future Enhancements)
 - AI-based disease prediction via symptoms
