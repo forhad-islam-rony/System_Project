@@ -20,6 +20,10 @@ const navLinks = [
     display: 'Find a Doctor',
   },
   {
+    path: '/medical-chatbot',
+    display: 'AI Assistant',
+  },
+  {
     path: '/about',
     display: 'Services',
   },

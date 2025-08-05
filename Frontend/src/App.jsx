@@ -43,6 +43,7 @@ import Ambulance from './pages/Ambulance';
 import AmbulanceStatus from './pages/AmbulanceStatus';
 import AdminAmbulanceDashboard from './pages/Admin/AdminAmbulanceDashboard';
 import ManageDriversPage from './pages/Admin/ManageDriversPage';
+import MedicalChatbot from './pages/MedicalChatbot';
 
 export const App = () => {
   return (
@@ -65,6 +66,7 @@ export const App = () => {
             <Route path='/community' element={<Community />} />
             <Route path='/ambulance' element={<Ambulance />} />
             <Route path='/ambulance-status' element={<AmbulanceStatus />} />
+            <Route path='/medical-chatbot' element={<MedicalChatbot />} />
             
             {/* Auth Routes */}
             <Route path='/login' element={<Login />} />

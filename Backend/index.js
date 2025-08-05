@@ -16,6 +16,8 @@ import cartRoutes from './routes/cartRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import contactRoute from './Routes/contact.js';
 import ambulanceRoutes from './Routes/ambulanceRoutes.js';
+import chatbotRoutes from './Routes/chatbot.js';
+import debugRoutes from './Routes/debug.js';
 
 dotenv.config();
 const app = express();
@@ -51,6 +53,8 @@ app.use('/api/v1/medicines', medicineRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/ambulance', ambulanceRoutes);
+app.use('/api/v1/chatbot', chatbotRoutes);
+app.use('/api/v1/debug', debugRoutes);
 
 // Add this test route
 app.get('/api/v1/test', async (req, res) => {
