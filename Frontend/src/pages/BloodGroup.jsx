@@ -42,7 +42,7 @@ const BloodGroup = () => {
         location: params.location
       }).toString();
 
-      const res = await fetch(`${BASE_URL}/api/v1/auth/blood-donors?${queryString}`);
+      const res = await fetch(`${BASE_URL}/auth/blood-donors?${queryString}`);
       const result = await res.json();
 
       if (!res.ok) {
