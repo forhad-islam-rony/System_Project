@@ -4,11 +4,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 const generateToken = user => {
-  return jwt.sign({iid:user._id, role:user.role}, process.env.JWT_SECRET_KEY, {
+  return jwt.sign({id:user._id, role:user.role}, process.env.JWT_SECRET_KEY, {
     expiresIn: '90d'
-  })
-
-}
+  });
+};
 
 export const register = async (req, res) => {
     try {
@@ -22,9 +21,11 @@ export const register = async (req, res) => {
             });
         }
 
-        // Check if email exists
-        const user = await User.findOne({ email });
-        if (user) {
+        // Check if email exists in both User and Doctor collections
+        const existingUser = await User.findOne({ email });
+        const existingDoctor = await Doctor.findOne({ email });
+        
+        if (existingUser || existingDoctor) {
             return res.status(400).json({ 
                 success: false, 
                 message: 'Email already exists' 
@@ -35,16 +36,32 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new User({
-            name,
-            email,
-            password: hashPassword,
-            photo,
-            gender,
-            role
-        });
+        if (role === 'doctor') {
+            // Create doctor with required fields
+            const newDoctor = new Doctor({
+                name,
+                email,
+                password: hashPassword,
+                photo,
+                gender,
+                role: 'doctor',
+                timeSlots: [] // Required field, will be updated later
+            });
 
-        await newUser.save();
+            await newDoctor.save();
+        } else {
+            // Create patient/user
+            const newUser = new User({
+                name,
+                email,
+                password: hashPassword,
+                photo,
+                gender,
+                role
+            });
+
+            await newUser.save();
+        }
 
         res.status(200).json({ 
             success: true, 
@@ -52,6 +69,7 @@ export const register = async (req, res) => {
         });
 
     } catch (err) {
+        console.error('Registration error:', err);
         res.status(500).json({ 
             success: false, 
             message: 'Internal server error, Try again' 

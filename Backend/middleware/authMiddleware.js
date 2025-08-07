@@ -20,11 +20,12 @@ export const authenticate = async (req, res, next) => {
         // Verify token
         const token = authToken.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log('Auth Middleware - User authenticated:', { id: decoded.id, role: decoded.role });
+        console.log('Auth Middleware - User authenticated:', { id: decoded.id, role: decoded.role, division: decoded.division });
 
         // Add user info to request
         req.userId = decoded.id;
         req.role = decoded.role;
+        req.division = decoded.division;  // Add division from token
 
         next();
     } catch (error) {
