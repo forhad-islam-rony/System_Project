@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Pharmacy page component for medicine browsing and purchasing
+ * @description React component that displays medicines with search, filter, and cart functionality.
+ * Includes favorites management, category filtering, and integration with cart system.
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect } from 'react';
 import { BsSearch, BsCart3 } from 'react-icons/bs';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
@@ -8,20 +16,50 @@ import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Pharmacy component for displaying and managing medicines
+ * @component
+ * @returns {JSX.Element} Pharmacy page with medicine grid, search, and filters
+ * @description Provides a comprehensive pharmacy interface with:
+ * - Medicine search and filtering by category
+ * - Add to cart functionality
+ * - Favorites/wishlist management
+ * - Responsive grid layout
+ * - Loading states and error handling
+ */
 const Pharmacy = () => {
+  // Navigation hook for programmatic routing
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [medicines, setMedicines] = useState([]);
-  const [filterMed, setFilterMed] = useState([]);
-  const [category, setCategory] = useState('all');
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState(['all']);
-  const [error, setError] = useState(null);
-  const { addToCart } = useCart();
-  const { user } = useAuth();
+  
+  // State for search functionality
+  const [searchTerm, setSearchTerm] = useState(''); // Current search query
+  
+  // State for medicine data management
+  const [medicines, setMedicines] = useState([]); // All medicines from API
+  const [filterMed, setFilterMed] = useState([]); // Filtered medicines for display
+  
+  // State for filtering and categorization
+  const [category, setCategory] = useState('all'); // Current selected category
+  const [categories, setCategories] = useState(['all']); // Available categories
+  
+  // State for user interactions
+  const [favorites, setFavorites] = useState([]); // User's favorite medicines
+  
+  // State for UI loading and error handling
+  const [loading, setLoading] = useState(true); // Loading state for API calls
+  const [error, setError] = useState(null); // Error state for failed operations
+  
+  // Context hooks for cart and authentication
+  const { addToCart } = useCart(); // Cart functionality from context
+  const { user } = useAuth(); // User authentication state
 
-  // Fetch medicines from backend
+  /**
+   * Fetch medicines from backend API
+   * @async
+   * @function fetchMedicines
+   * @description Retrieves all available medicines from the backend,
+   * extracts unique categories, and sets up initial state
+   */
   useEffect(() => {
     const fetchMedicines = async () => {
       try {

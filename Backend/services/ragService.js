@@ -1,24 +1,71 @@
+/**
+ * @fileoverview Retrieval-Augmented Generation (RAG) Service for Medical AI
+ * @description Implements RAG system for medical knowledge retrieval and context
+ * enhancement. Uses vector embeddings to find relevant medical information and
+ * provides symptom severity assessment.
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import GeminiService from './geminiService.js';
 
+/**
+ * RAG Service for medical knowledge retrieval and context enhancement
+ * @class RAGService
+ * @description Provides medical knowledge management and retrieval with:
+ * - Vector-based medical knowledge storage
+ * - Semantic similarity search for relevant information
+ * - Symptom severity assessment
+ * - Condition-specific medical advice
+ * - Emergency symptom detection
+ */
 class RAGService {
+  /**
+   * Initialize RAG service with empty knowledge base
+   * @constructor
+   * @description Sets up knowledge base storage and starts initialization process:
+   * - Creates empty knowledge base array
+   * - Initializes vector store for embeddings
+   * - Sets initialization flag
+   * - Triggers knowledge base population
+   */
   constructor() {
-    this.knowledgeBase = [];
-    this.vectorStore = new Map();
-    this.initialized = false;
-    this.initializeKnowledgeBase();
+    this.knowledgeBase = [];          // Raw medical knowledge data
+    this.vectorStore = new Map();     // Stores embeddings with metadata
+    this.initialized = false;         // Initialization status flag
+    this.initializeKnowledgeBase();  // Start async initialization
   }
 
+  /**
+   * Initialize medical knowledge base with embeddings
+   * @async
+   * @function initializeKnowledgeBase
+   * @description Loads medical knowledge and creates vector embeddings:
+   * - Loads predefined medical knowledge data
+   * - Creates embeddings for each knowledge entry
+   * - Stores embeddings with metadata in vector store
+   * - Handles initialization errors gracefully
+   * @returns {Promise<void>} Resolves when initialization is complete
+   */
   async initializeKnowledgeBase() {
+    // Skip if already initialized
     if (this.initialized) return;
 
     console.log('Initializing medical knowledge base...');
     
     try {
+      // Load medical knowledge data
       const medicalKnowledge = this.getMedicalKnowledgeData();
       
+      // Create embeddings for each knowledge entry
       for (const knowledge of medicalKnowledge) {
         try {
-          const embedding = await GeminiService.createEmbedding(knowledge.content + ' ' + knowledge.symptoms.join(' '));
+          // Combine content and symptoms for better semantic matching
+          const embedding = await GeminiService.createEmbedding(
+            knowledge.content + ' ' + knowledge.symptoms.join(' ')
+          );
+          
+          // Store embedding with metadata
           this.vectorStore.set(knowledge.id, {
             ...knowledge,
             embedding
@@ -28,6 +75,7 @@ class RAGService {
         }
       }
       
+      // Mark initialization as complete
       this.initialized = true;
       console.log(`Medical knowledge base initialized with ${this.vectorStore.size} entries`);
     } catch (error) {
@@ -35,16 +83,31 @@ class RAGService {
     }
   }
 
-  // Find relevant medical context for query
+  /**
+   * Find relevant medical context for a query
+   * @async
+   * @function findRelevantContext
+   * @param {string} query - User's medical query or symptoms
+   * @param {number} [limit=3] - Maximum number of relevant matches to return
+   * @returns {Promise<Array>} Array of relevant medical information
+   * @description Finds relevant medical information using semantic search:
+   * - Creates embedding for user query
+   * - Calculates similarity with knowledge base entries
+   * - Returns top matches above similarity threshold
+   * - Includes topic, content, symptoms, and severity
+   */
   async findRelevantContext(query, limit = 3) {
+    // Ensure knowledge base is initialized
     if (!this.initialized) {
       await this.initializeKnowledgeBase();
     }
 
     try {
+      // Create embedding for user query
       const queryEmbedding = await GeminiService.createEmbedding(query);
       const similarities = [];
 
+      // Calculate similarity with all knowledge base entries
       for (const [id, data] of this.vectorStore) {
         const similarity = this.cosineSimilarity(queryEmbedding, data.embedding);
         similarities.push({
@@ -53,38 +116,66 @@ class RAGService {
         });
       }
 
-      // Sort by similarity and return top matches
+      // Sort by similarity and filter top matches
       const topMatches = similarities
-        .sort((a, b) => b.similarity - a.similarity)
-        .slice(0, limit)
-        .filter(match => match.similarity > 0.6); // Only return relevant matches
+        .sort((a, b) => b.similarity - a.similarity)  // Sort by highest similarity
+        .slice(0, limit)                             // Take top N matches
+        .filter(match => match.similarity > 0.6);    // Only return relevant matches
 
+      // Return relevant information without embeddings
       return topMatches.map(match => ({
-        topic: match.topic,
-        content: match.content,
-        symptoms: match.symptoms,
-        severity: match.severity,
-        similarity: match.similarity
+        topic: match.topic,           // Medical condition/topic
+        content: match.content,       // Detailed medical information
+        symptoms: match.symptoms,     // Associated symptoms
+        severity: match.severity,     // Condition severity level
+        similarity: match.similarity  // Match relevance score
       }));
     } catch (error) {
       console.error('Error finding relevant context:', error);
-      return [];
+      return [];  // Return empty array on error
     }
   }
 
-  // Calculate cosine similarity between two vectors
+  /**
+   * Calculate cosine similarity between two vectors
+   * @function cosineSimilarity
+   * @param {number[]} a - First vector
+   * @param {number[]} b - Second vector
+   * @returns {number} Similarity score between 0 and 1
+   * @description Calculates the cosine similarity between two vectors:
+   * - Handles vectors of different lengths
+   * - Computes dot product and magnitudes
+   * - Returns normalized similarity score
+   * - Handles zero magnitude vectors
+   */
   cosineSimilarity(a, b) {
+    // Return 0 if vectors have different lengths
     if (a.length !== b.length) return 0;
     
+    // Calculate dot product of vectors
     const dotProduct = a.reduce((sum, ai, i) => sum + ai * b[i], 0);
+    
+    // Calculate vector magnitudes
     const magnitudeA = Math.sqrt(a.reduce((sum, ai) => sum + ai * ai, 0));
     const magnitudeB = Math.sqrt(b.reduce((sum, bi) => sum + bi * bi, 0));
     
+    // Handle zero magnitude vectors
     if (magnitudeA === 0 || magnitudeB === 0) return 0;
+    
+    // Return normalized similarity score
     return dotProduct / (magnitudeA * magnitudeB);
   }
 
-  // Get medical knowledge data
+  /**
+   * Get predefined medical knowledge data
+   * @function getMedicalKnowledgeData
+   * @returns {Array<Object>} Array of medical conditions with details
+   * @description Returns structured medical knowledge including:
+   * - Common medical conditions and symptoms
+   * - Severity levels and treatments
+   * - Emergency warning signs
+   * - Detailed descriptions and advice
+   */
   getMedicalKnowledgeData() {
     return [
       {
@@ -180,36 +271,66 @@ class RAGService {
     ];
   }
 
-  // Get condition-specific advice
+  /**
+   * Get advice for specific medical condition
+   * @function getConditionAdvice
+   * @param {string} condition - Medical condition to find advice for
+   * @returns {Object|null} Condition data if found, null otherwise
+   * @description Searches knowledge base for specific condition and returns:
+   * - Detailed condition description
+   * - Common symptoms and severity
+   * - Treatment recommendations
+   * - Emergency warning signs
+   */
   getConditionAdvice(condition) {
+    // Search for condition in medical knowledge base
     const conditionData = this.getMedicalKnowledgeData().find(
       item => item.topic.toLowerCase().includes(condition.toLowerCase())
     );
     
+    // Return condition data or null if not found
     return conditionData || null;
   }
 
-  // Check symptom severity
+  /**
+   * Assess severity of reported symptoms
+   * @function assessSymptomSeverity
+   * @param {string} symptoms - Description of symptoms to assess
+   * @returns {string} Severity level: 'EMERGENCY', 'URGENT', or 'ROUTINE'
+   * @description Analyzes symptoms for severity using keyword matching:
+   * - Checks for emergency conditions requiring immediate care
+   * - Identifies urgent symptoms needing prompt attention
+   * - Categorizes routine symptoms for regular care
+   * - Uses predefined keyword lists for classification
+   */
   assessSymptomSeverity(symptoms) {
+    // Keywords indicating emergency conditions
     const emergencyKeywords = [
       'chest pain', 'difficulty breathing', 'severe headache', 'loss of consciousness',
       'severe bleeding', 'high fever', 'severe abdominal pain', 'stroke symptoms',
       'heart attack', 'severe allergic reaction', 'cannot breathe', 'choking'
     ];
 
+    // Keywords indicating urgent conditions
     const urgentKeywords = [
       'persistent fever', 'severe pain', 'vomiting blood', 'severe dizziness',
       'vision problems', 'severe nausea', 'dehydration', 'confusion'
     ];
 
+    // Convert symptoms to lowercase for case-insensitive matching
     const symptomText = symptoms.toLowerCase();
     
+    // Check for emergency symptoms first
     if (emergencyKeywords.some(keyword => symptomText.includes(keyword))) {
-      return 'EMERGENCY';
-    } else if (urgentKeywords.some(keyword => symptomText.includes(keyword))) {
-      return 'URGENT';
-    } else {
-      return 'ROUTINE';
+      return 'EMERGENCY';  // Immediate medical attention needed
+    } 
+    // Then check for urgent symptoms
+    else if (urgentKeywords.some(keyword => symptomText.includes(keyword))) {
+      return 'URGENT';     // Prompt medical attention needed
+    } 
+    // Default to routine if no serious symptoms found
+    else {
+      return 'ROUTINE';    // Regular medical care appropriate
     }
   }
 }

@@ -11,6 +11,8 @@ function Doctors() {
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [doctorsPerPage] = useState(6);
   const navigate = useNavigate();
   
   // Get speciality from URL query parameter
@@ -90,6 +92,7 @@ function Doctors() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchDoctors();
+      setCurrentPage(1); // Reset to first page when search or filter changes
     }, 500);
 
     return () => clearTimeout(timeoutId);
@@ -185,74 +188,107 @@ function Doctors() {
 
           {/* Doctors Grid */}
           <div className="lg:w-3/4">
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filterDoc.map((doctor) => (
-                <div
-                  key={doctor._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
-                  onClick={() => navigate(`/doctors/${doctor._id}`)}
-                >
-                  <div className="relative">
-                    <img
-                      src={doctor.photo}
-                      alt={doctor.name}
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="absolute top-4 right-4 flex flex-col gap-2">
-                      {/* Availability badge */}
-                      <div className={`px-3 py-1 rounded-full text-sm text-white ${
-                        doctor.isAvailable ? "bg-green-500" : "bg-red-500"
-                      }`}>
-                        {doctor.isAvailable ? "Available" : "Not Available"}
+            <div className="flex flex-col">
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                {filterDoc
+                  .slice((currentPage - 1) * doctorsPerPage, currentPage * doctorsPerPage)
+                  .map((doctor) => (
+                    <div
+                      key={doctor._id}
+                      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                      onClick={() => navigate(`/doctors/${doctor._id}`)}
+                    >
+                      <div className="relative">
+                        <img
+                          src={doctor.photo}
+                          alt={doctor.name}
+                          className="w-full h-64 object-cover"
+                        />
+                        <div className="absolute top-4 right-4 flex flex-col gap-2">
+                          {/* Availability badge */}
+                          <div className={`px-3 py-1 rounded-full text-sm text-white ${
+                            doctor.isAvailable ? "bg-green-500" : "bg-red-500"
+                          }`}>
+                            {doctor.isAvailable ? "Available" : "Not Available"}
+                          </div>
+                          
+                          {/* Approval status badge */}
+                          <div className={`px-3 py-1 rounded-full text-sm text-white ${
+                            doctor.isApproved === "approved" ? "bg-blue-500" : "bg-yellow-500"
+                          }`}>
+                            {doctor.isApproved === "approved" ? "Approved" : "Pending"}
+                          </div>
+                        </div>
                       </div>
                       
-                      {/* Approval status badge */}
-                      <div className={`px-3 py-1 rounded-full text-sm text-white ${
-                        doctor.isApproved === "approved" ? "bg-blue-500" : "bg-yellow-500"
-                      }`}>
-                        {doctor.isApproved === "approved" ? "Approved" : "Pending"}
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {doctor.name}
+                        </h3>
+                        <p className="text-blue-600 font-medium mb-4">
+                          {doctor.specialization || "Specialization not specified"}
+                        </p>
+                        
+                        <div className="flex items-center gap-2 mb-4">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} className={`${i < doctor.averageRating ? "text-yellow-400" : "text-gray-300"}`} />
+                          ))}
+                          <span className="text-gray-600">({doctor.averageRating})</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">
+                            {doctor.totalPatients}+ Patients
+                          </span>
+                          <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
+                            View Profile <BsArrowRight />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {doctor.name}
-                    </h3>
-                    <p className="text-blue-600 font-medium mb-4">
-                      {doctor.specialization || "Specialization not specified"}
-                    </p>
-                    
-                    <div className="flex items-center gap-2 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={`${i < doctor.averageRating ? "text-yellow-400" : "text-gray-300"}`} />
-                      ))}
-                      <span className="text-gray-600">({doctor.averageRating})</span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">
-                        {doctor.totalPatients}+ Patients
-                      </span>
-                      <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
-                        View Profile <BsArrowRight />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filterDoc.length === 0 && (
-              <div className="text-center py-16">
-                <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-                  No doctors found
-                </h3>
-                <p className="text-gray-500">
-                  Try adjusting your search or filter criteria
-                </p>
+                  ))}
               </div>
-            )}
+
+              {filterDoc.length === 0 && (
+                <div className="text-center py-16">
+                  <h3 className="text-2xl font-semibold text-gray-700 mb-4">
+                    No doctors found
+                  </h3>
+                  <p className="text-gray-500">
+                    Try adjusting your search or filter criteria
+                  </p>
+                </div>
+              )}
+
+              {/* Pagination Controls */}
+              <div className="mt-8 flex items-center justify-center gap-4">
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                >
+                  Previous
+                </button>
+                <input
+                  type="range"
+                  min="1"
+                  max={Math.max(1, Math.ceil(filterDoc.length / doctorsPerPage))}
+                  value={currentPage}
+                  onChange={(e) => setCurrentPage(Number(e.target.value))}
+                  className="w-48 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-gray-600">
+                  Page {currentPage} of {Math.max(1, Math.ceil(filterDoc.length / doctorsPerPage))}
+                </span>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filterDoc.length / doctorsPerPage)))}
+                  disabled={currentPage === Math.ceil(filterDoc.length / doctorsPerPage)}
+                  className={`px-4 py-2 rounded-lg ${currentPage === Math.ceil(filterDoc.length / doctorsPerPage) ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

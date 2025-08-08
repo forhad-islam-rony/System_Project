@@ -1,14 +1,40 @@
+/**
+ * @fileoverview Authentication Controller for User Registration and Login
+ * @description Handles user authentication including registration, login, and JWT token generation
+ * for patients, doctors, and admins with secure password hashing and validation
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import User from '../models/UserSchema.js';
 import Doctor from '../models/DoctorSchema.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
+/**
+ * Generate JWT token for authenticated users
+ * @function generateToken
+ * @param {Object} user - User object from database
+ * @returns {string} JWT token with user ID and role
+ * @description Creates a JSON Web Token containing user ID and role information.
+ * Token expires in 90 days and includes role for authorization purposes.
+ */
 const generateToken = user => {
   return jwt.sign({id:user._id, role:user.role}, process.env.JWT_SECRET_KEY, {
-    expiresIn: '90d'
+    expiresIn: '90d'  // Long-lived token for better user experience
   });
 };
 
+/**
+ * Register a new user (patient or doctor) in the system
+ * @async
+ * @function register
+ * @param {Object} req - Express request object containing user registration data
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} JSON response with success status and message
+ * @description Handles user registration with validation, password hashing, and role-based account creation.
+ * Supports both patient and doctor registration with appropriate schema validation.
+ */
 export const register = async (req, res) => {
     try {
         const { name, email, password, photo, gender, role } = req.body;
