@@ -1,8 +1,8 @@
 import {useEffect, useRef, useContext} from 'react';
-import logo from '../assets/images/logo.png';
 import userImg from '../assets/images/avatar-icon.png';
 import { Link, NavLink } from 'react-router-dom';
 import { BiMenu } from 'react-icons/bi';
+import { FaHospital } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/header.css';
 
@@ -73,9 +73,12 @@ const Navbar = () => {
       <div className="container">
         <div className="flex items-center justify-between">
           {/* logo */}
-        <div>
-        <img src={logo} alt="Logo" />
-        </div>
+        <Link to="/" className="flex items-center gap-2">
+          <FaHospital className="text-primaryColor text-[24px]" />
+          <span className="text-[24px] font-[700] text-headingColor">
+            Next<span className="text-primaryColor">Health</span>
+          </span>
+        </Link>
            {/* Menu */}
            <div className="navigation" ref={menuRef} onClick={toggleMenu}>
           <ul className="menu flex items-center gap-[2.7rem]">

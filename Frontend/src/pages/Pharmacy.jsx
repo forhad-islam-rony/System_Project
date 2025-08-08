@@ -45,9 +45,56 @@ const Pharmacy = () => {
         setMedicines(data.data);
         setFilterMed(data.data);
 
-        // Extract unique categories from medicines
-        const uniqueCategories = ['all', ...new Set(data.data.map(med => med.category))];
-        setCategories(uniqueCategories);
+        // Define predefined categories to ensure consistency
+        const predefinedCategories = [
+          'all',
+          'Antibiotics',
+          'Cardiac', 
+          'Painkillers',
+          'Vitamins & Supplements',
+          'Diabetes',
+          'Respiratory',
+          'Digestive'
+        ];
+
+        // Extract unique categories from medicines and normalize them
+        const normalizeCategory = (cat) => {
+          if (!cat) return 'Other';
+          const lowerCat = cat.toLowerCase();
+          
+          // Map variations to standard categories
+          if (lowerCat.includes('vitamin') || lowerCat.includes('supplement')) {
+            return 'Vitamins & Supplements';
+          }
+          if (lowerCat.includes('antibiotic')) {
+            return 'Antibiotics';
+          }
+          if (lowerCat.includes('heart') || lowerCat.includes('cardiac')) {
+            return 'Cardiac';
+          }
+          if (lowerCat.includes('pain') || lowerCat.includes('killer')) {
+            return 'Painkillers';
+          }
+          if (lowerCat.includes('diabete') || lowerCat.includes('sugar')) {
+            return 'Diabetes';
+          }
+          if (lowerCat.includes('respir') || lowerCat.includes('lung') || lowerCat.includes('cough')) {
+            return 'Respiratory';
+          }
+          if (lowerCat.includes('digest') || lowerCat.includes('stomach') || lowerCat.includes('gastro')) {
+            return 'Digestive';
+          }
+          
+          return cat; // Return original if no match
+        };
+
+        // Get categories that actually exist in the data
+        const existingCategories = [...new Set(data.data.map(med => normalizeCategory(med.category)))];
+        
+        // Combine predefined categories with any new ones from data
+        const allCategories = ['all', ...predefinedCategories.slice(1), ...existingCategories.filter(cat => !predefinedCategories.includes(cat))];
+        
+        setCategories([...new Set(allCategories)]); // Remove duplicates
       } catch (err) {
         console.error('Detailed error:', err); // More detailed error logging
         setError(err.message);
@@ -59,11 +106,44 @@ const Pharmacy = () => {
     fetchMedicines();
   }, []);
 
+  // Function to normalize item categories (same logic as in fetchMedicines)
+  const normalizeItemCategory = (cat) => {
+    if (!cat) return 'Other';
+    const lowerCat = cat.toLowerCase();
+    
+    if (lowerCat.includes('vitamin') || lowerCat.includes('supplement')) {
+      return 'Vitamins & Supplements';
+    }
+    if (lowerCat.includes('antibiotic')) {
+      return 'Antibiotics';
+    }
+    if (lowerCat.includes('heart') || lowerCat.includes('cardiac')) {
+      return 'Cardiac';
+    }
+    if (lowerCat.includes('pain') || lowerCat.includes('killer')) {
+      return 'Painkillers';
+    }
+    if (lowerCat.includes('diabete') || lowerCat.includes('sugar')) {
+      return 'Diabetes';
+    }
+    if (lowerCat.includes('respir') || lowerCat.includes('lung') || lowerCat.includes('cough')) {
+      return 'Respiratory';
+    }
+    if (lowerCat.includes('digest') || lowerCat.includes('stomach') || lowerCat.includes('gastro')) {
+      return 'Digestive';
+    }
+    
+    return cat;
+  };
+
   const applyFilter = (category, searchTerm) => {
     let filtered = medicines;
     
     if (category !== 'all') {
-      filtered = filtered.filter(item => item.category.toLowerCase() === category.toLowerCase());
+      filtered = filtered.filter(item => {
+        const normalizedItemCategory = normalizeItemCategory(item.category);
+        return normalizedItemCategory === category;
+      });
     }
     
     if (searchTerm) {
@@ -212,7 +292,7 @@ const Pharmacy = () => {
                     
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="text-2xl font-bold text-blue-600">${item.price}</span>
+                        <span className="text-2xl font-bold text-blue-600">৳{item.price}</span>
                         {item.dosageMg && (
                           <span className="text-sm text-gray-500 block">
                             {item.dosageMg}mg
@@ -238,4 +318,4 @@ const Pharmacy = () => {
   );
 };
 
-export default Pharmacy; 
+export default Pharmacy;

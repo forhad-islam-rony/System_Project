@@ -271,6 +271,34 @@ export const createDoctor = async (req, res) => {
   }
 };
 
+export const getTopRatedDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ isApproved: "approved" })
+      .select("-password")
+      .sort({ averageRating: -1 }) // Sort by rating in descending order
+      .limit(3); // Get only top 3
+
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No doctors found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Top rated doctors found',
+      data: doctors
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error finding doctors',
+      error: err.message
+    });
+  }
+};
+
 export const updateAvailability = async (req, res) => {
   const { id } = req.params;
   const { isAvailable } = req.body;

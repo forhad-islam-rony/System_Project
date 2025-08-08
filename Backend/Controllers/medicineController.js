@@ -1,5 +1,17 @@
 import Medicine from '../models/Medicine.js';
 
+// Standardized medicine categories
+export const medicineCategories = [
+    "Pain & Fever",
+    "Cold & Flu",
+    "Vitamins & Supplements",
+    "Diabetes Care",
+    "Heart & BP",
+    "Skin Care",
+    "Baby Care",
+    "First Aid"
+];
+
 // Get all medicines
 export const getAllMedicines = async (req, res) => {
     try {
@@ -67,6 +79,22 @@ export const deleteMedicine = async (req, res) => {
 };
 
 // Get medicine by ID
+// Get all medicine categories
+export const getMedicineCategories = async (req, res) => {
+    try {
+        res.status(200).json({
+            success: true,
+            message: 'Medicine categories fetched successfully',
+            data: medicineCategories
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch medicine categories'
+        });
+    }
+};
+
 export const getMedicineById = async (req, res) => {
     try {
         const { id } = req.params;

@@ -1,36 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaSearch, FaStar } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
 import { BASE_URL } from "../config";
 
 function Doctors() {
-  const { speciality } = useParams();
   const [doctors, setDoctors] = useState([]);
   const [filterDoc, setFilterDoc] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSpeciality, setSelectedSpeciality] = useState(speciality || "");
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  // Get speciality from URL query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const specFromUrl = params.get('specialization');
+    if (specFromUrl) {
+      setSelectedSpeciality(specFromUrl);
+    }
+  }, []);
 
   const normalizeSpecialization = (spec) => {
     if (!spec) return "";
-    spec = spec.toLowerCase();
-    if (spec.includes('neuro')) return 'neurology';
-    if (spec.includes('cardio')) return 'cardiology';
-    if (spec.includes('derma')) return 'dermatology';
-    if (spec.includes('gastro')) return 'gastroenterology';
-    if (spec.includes('surg')) return 'surgery';
-    return spec;
+    return spec;  // Return the speciality as is, since we're matching exact names
   };
 
   const specialities = [
+    { name: "General physician", icon: "👨‍⚕️" },
+    { name: "Gynecologist", icon: "👩‍⚕️" },
+    { name: "Dermatologist", icon: "🔬" },
+    { name: "Pediatricians", icon: "👶" },
+    { name: "Neurologist", icon: "🧠" },
+    { name: "Gastroenterologist", icon: "🩺" },
     { name: "Surgery", icon: "🔪" },
-    { name: "Neurology", icon: "🧠" },
-    { name: "Dermatology", icon: "👨‍⚕️" },
     { name: "Cardiology", icon: "❤️" },
-    { name: "Gastroenterology", icon: "🩺" }
+    { name: "Orthopedic", icon: "🦴" },
+    { name: "Dentist", icon: "🦷" }
   ];
 
   const handleShowAllDoctors = () => {

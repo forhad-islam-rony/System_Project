@@ -4,7 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="33432077-a1ae-4628-97f7-e0cfe7e5a9fa";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+    <script type="text/javascript">
+      window.$crisp=[];
+      window.CRISP_WEBSITE_ID="33432077-a1ae-4628-97f7-e0cfe7e5a9fa";
+      (function(){
+        d=document;s=d.createElement("script");
+        s.src="https://client.crisp.chat/l.js";s.async=1;
+        d.getElementsByTagName("head")[0].appendChild(s);
+        
+        // Hide chat on admin and moderator pages
+        function toggleCrispChat() {
+          const path = window.location.pathname;
+          const isAdminPage = path.startsWith('/admin');
+          const isModeratorPage = path.startsWith('/moderator');
+          
+          if (window.$crisp && window.$crisp.push) {
+            if (isAdminPage || isModeratorPage) {
+              window.$crisp.push(["do", "chat:hide"]);
+            } else {
+              window.$crisp.push(["do", "chat:show"]);
+            }
+          }
+        }
+        
+        // Check on load and route changes
+        window.addEventListener('load', toggleCrispChat);
+        
+        // Monitor for route changes (for SPA)
+        window.addEventListener('DOMContentLoaded', () => {
+          let currentPath = window.location.pathname;
+          const observer = new MutationObserver(() => {
+            if (currentPath !== window.location.pathname) {
+              currentPath = window.location.pathname;
+              setTimeout(toggleCrispChat, 100);
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      })();
+    </script>
     <title>Project Name</title>
   </head>
   <body>

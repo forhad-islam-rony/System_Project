@@ -22,7 +22,7 @@ const CartIcon = () => {
         <>
             <button 
                 onClick={handleCartClick}
-                className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-300"
+                className="fixed bottom-32 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors duration-300 z-50"
             >
                 <div className="relative">
                     <BsCart3 size={24} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BASE_URL } from '../../config';
 import { Toaster, toast } from 'react-hot-toast';
 
-const Appointments = () => {
+const Appointments = ({ doctorData }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchEmail, setSearchEmail] = useState('');

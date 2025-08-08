@@ -18,7 +18,7 @@ const TIME_SLOTS = [
   "05:00 PM - 06:00 PM"
 ];
 
-const DoctorProfile = () => {
+const DoctorProfile = ({ onProfileUpdate }) => {
   const { user, token: authToken, dispatch } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -141,7 +141,12 @@ const DoctorProfile = () => {
         });
 
         // Update localStorage
-        localStorage.setItem('userData', JSON.stringify(res.data.data));
+        localStorage.setItem('user', JSON.stringify(res.data.data));
+        
+        // Trigger parent component refresh if callback is provided
+        if (onProfileUpdate) {
+          onProfileUpdate();
+        }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');

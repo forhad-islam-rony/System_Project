@@ -30,7 +30,9 @@ const Home = () => {
         <p className='text_para'>
         Empowering health in Bangladesh with innovative, accessible medical solutions, connecting patients to top healthcare providers for better, healthier lives.
         </p>
-        <button className='btn hover:scale-105 transition-all duration-300'>Request an Appointment</button>
+        <Link to="/doctors">
+          <button className='btn hover:scale-105 transition-all duration-300'>Request an Appointment</button>
+        </Link>
       </div>
       {/* Hero Counter */}
       <div className='mt-[30px] lg:mt-[70px] flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-[30px]'>
@@ -94,7 +96,7 @@ const Home = () => {
         <h2 className='text-[26px] leading-9 text-headingColor font-[700] text-center'>Find an Ambulance</h2>
         <p className='text_para text-center leading-7 text-textColor font-[400] mt-4'>Get access to reliable ambulance services in Bangladesh, book instantly for emergencies, and ensure timely medical transport.</p>
 
-        <Link to='/doctors' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
+        <Link to='/ambulance' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
         <BsArrowRight className='group-hover:text-white w-6 h-5' />
         </Link>
        </div>
@@ -107,7 +109,7 @@ const Home = () => {
         <h2 className='text-[26px] leading-9 text-headingColor font-[700] text-center'>Online Health Checkup</h2>
         <p className='text_para text-center leading-7 text-textColor font-[400] mt-4'>Get personalized health assessments with AI-driven chatbots, detect potential diseases online, and stay proactive about your well-being.</p>
 
-        <Link to='/blood-group' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
+        <Link to='/medical-chatbot' className='w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[20px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
         <BsArrowRight className='group-hover:text-white w-6 h-5' />
         </Link>
        </div>

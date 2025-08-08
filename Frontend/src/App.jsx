@@ -37,6 +37,7 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import ManageMedicines from './pages/Admin/ManageMedicines';
 import { CartProvider } from './context/CartContext';
 import ConditionalCartIcon from './components/Cart/ConditionalCartIcon';
+import CrispChatController from './components/CrispChatController';
 import ManageOrders from './pages/Admin/ManageOrders';
 import Inquiry from './pages/Admin/Inquiry';
 import Ambulance from './pages/Ambulance';
@@ -50,6 +51,7 @@ export const App = () => {
     <AuthProvider>
       <CartProvider>
         <Toaster position="top-center" reverseOrder={false} />
+        <CrispChatController />
         <div className='mx-4 sm:max-[10%]'>
           <Routes>
             <Route path="/admin/*" element={null} />

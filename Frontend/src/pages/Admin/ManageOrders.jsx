@@ -128,15 +128,23 @@ const ManageOrders = () => {
                             <div className="space-y-2">
                                 {order.items.map((item) => (
                                     <div key={item._id} className="flex items-center gap-4">
-                                        <img
-                                            src={item.medicine.photo}
-                                            alt={item.medicine.productName}
-                                            className="w-16 h-16 object-cover rounded"
-                                        />
+                                        {item.medicine ? (
+                                            <img
+                                                src={item.medicine.photo || '/placeholder-medicine.png'}
+                                                alt={item.medicine.productName || 'Medicine'}
+                                                className="w-16 h-16 object-cover rounded"
+                                            />
+                                        ) : (
+                                            <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                                <span className="text-gray-500 text-xs">No image</span>
+                                            </div>
+                                        )}
                                         <div>
-                                            <p className="font-medium">{item.medicine.productName}</p>
+                                            <p className="font-medium">
+                                                {item.medicine ? item.medicine.productName : 'Product no longer available'}
+                                            </p>
                                             <p className="text-gray-600">
-                                                {item.quantity} x ${item.price} = ${item.quantity * item.price}
+                                                {item.quantity || 0} x ৳{(item.price || 0).toFixed(2)} = ৳{((item.quantity || 0) * (item.price || 0)).toFixed(2)}
                                             </p>
                                         </div>
                                     </div>
@@ -147,7 +155,7 @@ const ManageOrders = () => {
                         <div className="border-t pt-4">
                             <div className="flex justify-between">
                                 <span className="font-semibold">Total Amount:</span>
-                                <span className="font-bold">${order.totalAmount.toFixed(2)}</span>
+                                <span className="font-bold">৳{(order.totalAmount || 0).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>

@@ -6,8 +6,12 @@ const ConditionalCartIcon = () => {
     const location = useLocation();
     const path = location.pathname;
 
-    // Show cart icon only on pharmacy and medicine details pages
-    const shouldShowCart = path === '/pharmacy' || path.startsWith('/pharmacy/');
+    // Hide cart icon on admin and moderator pages
+    const isAdminPage = path.startsWith('/admin');
+    const isModeratorPage = path.startsWith('/moderator');
+    
+    // Show cart icon only on pharmacy and medicine details pages, but not on admin/moderator pages
+    const shouldShowCart = (path === '/pharmacy' || path.startsWith('/pharmacy/')) && !isAdminPage && !isModeratorPage;
 
     if (!shouldShowCart) return null;
 

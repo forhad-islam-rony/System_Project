@@ -9,6 +9,8 @@ const ManageMedicines = () => {
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewURL, setPreviewURL] = useState('');
+    const [medicines, setMedicines] = useState([]);
+    const [loadingMedicines, setLoadingMedicines] = useState(false);
     const [formData, setFormData] = useState({
         productName: '',
         genericName: '',
@@ -115,6 +117,7 @@ const ManageMedicines = () => {
             setPreviewURL('');
 
             toast.success('Medicine added successfully!');
+            fetchMedicines(); // Refresh the medicine list
         } catch (error) {
             console.error('Error:', error);
             toast.error(error.message || 'Something went wrong!');
@@ -122,6 +125,61 @@ const ManageMedicines = () => {
             setLoading(false);
         }
     };
+
+    // Fetch all medicines
+    const fetchMedicines = async () => {
+        try {
+            setLoadingMedicines(true);
+            const response = await fetch(`${BASE_URL}/medicines`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch medicines');
+            }
+            
+            const data = await response.json();
+            setMedicines(data.data || []);
+        } catch (error) {
+            console.error('Error fetching medicines:', error);
+            toast.error('Failed to fetch medicines');
+        } finally {
+            setLoadingMedicines(false);
+        }
+    };
+
+    // Delete medicine
+    const deleteMedicine = async (medicineId) => {
+        if (!window.confirm('Are you sure you want to delete this medicine?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/medicines/${medicineId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete medicine');
+            }
+
+            toast.success('Medicine deleted successfully');
+            fetchMedicines(); // Refresh the list
+        } catch (error) {
+            console.error('Error deleting medicine:', error);
+            toast.error('Failed to delete medicine');
+        }
+    };
+
+    // Fetch medicines when component mounts
+    React.useEffect(() => {
+        fetchMedicines();
+    }, []);
 
     return (
         <div className="max-w-[1170px] mx-auto">
@@ -203,15 +261,23 @@ const ManageMedicines = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Category
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     name="category"
                                     value={formData.category}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 
                                     focus:ring-primaryColor focus:border-transparent transition-all"
                                     required
-                                />
+                                >
+                                    <option value="">Select a category</option>
+                                    <option value="Antibiotics">Antibiotics</option>
+                                    <option value="Cardiac">Cardiac</option>
+                                    <option value="Painkillers">Painkillers</option>
+                                    <option value="Vitamins & Supplements">Vitamins & Supplements</option>
+                                    <option value="Diabetes">Diabetes</option>
+                                    <option value="Respiratory">Respiratory</option>
+                                    <option value="Digestive">Digestive</option>
+                                </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -359,6 +425,71 @@ const ManageMedicines = () => {
                         </button>
                     </div>
                 </form>
+            </div>
+
+            {/* Medicine Management Section */}
+            <div className="bg-white rounded-2xl shadow-md p-8">
+                <h2 className="text-3xl font-bold text-primaryColor mb-8 border-b pb-4">
+                    Manage Existing Medicines
+                </h2>
+                
+                {loadingMedicines ? (
+                    <div className="flex justify-center items-center py-8">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primaryColor"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {medicines.length === 0 ? (
+                            <div className="col-span-full text-center py-8">
+                                <p className="text-gray-500 text-lg">No medicines found</p>
+                            </div>
+                        ) : (
+                            medicines.map((medicine) => (
+                                <div key={medicine._id} className="bg-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
+                                    <div className="relative mb-4">
+                                        <img
+                                            src={medicine.photo}
+                                            alt={medicine.productName}
+                                            className="w-full h-32 object-cover rounded-lg"
+                                        />
+                                        <button
+                                            onClick={() => deleteMedicine(medicine._id)}
+                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all"
+                                            title="Delete Medicine"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <h3 className="font-semibold text-lg text-gray-800 truncate">
+                                            {medicine.productName}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            <span className="font-medium">Generic:</span> {medicine.genericName}
+                                        </p>
+                                        <div className="flex justify-between items-center">
+                                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                                {medicine.category}
+                                            </span>
+                                            <span className="font-bold text-green-600">
+                                                ৳{medicine.price}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-gray-500">
+                                            {medicine.dosageMg}mg
+                                        </p>
+                                        <p className="text-sm text-gray-600 line-clamp-2">
+                                            {medicine.description?.text}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

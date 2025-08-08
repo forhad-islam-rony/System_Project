@@ -1,11 +1,12 @@
 import express from 'express';
-import { getAllMedicines, getMedicineById, createMedicine } from '../controllers/medicineController.js';
+import { getAllMedicines, getMedicineById, createMedicine, getMedicineCategories } from '../controllers/medicineController.js';
 import { authenticate, restrict } from '../auth/verifyToken.js';
 
 const router = express.Router();
 
 router.get('/', getAllMedicines);  // Public route to get all medicines
-router.get('/:id', getMedicineById);  // Add this route
+router.get('/categories', getMedicineCategories);  // Get all medicine categories
+router.get('/:id', getMedicineById);  // Get medicine by ID
 router.post('/', authenticate, restrict(['admin']), createMedicine);
 
 export default router; 

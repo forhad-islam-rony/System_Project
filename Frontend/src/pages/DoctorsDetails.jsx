@@ -104,17 +104,18 @@ const DoctorsDetails = () => {
     }
 
     return (
-      <section>
+      <section className="pt-[50px]">
         <div className="max-w-[1170px] px-5 mx-auto">
           <div className="grid md:grid-cols-3 gap-[50px]">
             <div className="md:col-span-2">
-              <div className="flex items-center gap-5">
-                <figure className="max-w-[200px] max-h-[200px]">
-                  <img src={doctor.photo} alt={doctor.name} className="w-full" />
+              {/* Doctor Info Section */}
+              <div className="flex flex-col md:flex-row gap-5 mb-8">
+                <figure className="w-full md:w-[200px] h-[200px] flex-shrink-0">
+                  <img src={doctor.photo} alt={doctor.name} className="w-full h-full object-cover rounded-lg" />
                 </figure>
-                <div>
+                <div className="flex flex-col">
                   <span className="bg-[#CCF0F3] text-irisBlueColor py-1 px-6 lg:py-2 lg:px-6 
-                          text-[12px] leading-4 lg:text-[16px] lg:leading-7 font-semibold rounded">
+                          text-[12px] leading-4 lg:text-[16px] lg:leading-7 font-semibold rounded w-fit">
                     {doctor.specialization}
                   </span>
 
@@ -140,7 +141,8 @@ const DoctorsDetails = () => {
                 </div>
               </div>
 
-              <div className="mt-[50px] border-b border-solid border-[#0066ff34]">
+              {/* Tabs Section */}
+              <div className="border-b border-solid border-[#0066ff34] mb-8">
                 <button
                   onClick={() => setTab("about")}
                   className={`${
@@ -159,7 +161,8 @@ const DoctorsDetails = () => {
                 </button>
               </div>
 
-              <div className="mt-[50px]">
+              {/* Content Section */}
+              <div className="mt-8">
                 {tab === "about" && <DoctorAbout doctor={doctor} />}
                 {tab === "feedback" && (
                   <Feedback 
@@ -170,8 +173,11 @@ const DoctorsDetails = () => {
               </div>
             </div>
 
-            <div>
-              <SidePanel doctor={doctor} />
+            {/* Side Panel */}
+            <div className="md:col-span-1">
+              <div className="md:sticky md:top-24">
+                <SidePanel doctor={doctor} />
+              </div>
             </div>
           </div>
         </div>

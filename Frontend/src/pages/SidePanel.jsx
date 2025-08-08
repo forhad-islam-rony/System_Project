@@ -180,7 +180,7 @@ const SidePanel = ({ doctor }) => {
             visitType === 'second' ? 'Second Visit (25% Off)' :
             'Free Visit'
           }</li>
-          <li className="mb-2">• Price: ${price}</li>
+          <li className="mb-2">• Price: ৳{price}</li>
         </ul>
         <div className="flex justify-end gap-4">
           <button
@@ -225,7 +225,7 @@ const SidePanel = ({ doctor }) => {
           </p>
           <div className="text-right">
             <span className="text-[16px] leading-7 lg:text-[22px] lg:leading-8 text-headingColor font-bold">
-              ${price}
+              ৳{price}
             </span>
             {visitType === 'second' && (
               <p className="text-sm text-green-600">25% discount applied (Return Patient)</p>
