@@ -29,7 +29,6 @@ import ambulanceRoutes from './Routes/ambulanceRoutes.js'; // Emergency ambulanc
 import chatbotRoutes from './Routes/chatbot.js';   // AI medical consultation
 import debugRoutes from './Routes/debug.js';       // Development debugging routes
 
-import serverless from 'serverless-http'; 
 
 // Load environment variables from .env file
 dotenv.config();
