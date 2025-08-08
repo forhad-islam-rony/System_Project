@@ -66,6 +66,10 @@ const quickLinks03 = [
     display: "About Us",
   },
   {
+    path: '/review',
+    display: "Review Us",
+  },
+  {
     path: '/blogs',
     display: "Health Blog",
   },

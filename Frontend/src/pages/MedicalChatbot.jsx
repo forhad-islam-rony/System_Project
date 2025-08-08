@@ -11,6 +11,7 @@ import { AuthContext } from '../context/AuthContext.jsx';
 import ChatInterface from '../components/ChatInterface.jsx';
 import FileUploader from '../components/FileUploader.jsx';
 import axios from 'axios';
+import useScrollToTop from '../hooks/useScrollToTop';
 
 /**
  * Medical AI Chatbot component for healthcare consultations
@@ -24,9 +25,12 @@ import axios from 'axios';
  * - Follow-up question suggestions
  * - Responsive design for all devices
  */
-const MedicalChatbot = () => {
+function MedicalChatbot() {
   // Get authentication context for user data and token
   const { user, token } = useContext(AuthContext);
+  
+  // Use custom hook for scroll to top functionality
+  useScrollToTop();
   
   // ==================== State Management ====================
   
@@ -54,6 +58,8 @@ const MedicalChatbot = () => {
   });
 
   // ==================== Initialization ====================
+  
+
   
   /**
    * Initialize chatbot on component mount
@@ -172,6 +178,50 @@ const MedicalChatbot = () => {
     } finally {
       // Reset loading state
       setLoading(false);
+    }
+  };
+
+  /**
+   * Delete a chat session
+   * @async
+   * @function deleteChatSession
+   * @param {string} sessionIdToDelete - ID of the session to delete
+   * @param {Event} event - Click event to prevent propagation
+   * @description Deletes a chat session after user confirmation
+   */
+  const deleteChatSession = async (sessionIdToDelete, event) => {
+    // Prevent triggering loadChatHistory when clicking delete button
+    event.stopPropagation();
+    
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to delete this chat? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+      console.log('🗑️ Deleting chat session:', sessionIdToDelete);
+      
+      // Send delete request to API
+      const response = await api.delete(`/chatbot/session/${sessionIdToDelete}`);
+      
+      if (response.data.success) {
+        console.log('✅ Chat session deleted successfully');
+        
+        // If the deleted session is the current active session, start a new one
+        if (sessionIdToDelete === sessionId) {
+          await startNewSession();
+        }
+        
+        // Refresh the chat sessions list
+        await loadChatSessions();
+        
+        // Show success message (optional)
+        alert('Chat deleted successfully!');
+      } else {
+        alert('Failed to delete chat session.');
+      }
+    } catch (error) {
+      console.error('❌ Error deleting chat session:', error);
+      alert('Failed to delete chat session. Please try again.');
     }
   };
 
@@ -417,9 +467,18 @@ const MedicalChatbot = () => {
                     className={`session-card ${sessionId === session.sessionId ? 'current' : ''}`}
                     onClick={() => loadChatHistory(session.sessionId)}
                   >
-                    {/* Session Title */}
-                    <div className="session-title">
-                      💬 {session.sessionTitle}
+                    {/* Session Header with Title and Delete Button */}
+                    <div className="session-header">
+                      <div className="session-title">
+                        💬 {session.sessionTitle}
+                      </div>
+                      <button
+                        className="delete-session-btn"
+                        onClick={(e) => deleteChatSession(session.sessionId, e)}
+                        title="Delete this chat"
+                      >
+                        🗑️
+                      </button>
                     </div>
                     {/* Session Metadata */}
                     <div className="session-meta">
@@ -626,10 +685,42 @@ const MedicalChatbot = () => {
         }
 
         /* Session Card Content */
+        .session-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 8px;
+        }
+
         .session-title {
           font-weight: 600;
           color: #1e293b;
-          margin-bottom: 8px;
+          flex: 1;
+          margin-right: 12px;
+        }
+
+        /* Delete Button */
+        .delete-session-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 16px;
+          opacity: 0.6;
+          transition: all 0.2s;
+          flex-shrink: 0;
+        }
+
+        .delete-session-btn:hover {
+          opacity: 1;
+          background: #fee2e2;
+          color: #dc2626;
+          transform: scale(1.1);
+        }
+
+        .delete-session-btn:active {
+          transform: scale(0.95);
         }
 
         .session-meta {
@@ -676,4 +767,4 @@ const MedicalChatbot = () => {
   );
 };
 
-export default MedicalChatbot;
+export { MedicalChatbot as default };

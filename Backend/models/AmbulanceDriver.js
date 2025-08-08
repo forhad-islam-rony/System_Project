@@ -82,12 +82,6 @@ const ambulanceDriverSchema = new mongoose.Schema({
  * @description Improves performance for common query patterns
  */
 
-// Index for phone number lookups
-ambulanceDriverSchema.index({ phone: 1 });
-
-// Index for license number searches
-ambulanceDriverSchema.index({ licenseNumber: 1 });
-
 // Index for status-based queries
 ambulanceDriverSchema.index({ status: 1 });
 

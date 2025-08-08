@@ -22,6 +22,18 @@ const reviewSchema = new mongoose.Schema(
       max: 5,
       default: 0,
     },
+    // For general platform reviews
+    patientName: {
+      type: String,
+    },
+    patientPhoto: {
+      type: String,
+    },
+    reviewType: {
+      type: String,
+      enum: ['doctor', 'platform'],
+      default: 'doctor'
+    },
   },
   { timestamps: true }
 );
@@ -72,12 +84,16 @@ reviewSchema.statics.calcAverageRating = async function (doctorId) {
 
 // Make sure this gets called after saving a review
 reviewSchema.post('save', async function() {
-  await this.constructor.calcAverageRating(this.doctor);
+  // Only calculate average rating for doctor reviews
+  if (this.reviewType === 'doctor' && this.doctor) {
+    await this.constructor.calcAverageRating(this.doctor);
+  }
 });
 
 // Also add this to handle review updates/deletions
 reviewSchema.post(/^findOneAnd/, async function(doc) {
-  if (doc) {
+  // Only calculate average rating for doctor reviews
+  if (doc && doc.reviewType === 'doctor' && doc.doctor) {
     await doc.constructor.calcAverageRating(doc.doctor);
   }
 });

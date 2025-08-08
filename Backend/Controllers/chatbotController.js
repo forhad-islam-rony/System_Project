@@ -352,13 +352,17 @@ Format your response clearly and include relevant medical context.`;
     }
   }
 
-  // Get user's chat sessions
+  // Get user's chat sessions (only show chats with 3+ messages)
   async getUserChatSessions(req, res) {
     try {
       const userId = req.userId;
       const { page = 1, limit = 10, active } = req.query;
 
-      const query = { userId: new mongoose.Types.ObjectId(userId) };
+      const query = { 
+        userId: new mongoose.Types.ObjectId(userId),
+        // Only include sessions with 3 or more messages
+        $expr: { $gte: [{ $size: "$messages" }, 3] }
+      };
       if (active !== undefined) {
         query.isActive = active === 'true';
       }

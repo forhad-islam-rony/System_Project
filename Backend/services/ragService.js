@@ -179,6 +179,393 @@ class RAGService {
   getMedicalKnowledgeData() {
     return [
       {
+        id: 'covid19_1',
+        topic: 'COVID-19',
+        content: 'COVID-19 is a respiratory illness caused by the SARS-CoV-2 virus. Symptoms can range from mild to severe. The virus primarily spreads through respiratory droplets when an infected person coughs, sneezes, or talks. Incubation period is typically 2-14 days.',
+        symptoms: ['fever', 'dry cough', 'fatigue', 'loss of taste or smell', 'body aches', 'shortness of breath', 'sore throat'],
+        severity: 'mild_to_critical',
+        treatment: 'Rest, hydration, monitoring oxygen levels, antiviral medications if prescribed',
+        emergency_signs: ['severe difficulty breathing', 'persistent chest pain', 'confusion', 'bluish lips or face']
+      },
+      {
+        id: 'asthma_1',
+        topic: 'Asthma',
+        content: 'Asthma is a chronic respiratory condition that causes inflammation and narrowing of the airways. It can be triggered by allergens, exercise, cold air, or stress. Regular management and avoiding triggers are key to controlling symptoms.',
+        symptoms: ['wheezing', 'shortness of breath', 'chest tightness', 'coughing', 'difficulty sleeping'],
+        severity: 'mild_to_severe',
+        treatment: 'Inhalers (rescue and maintenance), avoiding triggers, action plan',
+        emergency_signs: ['severe breathing difficulty', 'rapid worsening of symptoms', 'no improvement with rescue inhaler']
+      },
+      {
+        id: 'arthritis_1',
+        topic: 'Arthritis',
+        content: 'Arthritis refers to inflammation of joints causing pain and stiffness. Common types include osteoarthritis (wear and tear) and rheumatoid arthritis (autoimmune). Symptoms often worsen with age and can affect daily activities.',
+        symptoms: ['joint pain', 'stiffness', 'swelling', 'reduced range of motion', 'redness', 'warmth in joints'],
+        severity: 'chronic_condition',
+        treatment: 'Pain management, physical therapy, anti-inflammatory medications',
+        emergency_signs: ['severe sudden joint pain', 'joint deformity', 'inability to move joint']
+      },
+      {
+        id: 'migraine_1',
+        topic: 'Migraine',
+        content: 'Migraines are severe headaches often accompanied by other symptoms. They can be triggered by various factors including stress, certain foods, hormonal changes, or environmental factors. Episodes can last hours to days.',
+        symptoms: ['severe headache', 'pulsating pain', 'nausea', 'vomiting', 'light sensitivity', 'sound sensitivity', 'aura'],
+        severity: 'moderate_to_severe',
+        treatment: 'Pain relief medications, preventive medications, trigger avoidance',
+        emergency_signs: ['worst headache ever', 'headache with neurological symptoms', 'confusion']
+      },
+      {
+        id: 'gastritis_1',
+        topic: 'Gastritis',
+        content: 'Gastritis is inflammation of the stomach lining that can be acute or chronic. Common causes include H. pylori infection, excessive alcohol use, or regular use of NSAIDs. Diet modifications often help manage symptoms.',
+        symptoms: ['stomach pain', 'nausea', 'vomiting', 'bloating', 'indigestion', 'loss of appetite'],
+        severity: 'mild_to_moderate',
+        treatment: 'Antacids, acid reducers, avoiding trigger foods, H. pylori treatment if needed',
+        emergency_signs: ['severe abdominal pain', 'vomiting blood', 'black stools']
+      },
+      {
+        id: 'anemia_1',
+        topic: 'Anemia',
+        content: 'Anemia occurs when the body lacks enough healthy red blood cells to carry oxygen. Common causes include iron deficiency, vitamin B12 deficiency, or chronic diseases. Regular blood tests help monitor condition.',
+        symptoms: ['fatigue', 'weakness', 'shortness of breath', 'dizziness', 'pale skin', 'cold hands and feet'],
+        severity: 'mild_to_severe',
+        treatment: 'Iron supplements, dietary changes, vitamin B12 supplements',
+        emergency_signs: ['severe shortness of breath', 'chest pain', 'fainting']
+      },
+      {
+        id: 'thyroid_1',
+        topic: 'Thyroid Disorders',
+        content: "Thyroid disorders affect the thyroid gland's ability to produce hormones. Common conditions include hypothyroidism (underactive) and hyperthyroidism (overactive). Regular monitoring and medication adjustments may be needed.",
+        symptoms: ['fatigue', 'weight changes', 'mood changes', 'temperature sensitivity', 'irregular heartbeat'],
+        severity: 'chronic_condition',
+        treatment: 'Hormone replacement or suppression medications, regular monitoring',
+        emergency_signs: ['severe rapid heartbeat', 'extreme fatigue', 'thyroid storm symptoms']
+      },
+      {
+        id: 'gerd_1',
+        topic: 'GERD',
+        content: 'Gastroesophageal Reflux Disease (GERD) occurs when stomach acid frequently flows back into the esophagus. It can cause chronic symptoms and complications if untreated. Lifestyle changes often help manage symptoms.',
+        symptoms: ['heartburn', 'chest pain', 'difficulty swallowing', 'regurgitation', 'chronic cough'],
+        severity: 'chronic_condition',
+        treatment: 'Acid reducers, lifestyle changes, avoiding trigger foods',
+        emergency_signs: ['severe chest pain', 'difficulty breathing', 'inability to swallow']
+      },
+      {
+        id: 'allergies_1',
+        topic: 'Allergies',
+        content: 'Allergies are immune system responses to substances normally harmless to most people. Common allergens include pollen, dust, food, and pet dander. Severity can range from mild to life-threatening.',
+        symptoms: ['sneezing', 'runny nose', 'itchy eyes', 'skin rash', 'wheezing', 'congestion'],
+        severity: 'mild_to_severe',
+        treatment: 'Antihistamines, nasal sprays, avoiding triggers, immunotherapy',
+        emergency_signs: ['difficulty breathing', 'throat swelling', 'severe dizziness']
+      },
+      {
+        id: 'insomnia_1',
+        topic: 'Insomnia',
+        content: 'Insomnia is a sleep disorder making it difficult to fall asleep, stay asleep, or both. Can be acute (short-term) or chronic (long-term). Often related to stress, medical conditions, or medications.',
+        symptoms: ['difficulty sleeping', 'daytime fatigue', 'mood changes', 'difficulty concentrating', 'headaches'],
+        severity: 'mild_to_severe',
+        treatment: 'Sleep hygiene, cognitive behavioral therapy, medications if needed',
+        emergency_signs: ['chest pain with insomnia', 'severe mental health symptoms']
+      },
+      {
+        id: 'ibs_1',
+        topic: 'Irritable Bowel Syndrome',
+        content: 'IBS is a common disorder affecting the large intestine. It can cause various digestive symptoms and is often triggered by stress, certain foods, or hormonal changes. Management focuses on symptom control.',
+        symptoms: ['abdominal pain', 'bloating', 'diarrhea', 'constipation', 'gas', 'cramping'],
+        severity: 'chronic_condition',
+        treatment: 'Dietary changes, stress management, fiber supplements, medications',
+        emergency_signs: ['severe abdominal pain', 'rectal bleeding', 'unexplained weight loss']
+      },
+      {
+        id: 'sinusitis_1',
+        topic: 'Sinusitis',
+        content: 'Sinusitis is inflammation of the sinuses, often following a cold or allergies. Can be acute or chronic. Bacterial infections may require antibiotics, while viral cases typically resolve on their own.',
+        symptoms: ['facial pain', 'nasal congestion', 'thick nasal discharge', 'reduced smell', 'headache'],
+        severity: 'mild_to_moderate',
+        treatment: 'Nasal decongestants, saline rinses, antibiotics if bacterial',
+        emergency_signs: ['severe headache', 'visual changes', 'mental confusion']
+      },
+      {
+        id: 'bronchitis_1',
+        topic: 'Bronchitis',
+        content: 'Bronchitis is inflammation of the bronchial tubes. Acute bronchitis is usually viral and self-limiting, while chronic bronchitis is often related to smoking and may be part of COPD.',
+        symptoms: ['persistent cough', 'mucus production', 'chest discomfort', 'fatigue', 'mild fever'],
+        severity: 'mild_to_moderate',
+        treatment: 'Rest, hydration, humidifier use, bronchodilators if needed',
+        emergency_signs: ['severe breathing difficulty', 'high fever', 'coughing blood']
+      },
+      {
+        id: 'vertigo_1',
+        topic: 'Vertigo',
+        content: 'Vertigo is a sensation of spinning or dizziness. Can be caused by inner ear problems, migraine, or other conditions. Episodes can last from minutes to days and may affect balance.',
+        symptoms: ['spinning sensation', 'dizziness', 'nausea', 'balance problems', 'headache'],
+        severity: 'mild_to_severe',
+        treatment: 'Vestibular rehabilitation, medications, treating underlying cause',
+        emergency_signs: ['sudden severe vertigo', 'neurological symptoms', 'hearing loss']
+      },
+      {
+        id: 'gallstones_1',
+        topic: 'Gallstones',
+        content: 'Gallstones are hardened deposits in the gallbladder. They can cause pain when they block bile ducts. Risk factors include obesity, high-fat diet, and certain medical conditions.',
+        symptoms: ['upper abdominal pain', 'nausea', 'vomiting', 'back pain', 'indigestion'],
+        severity: 'moderate_to_severe',
+        treatment: 'Surgery if symptomatic, dietary changes, pain management',
+        emergency_signs: ['severe abdominal pain', 'fever with pain', 'jaundice']
+      },
+      {
+        id: 'pneumonia_1',
+        topic: 'Pneumonia',
+        content: 'Pneumonia is an infection causing inflammation in the air sacs of lungs. Can be bacterial, viral, or fungal. Severity ranges from mild to life-threatening, especially in vulnerable populations.',
+        symptoms: ['cough with phlegm', 'fever', 'chills', 'difficulty breathing', 'chest pain'],
+        severity: 'moderate_to_severe',
+        treatment: 'Antibiotics if bacterial, rest, hydration, oxygen therapy if needed',
+        emergency_signs: ['severe breathing difficulty', 'bluish skin', 'confusion']
+      },
+      {
+        id: 'kidney_stones_1',
+        topic: 'Kidney Stones',
+        content: 'Kidney stones are hard deposits made of minerals and salts that form inside kidneys. They can cause severe pain when passing through the urinary tract. Prevention includes adequate hydration.',
+        symptoms: ['severe back pain', 'abdominal pain', 'painful urination', 'blood in urine', 'nausea'],
+        severity: 'moderate_to_severe',
+        treatment: 'Pain management, hydration, medical procedures if needed',
+        emergency_signs: ['severe pain', 'fever with pain', 'complete inability to urinate']
+      },
+      {
+        id: 'osteoporosis_1',
+        topic: 'Osteoporosis',
+        content: 'Osteoporosis causes bones to become weak and brittle. Risk increases with age, especially in postmenopausal women. Regular exercise and calcium intake help maintain bone strength.',
+        symptoms: ['back pain', 'loss of height', 'stooped posture', 'easily broken bones'],
+        severity: 'chronic_condition',
+        treatment: 'Calcium supplements, vitamin D, medications, weight-bearing exercise',
+        emergency_signs: ['sudden severe back pain', 'inability to move after fall']
+      },
+      {
+        id: 'parkinsons_1',
+        topic: 'Parkinson\'s Disease',
+        content: 'Parkinson\'s is a progressive nervous system disorder affecting movement. Symptoms develop gradually and can include tremors, stiffness, and balance problems.',
+        symptoms: ['tremors', 'slow movement', 'rigid muscles', 'impaired balance', 'speech changes'],
+        severity: 'chronic_progressive',
+        treatment: 'Medications to manage symptoms, physical therapy, lifestyle modifications',
+        emergency_signs: ['falling and injury', 'severe depression', 'inability to move']
+      },
+      {
+        id: 'celiac_1',
+        topic: 'Celiac Disease',
+        content: 'Celiac disease is an immune reaction to eating gluten. It causes inflammation damaging the small intestine\'s lining. Strict gluten-free diet is essential for management.',
+        symptoms: ['diarrhea', 'bloating', 'fatigue', 'weight loss', 'anemia', 'skin rash'],
+        severity: 'chronic_condition',
+        treatment: 'Strict gluten-free diet, nutritional supplements if needed',
+        emergency_signs: ['severe abdominal pain', 'excessive diarrhea', 'dehydration']
+      },
+      {
+        id: 'lupus_1',
+        topic: 'Lupus',
+        content: 'Lupus is an autoimmune disease causing inflammation throughout the body. Can affect joints, skin, kidneys, and other organs. Symptoms can flare up and remit.',
+        symptoms: ['joint pain', 'butterfly rash', 'fatigue', 'fever', 'sun sensitivity'],
+        severity: 'chronic_condition',
+        treatment: 'Immunosuppressants, anti-inflammatory medications, lifestyle changes',
+        emergency_signs: ['severe chest pain', 'severe headache', 'confusion']
+      },
+      {
+        id: 'endometriosis_1',
+        topic: 'Endometriosis',
+        content: 'Endometriosis occurs when tissue similar to the uterine lining grows outside the uterus. Can cause severe pain and fertility issues. Treatment depends on severity and fertility desires.',
+        symptoms: ['pelvic pain', 'painful periods', 'painful intercourse', 'infertility', 'heavy bleeding'],
+        severity: 'chronic_condition',
+        treatment: 'Pain medications, hormone therapy, surgery in severe cases',
+        emergency_signs: ['severe pelvic pain', 'heavy bleeding', 'signs of infection']
+      },
+      {
+        id: 'psoriasis_1',
+        topic: 'Psoriasis',
+        content: 'Psoriasis is a chronic skin condition causing rapid skin cell buildup. Results in thick, scaly patches. Can be triggered by stress, infections, or weather.',
+        symptoms: ['red scaly patches', 'itching', 'burning', 'joint pain', 'thick nails'],
+        severity: 'chronic_condition',
+        treatment: 'Topical treatments, light therapy, systemic medications',
+        emergency_signs: ['severe widespread rash', 'signs of infection', 'joint swelling']
+      },
+      {
+        id: 'glaucoma_1',
+        topic: 'Glaucoma',
+        content: 'Glaucoma is a group of eye conditions damaging the optic nerve. Often caused by high pressure in the eye. Early detection and treatment crucial to prevent vision loss.',
+        symptoms: ['gradual vision loss', 'eye pain', 'headache', 'rainbow halos around lights'],
+        severity: 'chronic_progressive',
+        treatment: 'Eye drops, laser treatment, surgery if needed',
+        emergency_signs: ['sudden vision loss', 'severe eye pain', 'nausea with eye pain']
+      },
+      {
+        id: 'tinnitus_1',
+        topic: 'Tinnitus',
+        content: 'Tinnitus causes ringing or buzzing in the ears. Can be constant or intermittent. Often related to hearing loss, ear injury, or circulatory problems.',
+        symptoms: ['ringing in ears', 'buzzing sound', 'difficulty concentrating', 'sleep problems'],
+        severity: 'mild_to_severe',
+        treatment: 'Sound therapy, hearing aids, stress management, treating underlying causes',
+        emergency_signs: ['sudden hearing loss', 'dizziness with tinnitus', 'facial weakness']
+      },
+      {
+        id: 'carpal_tunnel_1',
+        topic: 'Carpal Tunnel Syndrome',
+        content: 'Carpal tunnel syndrome occurs when the median nerve is compressed in the wrist. Common in people who perform repetitive hand movements. Can cause permanent nerve damage if untreated.',
+        symptoms: ['hand numbness', 'tingling', 'weak grip', 'wrist pain', 'dropping objects'],
+        severity: 'mild_to_severe',
+        treatment: 'Wrist splints, ergonomic changes, surgery in severe cases',
+        emergency_signs: ['complete loss of feeling', 'severe weakness', 'muscle wasting']
+      },
+      {
+        id: 'sleep_apnea_1',
+        topic: 'Sleep Apnea',
+        content: 'Sleep apnea causes breathing to repeatedly stop during sleep. Can lead to serious health complications if untreated. Risk factors include obesity and family history.',
+        symptoms: ['loud snoring', 'breathing pauses', 'morning headaches', 'daytime sleepiness'],
+        severity: 'moderate_to_severe',
+        treatment: 'CPAP machine, lifestyle changes, dental devices',
+        emergency_signs: ['choking during sleep', 'severe daytime drowsiness', 'chest pain']
+      },
+      {
+        id: 'fibromyalgia_1',
+        topic: 'Fibromyalgia',
+        content: 'Fibromyalgia causes widespread musculoskeletal pain along with fatigue, sleep, memory and mood issues. Exact cause unknown but likely involves how brain processes pain signals.',
+        symptoms: ['widespread pain', 'fatigue', 'cognitive difficulties', 'sleep problems', 'depression'],
+        severity: 'chronic_condition',
+        treatment: 'Pain medications, exercise, stress management, sleep hygiene',
+        emergency_signs: ['severe depression', 'suicidal thoughts', 'severe pain crisis']
+      },
+      {
+        id: 'gout_1',
+        topic: 'Gout',
+        content: 'Gout is a form of arthritis caused by excess uric acid. Causes sudden, severe attacks of pain, swelling, and redness. Diet and lifestyle factors can trigger attacks.',
+        symptoms: ['severe joint pain', 'swelling', 'redness', 'limited movement', 'warmth in joint'],
+        severity: 'moderate_to_severe',
+        treatment: 'Anti-inflammatory medications, dietary changes, preventive medications',
+        emergency_signs: ['severe pain with fever', 'joint infection signs', 'multiple joint involvement']
+      },
+      {
+        id: 'diverticulitis_1',
+        topic: 'Diverticulitis',
+        content: 'Diverticulitis occurs when small pouches in the digestive tract become inflamed or infected. Common in older adults. Diet plays important role in prevention.',
+        symptoms: ['abdominal pain', 'fever', 'nausea', 'changed bowel habits', 'bloating'],
+        severity: 'moderate_to_severe',
+        treatment: 'Antibiotics, liquid diet, surgery in severe cases',
+        emergency_signs: ['severe abdominal pain', 'high fever', 'inability to pass stool']
+      },
+      {
+        id: 'bells_palsy_1',
+        topic: 'Bell\'s Palsy',
+        content: 'Bell\'s palsy causes sudden weakness in facial muscles. Usually affects one side of face. Most cases improve without treatment within months.',
+        symptoms: ['facial drooping', 'difficulty smiling', 'drooling', 'eye problems', 'taste changes'],
+        severity: 'moderate',
+        treatment: 'Corticosteroids, eye protection, physical therapy',
+        emergency_signs: ['complete paralysis', 'other neurological symptoms', 'severe pain']
+      },
+      {
+        id: 'meningitis_1',
+        topic: 'Meningitis',
+        content: 'Meningitis is inflammation of membranes surrounding brain and spinal cord. Can be bacterial, viral, or fungal. Bacterial meningitis is medical emergency requiring immediate treatment.',
+        symptoms: ['severe headache', 'stiff neck', 'fever', 'confusion', 'sensitivity to light'],
+        severity: 'severe',
+        treatment: 'Immediate antibiotics if bacterial, supportive care, hospitalization',
+        emergency_signs: ['severe headache', 'neck stiffness', 'rapid deterioration']
+      },
+      {
+        id: 'addisons_1',
+        topic: 'Addison\'s Disease',
+        content: 'Addison\'s disease occurs when adrenal glands don\'t produce enough hormones. Can be life-threatening if untreated. Regular medication essential.',
+        symptoms: ['fatigue', 'muscle weakness', 'low blood pressure', 'skin darkening', 'salt craving'],
+        severity: 'chronic_condition',
+        treatment: 'Hormone replacement therapy, stress dose steroids when needed',
+        emergency_signs: ['severe weakness', 'confusion', 'severe abdominal pain']
+      },
+      {
+        id: 'peripheral_neuropathy_1',
+        topic: 'Peripheral Neuropathy',
+        content: 'Peripheral neuropathy results from damage to peripheral nerves. Can cause weakness, numbness, and pain. Common in diabetics and those with vitamin deficiencies.',
+        symptoms: ['numbness', 'tingling', 'burning pain', 'muscle weakness', 'coordination problems'],
+        severity: 'chronic_progressive',
+        treatment: 'Pain management, treating underlying cause, physical therapy',
+        emergency_signs: ['sudden weakness', 'severe pain', 'injury due to numbness']
+      },
+      {
+        id: 'ulcerative_colitis_1',
+        topic: 'Ulcerative Colitis',
+        content: 'Ulcerative colitis is inflammatory bowel disease causing inflammation in digestive tract. Can lead to serious complications if untreated. Symptoms often come and go.',
+        symptoms: ['abdominal pain', 'bloody diarrhea', 'urgency', 'weight loss', 'fatigue'],
+        severity: 'chronic_condition',
+        treatment: 'Anti-inflammatory drugs, immune system suppressors, surgery if needed',
+        emergency_signs: ['severe bleeding', 'severe abdominal pain', 'high fever']
+      },
+      {
+        id: 'multiple_sclerosis_1',
+        topic: 'Multiple Sclerosis',
+        content: 'Multiple sclerosis is a disease where immune system attacks protective covering of nerves. Causes communication problems between brain and body. Symptoms vary widely.',
+        symptoms: ['fatigue', 'vision problems', 'numbness', 'balance problems', 'cognitive changes'],
+        severity: 'chronic_progressive',
+        treatment: 'Disease-modifying medications, symptom management, rehabilitation',
+        emergency_signs: ['sudden vision loss', 'severe weakness', 'difficulty speaking']
+      },
+      {
+        id: 'rheumatoid_arthritis_1',
+        topic: 'Rheumatoid Arthritis',
+        content: 'Rheumatoid arthritis is autoimmune disorder causing joint inflammation. Can damage various body systems. Early treatment can help prevent joint destruction.',
+        symptoms: ['joint pain', 'swelling', 'stiffness', 'fatigue', 'fever'],
+        severity: 'chronic_progressive',
+        treatment: 'Disease-modifying drugs, anti-inflammatory medications, physical therapy',
+        emergency_signs: ['severe joint pain', 'difficulty breathing', 'chest pain']
+      },
+      {
+        id: 'chronic_fatigue_1',
+        topic: 'Chronic Fatigue Syndrome',
+        content: 'Chronic fatigue syndrome causes extreme fatigue that can\'t be explained by underlying medical condition. Activities may worsen symptoms but rest doesn\'t improve them.',
+        symptoms: ['severe fatigue', 'sleep problems', 'difficulty concentrating', 'muscle pain', 'headaches'],
+        severity: 'chronic_condition',
+        treatment: 'Activity management, sleep hygiene, treating specific symptoms',
+        emergency_signs: ['severe depression', 'suicidal thoughts', 'severe pain']
+      },
+      {
+        id: 'interstitial_cystitis_1',
+        topic: 'Interstitial Cystitis',
+        content: 'Interstitial cystitis is chronic bladder condition causing bladder pressure and pain. Can cause frequent urination and pain. No cure but treatments can help manage symptoms.',
+        symptoms: ['pelvic pain', 'urgent urination', 'frequent urination', 'pain during intercourse'],
+        severity: 'chronic_condition',
+        treatment: 'Medications, bladder instillations, dietary modifications',
+        emergency_signs: ['severe pain', 'inability to urinate', 'fever with symptoms']
+      },
+      {
+        id: 'sjogrens_1',
+        topic: 'Sjögren\'s Syndrome',
+        content: 'Sjögren\'s syndrome is autoimmune disorder affecting moisture-producing glands. Commonly affects eyes and mouth. Can occur with other autoimmune conditions.',
+        symptoms: ['dry eyes', 'dry mouth', 'joint pain', 'fatigue', 'swollen salivary glands'],
+        severity: 'chronic_condition',
+        treatment: 'Artificial tears, saliva substitutes, medications for inflammation',
+        emergency_signs: ['severe eye pain', 'inability to swallow', 'severe joint pain']
+      },
+      {
+        id: 'hemochromatosis_1',
+        topic: 'Hemochromatosis',
+        content: 'Hemochromatosis causes body to absorb too much iron. Can damage organs if untreated. Early detection and treatment prevent complications.',
+        symptoms: ['joint pain', 'fatigue', 'abdominal pain', 'skin darkening', 'diabetes symptoms'],
+        severity: 'chronic_condition',
+        treatment: 'Regular blood removal, avoiding iron supplements, monitoring iron levels',
+        emergency_signs: ['severe abdominal pain', 'irregular heartbeat', 'confusion']
+      },
+      {
+        id: 'cluster_headache_1',
+        topic: 'Cluster Headaches',
+        content: 'Cluster headaches cause severe pain on one side of head. Occur in clusters or cycles. One of most painful types of headache.',
+        symptoms: ['severe one-sided pain', 'eye tearing', 'nasal congestion', 'restlessness', 'eye redness'],
+        severity: 'severe',
+        treatment: 'Oxygen therapy, medications, preventive treatments',
+        emergency_signs: ['worst headache ever', 'confusion', 'seizures']
+      },
+      {
+        id: 'temporal_arteritis_1',
+        topic: 'Temporal Arteritis',
+        content: 'Temporal arteritis causes inflammation of temporal arteries. Can lead to vision loss if untreated. Requires immediate treatment to prevent complications.',
+        symptoms: ['headache', 'scalp tenderness', 'jaw pain', 'vision problems', 'fever'],
+        severity: 'severe',
+        treatment: 'High-dose steroids, monitoring for complications',
+        emergency_signs: ['sudden vision changes', 'double vision', 'severe headache']
+      },
+      {
         id: 'fever_1',
         topic: 'Fever',
         content: 'Fever is a temporary increase in body temperature, often due to infection. Normal body temperature is around 98.6°F (37°C). Fever is generally considered when temperature is above 100.4°F (38°C). Common causes include viral infections, bacterial infections, heat exhaustion, and certain medications.',

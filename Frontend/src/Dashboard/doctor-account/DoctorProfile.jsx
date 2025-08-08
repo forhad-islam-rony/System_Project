@@ -7,6 +7,19 @@ import HashLoader from 'react-spinners/HashLoader';
 import { doctorInstance } from '../../utils/axiosConfig';
 
 // Add this at the top of your file, outside the component
+const SPECIALIZATIONS = [
+  'General physician',
+  'Gynecologist',
+  'Dermatologist',
+  'Pediatricians',
+  'Neurologist',
+  'Gastroenterologist',
+  'Surgery',
+  'Cardiology',
+  'Orthopedic',
+  'Dentist'
+];
+
 const TIME_SLOTS = [
   "09:00 AM - 10:00 AM",
   "10:00 AM - 11:00 AM",
@@ -258,15 +271,20 @@ const DoctorProfile = ({ onProfileUpdate }) => {
             <label className="text-textColor font-semibold block mb-2">
               Specialization*
             </label>
-            <input
-              type="text"
+            <select
               name="specialization"
               value={formData.specialization}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-solid border-[#0066ff61] focus:outline-none focus:border-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor rounded-lg"
-              placeholder="Specialization"
               required
-            />
+            >
+              <option value="">Select Specialization</option>
+              {SPECIALIZATIONS.map((spec) => (
+                <option key={spec} value={spec}>
+                  {spec}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

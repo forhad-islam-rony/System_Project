@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch, FaStar } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
 import { BASE_URL } from "../config";
+import useScrollToTop from "../hooks/useScrollToTop";
 
 function Doctors() {
   const [doctors, setDoctors] = useState([]);
@@ -14,6 +15,9 @@ function Doctors() {
   const [currentPage, setCurrentPage] = useState(1);
   const [doctorsPerPage] = useState(6);
   const navigate = useNavigate();
+  
+  // Use custom hook for scroll to top functionality
+  const scrollToTop = useScrollToTop();
   
   // Get speciality from URL query parameter
   useEffect(() => {
@@ -97,6 +101,11 @@ function Doctors() {
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedSpeciality]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    scrollToTop();
+  }, [currentPage]);
 
   if (loading) {
     return (
@@ -237,8 +246,9 @@ function Doctors() {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-600">
-                            {doctor.totalPatients}+ Patients
+                          <span className="text-gray-600 flex items-center gap-1">
+                            <span className="font-semibold">{doctor.totalPatients || 0}</span>
+                            <span>Patients Treated</span>
                           </span>
                           <button className="flex items-center gap-2 text-blue-500 hover:text-blue-700">
                             View Profile <BsArrowRight />

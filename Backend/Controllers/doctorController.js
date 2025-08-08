@@ -1,5 +1,6 @@
 import Doctor from '../models/DoctorSchema.js';
 import Booking from '../models/BookingSchema.js';
+import mongoose from 'mongoose';
 
 export const updateDoctor = async (req, res) => {
   const id = req.params.id;
@@ -123,16 +124,24 @@ export const getAllDoctor = async (req, res) => {
 
     const doctors = await Doctor.find(filter).select("-password");
 
-    // Add availability status to each doctor in response
-    const doctorsWithAvailability = doctors.map(doctor => ({
-      ...doctor._doc,
-      isAvailable: doctor.isAvailable || false
+    // Get appointment counts and add availability for each doctor
+    const doctorsWithDetails = await Promise.all(doctors.map(async (doctor) => {
+      const appointmentCount = await mongoose.model('Booking').countDocuments({
+        doctor: doctor._id,
+        status: { $in: ['approved', 'finished'] } // Only count completed appointments
+      });
+
+      return {
+        ...doctor._doc,
+        isAvailable: doctor.isAvailable || false,
+        totalPatients: appointmentCount
+      };
     }));
 
     res.status(200).json({
       success: true,
       message: "Doctors found",
-      data: doctorsWithAvailability
+      data: doctorsWithDetails
     });
 
   } catch (error) {
@@ -273,10 +282,24 @@ export const createDoctor = async (req, res) => {
 
 export const getTopRatedDoctors = async (req, res) => {
   try {
+    // First get the top rated doctors
     const doctors = await Doctor.find({ isApproved: "approved" })
       .select("-password")
       .sort({ averageRating: -1 }) // Sort by rating in descending order
       .limit(3); // Get only top 3
+
+    // For each doctor, get their total appointments count
+    const doctorsWithCounts = await Promise.all(doctors.map(async (doctor) => {
+      const appointmentCount = await mongoose.model('Booking').countDocuments({
+        doctor: doctor._id,
+        status: { $in: ['approved', 'finished'] } // Only count completed appointments
+      });
+
+      return {
+        ...doctor.toObject(),
+        totalPatients: appointmentCount
+      };
+    }));
 
     if (!doctors || doctors.length === 0) {
       return res.status(404).json({
@@ -288,7 +311,7 @@ export const getTopRatedDoctors = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Top rated doctors found',
-      data: doctors
+      data: doctorsWithCounts
     });
   } catch (err) {
     res.status(500).json({

@@ -52,6 +52,53 @@ export const createReview = async (req, res) => {
   }
 };
 
+// Get all platform reviews for testimonials
+export const getPlatformReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ 
+      reviewType: 'platform' 
+    }).sort({ createdAt: -1 });
+    
+    res.status(200).json({
+      success: true, 
+      message: "Platform reviews found", 
+      data: reviews
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false, 
+      message: 'No platform reviews found', 
+      error: error.message
+    });
+  }
+};
+
+// Create platform review
+export const createPlatformReview = async (req, res) => { 
+  try {
+    const reviewData = {
+      ...req.body,
+      user: req.userId,
+      reviewType: 'platform'
+    };
+    
+    const newReview = new Review(reviewData);
+    await newReview.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Review submitted successfully',
+      data: newReview
+    });
+  } catch (error) {
+    console.error("Error creating platform review:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 export const deleteReview = async (req, res) => {
   try {
     const { id } = req.params;

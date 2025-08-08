@@ -57,25 +57,6 @@ cd Backend
 touch .env
 ```
 
-Add the following environment variables to `Backend/.env`:
-
-```env
-# Database Configuration
-MONGODB_URI=mongodb://localhost:27017/healthcare-system
-# For MongoDB Atlas (production):
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/healthcare-system
-
-# JWT Authentication
-JWT_SECRET_KEY=your-super-secret-jwt-key-here-make-it-long-and-random
-
-# Google Gemini AI
-GEMINI_API_KEY=your-gemini-api-key-from-google-ai-studio
-
-# Cloudinary Configuration (Optional)
-CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-CLOUDINARY_API_KEY=your-cloudinary-api-key
-CLOUDINARY_API_SECRET=your-cloudinary-api-secret
-
 # Server Configuration
 PORT=5000
 NODE_ENV=development
@@ -98,13 +79,6 @@ touch .env
 
 Add the following to `Frontend/.env`:
 
-```env
-# API Configuration
-VITE_BASE_URL=http://localhost:5000/api/v1
-
-# For production:
-# VITE_BASE_URL=https://your-backend-domain.com/api/v1
-```
 
 ### **Step 4: Database Setup**
 

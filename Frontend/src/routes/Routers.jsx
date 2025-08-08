@@ -10,6 +10,7 @@ import DoctorDetails from '../pages/Doctors/DoctorDetails';
 import DoctorAccount from '../pages/Doctors/DoctorAccount';
 import BloodGroup from '../pages/BloodGroup';
 import Community from '../pages/Community';
+import ReviewPage from '../pages/ReviewPage';
 import ManageModerators from '../pages/Admin/ManageModerators';
 import ManageMedicines from '../pages/Admin/ManageMedicines';
 
@@ -31,6 +32,7 @@ const Routers = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/review" element={<ReviewPage />} />
             <Route path="/doctors/:id" element={<DoctorDetails />} />
             
             {/* Doctor Routes */}

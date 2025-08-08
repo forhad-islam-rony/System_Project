@@ -44,9 +44,34 @@ import Ambulance from './pages/Ambulance';
 import AmbulanceStatus from './pages/AmbulanceStatus';
 import AdminAmbulanceDashboard from './pages/Admin/AdminAmbulanceDashboard';
 import ManageDriversPage from './pages/Admin/ManageDriversPage';
-import MedicalChatbot from './pages/MedicalChatbot';
+import MedicalChatbot from './pages/MedicalChatbot.jsx';
+import ReviewPage from './pages/ReviewPage';
+import { useEffect } from 'react';
 
 export const App = () => {
+  
+  // Global click handler for all links to ensure scroll to top
+  useEffect(() => {
+    const handleLinkClick = (e) => {
+      // Check if clicked element is a link or inside a link
+      const link = e.target.closest('a');
+      if (link && link.href && !link.href.includes('#')) {
+        // Small delay to ensure navigation happens first
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 100);
+      }
+    };
+
+    // Add click listener to document
+    document.addEventListener('click', handleLinkClick);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('click', handleLinkClick);
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>
@@ -69,6 +94,7 @@ export const App = () => {
             <Route path='/ambulance' element={<Ambulance />} />
             <Route path='/ambulance-status' element={<AmbulanceStatus />} />
             <Route path='/medical-chatbot' element={<MedicalChatbot />} />
+            <Route path='/review' element={<ReviewPage />} />
             
             {/* Auth Routes */}
             <Route path='/login' element={<Login />} />
