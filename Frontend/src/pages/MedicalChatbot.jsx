@@ -1,46 +1,87 @@
+/**
+ * @fileoverview Medical AI Chatbot Page Component
+ * @description Advanced medical consultation interface with AI-powered responses,
+ * medical document analysis, chat history, and emergency detection capabilities
+ * @author Healthcare System Team
+ * @version 2.0.0
+ */
+
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
 import ChatInterface from '../components/ChatInterface.jsx';
 import FileUploader from '../components/FileUploader.jsx';
 import axios from 'axios';
 
+/**
+ * Medical AI Chatbot component for healthcare consultations
+ * @component
+ * @returns {JSX.Element} Complete medical chatbot interface
+ * @description Provides an AI-powered medical consultation interface with:
+ * - Real-time chat with medical AI
+ * - Medical document upload and analysis
+ * - Chat history management
+ * - Emergency symptom detection
+ * - Follow-up question suggestions
+ * - Responsive design for all devices
+ */
 const MedicalChatbot = () => {
+  // Get authentication context for user data and token
   const { user, token } = useContext(AuthContext);
   
-  // Core state
-  const [sessionId, setSessionId] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  // ==================== State Management ====================
   
-  // History state
-  const [chatSessions, setChatSessions] = useState([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
+  // Core chat functionality state
+  const [sessionId, setSessionId] = useState(null);       // Current chat session ID
+  const [messages, setMessages] = useState([]);           // Chat message history
+  const [loading, setLoading] = useState(false);          // Message sending state
+  const [uploading, setUploading] = useState(false);      // File upload state
+  const [followUpQuestions, setFollowUpQuestions] = useState([]); // AI suggestions
+  
+  // Chat history management state
+  const [chatSessions, setChatSessions] = useState([]);   // All user's chat sessions
+  const [showHistory, setShowHistory] = useState(false);  // History modal visibility
+  const [historyLoading, setHistoryLoading] = useState(false); // History loading state
 
-  // API setup
+  // ==================== API Configuration ====================
+  
+  // Configure axios instance with authentication
   const api = axios.create({
-    baseURL: 'http://localhost:5000/api/v1',
+    baseURL: 'http://localhost:5000/api/v1',  // Backend API URL
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Authorization': `Bearer ${token}`,      // JWT authentication
+      'Content-Type': 'application/json'       // Default content type
     }
   });
 
-  // Initialize on mount
+  // ==================== Initialization ====================
+  
+  /**
+   * Initialize chatbot on component mount
+   * @effect
+   * @description Starts new chat session and loads history when user is authenticated
+   */
   useEffect(() => {
     if (user && token) {
-      startNewSession();
-      loadChatSessions();
+      startNewSession();    // Start fresh chat session
+      loadChatSessions();   // Load previous chat history
     }
   }, [user, token]);
 
-  // Start new chat session
+  /**
+   * Start a new chat session with the AI
+   * @async
+   * @function startNewSession
+   * @description Creates new chat session, initializes with welcome message,
+   * and refreshes session list
+   */
   const startNewSession = async () => {
     try {
       console.log('🚀 Starting new chat session...');
+      
+      // Create new session via API
       const response = await api.post('/chatbot/start');
       
+      // Initialize chat state
       setSessionId(response.data.data.sessionId);
       setMessages([{
         role: 'assistant',
@@ -48,11 +89,11 @@ const MedicalChatbot = () => {
         timestamp: new Date(),
         messageType: 'text'
       }]);
-      setShowHistory(false);
+      setShowHistory(false);  // Hide history panel
       
       console.log('✅ New session started:', response.data.data.sessionId);
       
-      // Refresh session list
+      // Update sessions list with new session
       await loadChatSessions();
     } catch (error) {
       console.error('❌ Error starting chat session:', error);
@@ -60,149 +101,100 @@ const MedicalChatbot = () => {
     }
   };
 
-  // Load chat sessions list
+  /**
+   * Load user's chat session history
+   * @async
+   * @function loadChatSessions
+   * @description Fetches recent chat sessions from backend with loading states
+   * and error handling. Limits to 10 most recent sessions.
+   */
   const loadChatSessions = async () => {
     try {
+      // Show loading state
       setHistoryLoading(true);
       console.log('📋 Loading chat sessions...');
       console.log('🔑 User:', user?.name, 'Token exists:', !!token);
       
+      // Fetch recent sessions from API
       const response = await api.get('/chatbot/sessions?limit=10');
       console.log('📥 Sessions response:', response.data);
       
+      // Update state based on API response
       if (response.data.success) {
         const sessions = response.data.data.sessions || [];
         console.log('📊 Sessions loaded:', sessions.length);
-        setChatSessions(sessions);
+        setChatSessions(sessions);  // Update sessions list
       } else {
         console.warn('⚠️ Sessions response not successful:', response.data);
-        setChatSessions([]);
+        setChatSessions([]);  // Clear sessions on error
       }
     } catch (error) {
+      // Handle API errors
       console.error('❌ Error loading chat sessions:', error.response?.data || error.message);
-      setChatSessions([]);
+      setChatSessions([]);  // Clear sessions on error
     } finally {
+      // Reset loading state
       setHistoryLoading(false);
     }
   };
 
-  // Load specific chat history
+  /**
+   * Load chat history for a specific session
+   * @async
+   * @function loadChatHistory
+   * @param {string} selectedSessionId - ID of the session to load
+   * @description Fetches complete message history for a selected chat session
+   * and updates the chat interface accordingly
+   */
   const loadChatHistory = async (selectedSessionId) => {
     try {
+      // Show loading state
       setLoading(true);
       console.log('📖 Loading history for session:', selectedSessionId);
       
+      // Fetch session history from API
       const response = await api.get(`/chatbot/history/${selectedSessionId}`);
       console.log('📥 History response:', response.data);
       
+      // Update chat interface with historical messages
       if (response.data.success) {
-        setSessionId(selectedSessionId);
-        setMessages(response.data.data.messages || []);
-        setShowHistory(false);
+        setSessionId(selectedSessionId);  // Set active session
+        setMessages(response.data.data.messages || []);  // Load messages
+        setShowHistory(false);  // Hide history panel
         console.log('✅ History loaded:', response.data.data.messages?.length, 'messages');
       } else {
         alert('Failed to load chat history.');
       }
     } catch (error) {
+      // Handle API errors
       console.error('❌ Error loading chat history:', error);
       alert('Failed to load chat history.');
     } finally {
+      // Reset loading state
       setLoading(false);
     }
   };
 
-  // Delete chat session
-  const deleteChatSession = async (sessionIdToDelete) => {
-    try {
-      console.log('🗑️ Deleting session:', sessionIdToDelete);
-      
-      // Confirm deletion
-      const sessionToDelete = chatSessions.find(s => s.sessionId === sessionIdToDelete);
-      const confirmMessage = `Are you sure you want to delete this chat session?\n\n"${sessionToDelete?.sessionTitle || 'Unknown Session'}"\n\nThis action cannot be undone.`;
-      
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
-      
-      setHistoryLoading(true);
-      
-      const response = await api.delete(`/chatbot/session/${sessionIdToDelete}`);
-      console.log('📥 Delete response:', response.data);
-      
-      if (response.data.success) {
-        console.log('✅ Session deleted successfully');
-        
-        // If we deleted the current session, start a new one
-        if (sessionId === sessionIdToDelete) {
-          await startNewSession();
-        }
-        
-        // Refresh the sessions list
-        await loadChatSessions();
-        
-        alert('Chat session deleted successfully!');
-      } else {
-        alert('Failed to delete chat session.');
-      }
-    } catch (error) {
-      console.error('❌ Error deleting chat session:', error);
-      alert('Failed to delete chat session. Please try again.');
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
-
-  // Delete all chat sessions
-  const deleteAllSessions = async () => {
-    try {
-      const confirmMessage = `⚠️ WARNING: This will delete ALL ${chatSessions.length} chat sessions!\n\nThis action cannot be undone. Are you absolutely sure?`;
-      
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
-      
-      setHistoryLoading(true);
-      console.log('🗑️ Deleting all sessions...');
-      
-      // Delete sessions one by one
-      let deletedCount = 0;
-      for (const session of chatSessions) {
-        try {
-          await api.delete(`/chatbot/session/${session.sessionId}`);
-          deletedCount++;
-        } catch (error) {
-          console.error('❌ Failed to delete session:', session.sessionId, error);
-        }
-      }
-      
-      console.log(`✅ Deleted ${deletedCount} out of ${chatSessions.length} sessions`);
-      
-      // Start a new session
-      await startNewSession();
-      
-      // Refresh the sessions list
-      await loadChatSessions();
-      
-      alert(`Successfully deleted ${deletedCount} chat sessions!`);
-      
-    } catch (error) {
-      console.error('❌ Error deleting all sessions:', error);
-      alert('Failed to delete all sessions. Please try again.');
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
-
-  // Send message
+  /**
+   * Send user message to AI and handle response
+   * @async
+   * @function sendMessage
+   * @param {string} message - User's message text
+   * @description Sends message to AI, handles response, and updates chat interface
+   * with proper error handling and loading states
+   */
   const sendMessage = async (message) => {
+    // Validate active session
     if (!sessionId) {
       alert('No active session. Please start a new conversation.');
       return;
     }
 
+    // Initialize message sending state
     setLoading(true);
+    setFollowUpQuestions([]);  // Clear previous suggestions
 
-    // Add user message to UI immediately
+    // Immediately add user message for responsive UI
     const userMessage = {
       role: 'user',
       content: message,
@@ -212,26 +204,38 @@ const MedicalChatbot = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
+      // Send message to AI via API
       const response = await api.post('/chatbot/message', {
         sessionId,
         message
       });
 
-      const { response: aiResponse, messageType } = response.data.data;
+      // Extract AI response data
+      const { 
+        response: aiResponse,        // AI's message content
+        messageType,                 // Message type (text/emergency/analysis)
+        followUpQuestions: newFollowUp  // Suggested follow-up questions
+      } = response.data.data;
 
-      // Add AI response to UI
+      // Add AI response to chat interface
       const aiMessage = {
         role: 'assistant',
         content: aiResponse,
         timestamp: new Date(),
-        messageType: messageType || 'text'
+        messageType: messageType || 'text'  // Default to text type
       };
       setMessages(prev => [...prev, aiMessage]);
 
+      // Update follow-up suggestions if provided
+      if (newFollowUp && newFollowUp.length > 0) {
+        setFollowUpQuestions(newFollowUp);
+      }
+
     } catch (error) {
+      // Handle API errors gracefully
       console.error('Error sending message:', error);
       
-      // Add error message to UI
+      // Show error message in chat interface
       const errorMessage = {
         role: 'assistant',
         content: 'Sorry, I encountered an error processing your message. Please try again.',
@@ -240,23 +244,36 @@ const MedicalChatbot = () => {
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
+      // Reset loading state
       setLoading(false);
     }
   };
 
-  // Handle file upload
+  /**
+   * Handle medical document upload and analysis
+   * @async
+   * @function handleFileUpload
+   * @param {File} file - Medical document file to upload
+   * @throws {Error} If no active session or upload fails
+   * @description Uploads medical documents (PDFs, images) for AI analysis
+   * and adds results to chat interface
+   */
   const handleFileUpload = async (file) => {
+    // Validate active session
     if (!sessionId) {
       throw new Error('No active chat session. Please start a new conversation.');
     }
 
+    // Show upload progress state
     setUploading(true);
 
     try {
+      // Prepare file upload data
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('sessionId', sessionId);
+      formData.append('file', file);         // Medical document
+      formData.append('sessionId', sessionId); // Current session
 
+      // Upload file to backend for analysis
       const response = await axios.post(
         'http://localhost:5000/api/v1/chatbot/upload',
         formData,
@@ -268,7 +285,7 @@ const MedicalChatbot = () => {
         }
       );
 
-      // Add system message about file upload
+      // Add upload confirmation message
       const uploadMessage = {
         role: 'system',
         content: `📄 Medical document uploaded: ${response.data.fileName}`,
@@ -276,41 +293,56 @@ const MedicalChatbot = () => {
         messageType: 'text'
       };
 
-      // Add analysis message
+      // Add AI analysis results
       const analysisMessage = {
         role: 'assistant',
         content: `📊 **Medical Document Analysis**\n\n${response.data.analysis}`,
         timestamp: new Date(),
-        messageType: 'file_analysis'
+        messageType: 'file_analysis'  // Special type for document analysis
       };
 
+      // Update chat with upload and analysis messages
       setMessages(prev => [...prev, uploadMessage, analysisMessage]);
 
     } catch (error) {
+      // Handle upload/analysis errors
       console.error('Error uploading file:', error);
       throw new Error(error.response?.data?.message || 'Failed to upload and analyze document');
     } finally {
+      // Reset upload state
       setUploading(false);
     }
   };
 
-  // Format date for display
+  /**
+   * Format date for user-friendly display
+   * @function formatDate
+   * @param {string} dateString - ISO date string to format
+   * @returns {string} Formatted date string (Today, Yesterday, or local date)
+   * @description Converts timestamps to relative dates for better readability
+   */
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setDate(yesterday.getDate() - 1);  // Calculate yesterday
 
+    // Return relative or absolute date based on timestamp
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return 'Today';  // Message from today
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return 'Yesterday';  // Message from yesterday
     } else {
-      return date.toLocaleDateString();
+      return date.toLocaleDateString();  // Older messages show full date
     }
   };
 
-  // If not authenticated
+  // ==================== Authentication Check ====================
+  
+  /**
+   * Render authentication gate
+   * @returns {JSX.Element} Authentication required message
+   */
   if (!user || !token) {
     return (
       <div className="auth-required">
@@ -320,21 +352,29 @@ const MedicalChatbot = () => {
     );
   }
 
+  // ==================== Main Chatbot Interface ====================
+  
   return (
     <div className="medical-chatbot">
-      {/* Header */}
+      {/* ========== Header Section ========== */}
       <div className="chatbot-header">
+        {/* Title and Description */}
         <div className="header-left">
           <h1>🤖 Medical AI Assistant</h1>
           <p>Get health insights and analyze your medical documents</p>
         </div>
+        
+        {/* Control Buttons */}
         <div className="header-right">
+          {/* Chat History Toggle Button */}
           <button
             className={`history-btn ${showHistory ? 'active' : ''}`}
             onClick={() => setShowHistory(!showHistory)}
           >
             📋 Chat History ({chatSessions.length})
           </button>
+          
+          {/* New Chat Button */}
           <button
             className="new-chat-btn"
             onClick={startNewSession}
@@ -344,31 +384,23 @@ const MedicalChatbot = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* ========== Main Content Area ========== */}
       <div className="chatbot-main">
         {showHistory ? (
-          /* History View */
+          /* ========== Chat History View ========== */
           <div className="history-view">
+            {/* History Panel Header */}
             <div className="history-header">
               <h2>📋 Chat History</h2>
-              <div className="history-actions">
-                {chatSessions.length > 0 && (
-                  <button
-                    className="delete-all-btn"
-                    onClick={() => deleteAllSessions()}
-                  >
-                    🗑️ Delete All
-                  </button>
-                )}
-                <button
-                  className="close-history-btn"
-                  onClick={() => setShowHistory(false)}
-                >
-                  ✕ Close
-                </button>
-              </div>
+              <button
+                className="close-history-btn"
+                onClick={() => setShowHistory(false)}
+              >
+                ✕ Close
+              </button>
             </div>
             
+            {/* History Content with Loading States */}
             {historyLoading ? (
               <div className="loading">Loading chat history...</div>
             ) : chatSessions.length === 0 ? (
@@ -377,39 +409,27 @@ const MedicalChatbot = () => {
                 <p>Start a new conversation to see it here!</p>
               </div>
             ) : (
+              /* Session Cards List */
               <div className="sessions-list">
                 {chatSessions.map((session) => (
                   <div
                     key={session.sessionId}
                     className={`session-card ${sessionId === session.sessionId ? 'current' : ''}`}
+                    onClick={() => loadChatHistory(session.sessionId)}
                   >
-                    <div 
-                      className="session-content"
-                      onClick={() => loadChatHistory(session.sessionId)}
-                    >
-                      <div className="session-title">
-                        💬 {session.sessionTitle}
-                      </div>
-                      <div className="session-meta">
-                        📅 {formatDate(session.lastActivity)} • 
-                        💬 {session.messageCount} messages
-                        {session.reportCount > 0 && ` • 📄 ${session.reportCount} files`}
-                      </div>
-                      <div className="session-preview">
-                        {session.lastMessage}
-                      </div>
+                    {/* Session Title */}
+                    <div className="session-title">
+                      💬 {session.sessionTitle}
                     </div>
-                    <div className="session-actions">
-                      <button
-                        className="delete-session-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteChatSession(session.sessionId);
-                        }}
-                        title="Delete this chat session"
-                      >
-                        🗑️
-                      </button>
+                    {/* Session Metadata */}
+                    <div className="session-meta">
+                      📅 {formatDate(session.lastActivity)} • 
+                      💬 {session.messageCount} messages
+                      {session.reportCount > 0 && ` • 📄 ${session.reportCount} files`}
+                    </div>
+                    {/* Last Message Preview */}
+                    <div className="session-preview">
+                      {session.lastMessage}
                     </div>
                   </div>
                 ))}
@@ -417,8 +437,9 @@ const MedicalChatbot = () => {
             )}
           </div>
         ) : (
-          /* Chat View */
+          /* ========== Active Chat View ========== */
           <div className="chat-view">
+            {/* File Upload Component */}
             <div className="file-upload-section">
               <FileUploader
                 onFileUpload={handleFileUpload}
@@ -427,19 +448,22 @@ const MedicalChatbot = () => {
               />
             </div>
             
+            {/* Chat Interface Component */}
             <div className="chat-section">
               <ChatInterface
                 messages={messages}
                 onSendMessage={sendMessage}
                 loading={loading}
+                followUpQuestions={followUpQuestions}
               />
             </div>
           </div>
         )}
       </div>
 
-      {/* Styles */}
+      {/* ========== Component Styles ========== */}
       <style jsx>{`
+        /* Main Container */
         .medical-chatbot {
           max-width: 1200px;
           margin: 0 auto;
@@ -448,6 +472,7 @@ const MedicalChatbot = () => {
           min-height: 100vh;
         }
 
+        /* Authentication Gate */
         .auth-required {
           text-align: center;
           padding: 60px 20px;
@@ -456,6 +481,7 @@ const MedicalChatbot = () => {
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
+        /* Header Styles */
         .chatbot-header {
           background: white;
           border-radius: 12px;
@@ -478,6 +504,7 @@ const MedicalChatbot = () => {
           color: #64748b;
         }
 
+        /* Control Buttons */
         .header-right {
           display: flex;
           gap: 12px;
@@ -494,6 +521,7 @@ const MedicalChatbot = () => {
           transition: all 0.2s;
         }
 
+        /* History Button States */
         .history-btn:hover {
           border-color: #3b82f6;
           background: #eff6ff;
@@ -505,6 +533,7 @@ const MedicalChatbot = () => {
           border-color: #3b82f6;
         }
 
+        /* New Chat Button States */
         .new-chat-btn {
           background: #10b981;
           color: white;
@@ -516,6 +545,7 @@ const MedicalChatbot = () => {
           border-color: #059669;
         }
 
+        /* Main Content Area */
         .chatbot-main {
           background: white;
           border-radius: 12px;
@@ -523,6 +553,7 @@ const MedicalChatbot = () => {
           overflow: hidden;
         }
 
+        /* History Panel */
         .history-view {
           padding: 24px;
         }
@@ -541,28 +572,7 @@ const MedicalChatbot = () => {
           color: #1e293b;
         }
 
-        .history-actions {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-        }
-
-        .delete-all-btn {
-          padding: 8px 16px;
-          border: 1px solid #fecaca;
-          border-radius: 6px;
-          background: #fef2f2;
-          cursor: pointer;
-          color: #dc2626;
-          font-weight: 500;
-          transition: all 0.2s;
-        }
-
-        .delete-all-btn:hover {
-          background: #fee2e2;
-          border-color: #f87171;
-        }
-
+        /* Close History Button */
         .close-history-btn {
           padding: 8px 16px;
           border: 1px solid #e2e8f0;
@@ -576,6 +586,7 @@ const MedicalChatbot = () => {
           background: #f1f5f9;
         }
 
+        /* Loading States */
         .loading {
           text-align: center;
           padding: 40px;
@@ -588,19 +599,20 @@ const MedicalChatbot = () => {
           color: #64748b;
         }
 
+        /* Session History List */
         .sessions-list {
           display: flex;
           flex-direction: column;
           gap: 12px;
         }
 
+        /* Session Card */
         .session-card {
+          padding: 16px;
           border: 1px solid #e2e8f0;
           border-radius: 8px;
+          cursor: pointer;
           transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 12px;
         }
 
         .session-card:hover {
@@ -613,35 +625,7 @@ const MedicalChatbot = () => {
           background: #ecfdf5;
         }
 
-        .session-content {
-          flex: 1;
-          padding: 16px;
-          cursor: pointer;
-        }
-
-        .session-actions {
-          padding: 16px 12px;
-          display: flex;
-          align-items: center;
-        }
-
-        .delete-session-btn {
-          padding: 8px;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-          border-radius: 4px;
-          font-size: 16px;
-          color: #64748b;
-          transition: all 0.2s;
-        }
-
-        .delete-session-btn:hover {
-          background: #fee2e2;
-          color: #dc2626;
-          transform: scale(1.1);
-        }
-
+        /* Session Card Content */
         .session-title {
           font-weight: 600;
           color: #1e293b;
@@ -662,6 +646,7 @@ const MedicalChatbot = () => {
           text-overflow: ellipsis;
         }
 
+        /* Chat View */
         .chat-view {
           padding: 24px;
         }
@@ -670,6 +655,7 @@ const MedicalChatbot = () => {
           margin-bottom: 24px;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
           .medical-chatbot {
             padding: 12px;

@@ -1,26 +1,43 @@
+/**
+ * @fileoverview Main Express Server Entry Point for Healthcare System
+ * @description Primary server file that initializes Express application, sets up middleware,
+ * configures routes, connects to MongoDB, and starts the server with error handling
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import authRoute from './Routes/auth.js';
-import userRoutes from './Routes/user.js';
-import doctorRoutes from './Routes/doctor.js';
-import reviewRoutes from './Routes/review.js';
-import bookingRoute from './Routes/booking.js';
-import adminRoute from './Routes/admin.js';
-import postRoute from './Routes/posts.js';
-import moderatorRoutes from './Routes/moderator.js';
-import medicineRoutes from './Routes/medicineRoutes.js';
-import cartRoutes from './routes/cartRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import contactRoute from './Routes/contact.js';
-import ambulanceRoutes from './Routes/ambulanceRoutes.js';
-import chatbotRoutes from './Routes/chatbot.js';
-import debugRoutes from './Routes/debug.js';
 
+// Import all route modules for different healthcare features
+import authRoute from './Routes/auth.js';           // Authentication and registration
+import userRoutes from './Routes/user.js';         // User profile management
+import doctorRoutes from './Routes/doctor.js';     // Doctor management
+import reviewRoutes from './Routes/review.js';     // Doctor reviews and ratings
+import bookingRoute from './Routes/booking.js';    // Appointment booking
+import adminRoute from './Routes/admin.js';        // Admin dashboard and controls
+import postRoute from './Routes/posts.js';         // Community health posts
+import moderatorRoutes from './Routes/moderator.js'; // Content moderation
+import medicineRoutes from './Routes/medicineRoutes.js'; // Pharmacy management
+import cartRoutes from './routes/cartRoutes.js';   // Shopping cart functionality
+import orderRoutes from './routes/orderRoutes.js'; // Order processing
+import contactRoute from './Routes/contact.js';    // Contact form handling
+import ambulanceRoutes from './Routes/ambulanceRoutes.js'; // Emergency ambulance services
+import chatbotRoutes from './Routes/chatbot.js';   // AI medical consultation
+import debugRoutes from './Routes/debug.js';       // Development debugging routes
+
+import serverless from 'serverless-http'; 
+
+// Load environment variables from .env file
 dotenv.config();
+
+// Initialize Express application
 const app = express();
+
+// Server port configuration (default to 5000 for healthcare system)
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {

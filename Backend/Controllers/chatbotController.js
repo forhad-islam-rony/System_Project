@@ -1,15 +1,40 @@
+/**
+ * @fileoverview Medical Chatbot Controller for AI-powered healthcare consultations
+ * @description Handles chat sessions, medical queries, file uploads, and emergency detection
+ * using Gemini AI with RAG (Retrieval-Augmented Generation) for contextual responses
+ * @author Healthcare System Team
+ * @version 2.0.0
+ */
+
 import ChatSession from '../models/ChatSession.js';
 import geminiService from '../services/geminiService.js';
 import ragService from '../services/ragService.js';
 import enhancedFileUploadService from '../services/enhancedFileUploadService.js';
 import mongoose from 'mongoose';
 
+/**
+ * Controller class for managing medical chatbot interactions
+ * Provides AI-powered medical consultations with file analysis capabilities
+ * and emergency symptom detection
+ */
 class ChatbotController {
-  // Start new chat session
+  /**
+   * Start a new medical consultation chat session
+   * @async
+   * @function startChatSession
+   * @param {Object} req - Express request object containing authenticated user ID
+   * @param {Object} res - Express response object
+   * @returns {Promise<Object>} JSON response with session ID and initial message
+   * @description Creates a new chat session for the authenticated user with a welcome message
+   * from the medical AI assistant. Each session is tied to a specific user and includes
+   * an initial greeting explaining the AI's capabilities.
+   */
   async startChatSession(req, res) {
     try {
+      // Extract authenticated user ID from middleware
       const userId = req.userId;
       
+      // Validate user authentication
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -17,6 +42,7 @@ class ChatbotController {
         });
       }
       
+      // Create new chat session with initial AI greeting
       const chatSession = new ChatSession({
         userId: new mongoose.Types.ObjectId(userId),
         sessionTitle: `Medical Consultation - ${new Date().toLocaleDateString()}`,
@@ -29,8 +55,10 @@ class ChatbotController {
         isActive: true
       });
       
+      // Save session to database
       const savedSession = await chatSession.save();
       
+      // Return success response with session details
       res.status(200).json({
         success: true,
         data: {
@@ -40,6 +68,7 @@ class ChatbotController {
         }
       });
     } catch (error) {
+      // Log error and return failure response
       console.error('Error starting chat session:', error);
       res.status(500).json({
         success: false,

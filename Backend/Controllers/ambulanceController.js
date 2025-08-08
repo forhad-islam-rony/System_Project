@@ -1,7 +1,30 @@
+/**
+ * @fileoverview Ambulance Service Controller
+ * @description Manages ambulance drivers and emergency requests with real-time
+ * location tracking, request assignment, and status management
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import AmbulanceDriver from '../models/AmbulanceDriver.js';
 import AmbulanceRequest from '../models/AmbulanceRequest.js';
 
-// Driver Controllers
+// ==================== Driver Controllers ====================
+
+/**
+ * Create new ambulance driver
+ * @async
+ * @function createDriver
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Driver details
+ * @param {string} req.body.driverName - Driver's full name
+ * @param {string} req.body.phone - Driver's contact number
+ * @param {string} req.body.licenseNumber - Driver's license number
+ * @param {Object} req.body.location - Driver's current location
+ * @param {string} req.body.vehicleNumber - Ambulance vehicle number
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Created driver details
+ */
 export const createDriver = async (req, res) => {
     try {
         const driver = new AmbulanceDriver(req.body);
@@ -19,6 +42,16 @@ export const createDriver = async (req, res) => {
     }
 };
 
+/**
+ * Get all registered ambulance drivers
+ * @async
+ * @function getAllDrivers
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} List of all ambulance drivers
+ * @description Retrieves all registered ambulance drivers with their details
+ * including current status and location
+ */
 export const getAllDrivers = async (req, res) => {
     try {
         const drivers = await AmbulanceDriver.find();
@@ -34,6 +67,17 @@ export const getAllDrivers = async (req, res) => {
     }
 };
 
+/**
+ * Get specific driver by ID
+ * @async
+ * @function getDriverById
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Driver's ID
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Driver details if found
+ * @description Retrieves a specific ambulance driver's details by their ID
+ */
 export const getDriverById = async (req, res) => {
     try {
         const driver = await AmbulanceDriver.findById(req.params.id);
@@ -55,6 +99,18 @@ export const getDriverById = async (req, res) => {
     }
 };
 
+/**
+ * Update driver information
+ * @async
+ * @function updateDriver
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Driver's ID
+ * @param {Object} req.body - Updated driver details
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated driver details
+ * @description Updates an ambulance driver's information with validation
+ */
 export const updateDriver = async (req, res) => {
     try {
         const driver = await AmbulanceDriver.findByIdAndUpdate(
@@ -81,6 +137,17 @@ export const updateDriver = async (req, res) => {
     }
 };
 
+/**
+ * Delete ambulance driver
+ * @async
+ * @function deleteDriver
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Driver's ID to delete
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Success message if deleted
+ * @description Removes an ambulance driver from the system
+ */
 export const deleteDriver = async (req, res) => {
     try {
         const driver = await AmbulanceDriver.findByIdAndDelete(req.params.id);
@@ -102,7 +169,25 @@ export const deleteDriver = async (req, res) => {
     }
 };
 
-// Request Controllers
+// ==================== Request Controllers ====================
+
+/**
+ * Create new ambulance request
+ * @async
+ * @function createRequest
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request details
+ * @param {string} req.body.name - Patient's name
+ * @param {string} req.body.phone - Contact phone number
+ * @param {string} req.body.pickupLocation - Pickup location description
+ * @param {string} req.body.emergencyType - Type of medical emergency
+ * @param {string} req.body.preferredHospital - Preferred hospital (optional)
+ * @param {Object} req.body.coordinates - Location coordinates
+ * @param {string} req.userId - Authenticated user's ID
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Created request details and nearby drivers
+ * @description Creates a new ambulance request and finds nearby available drivers
+ */
 export const createRequest = async (req, res) => {
     try {
         const { name, phone, pickupLocation, emergencyType, preferredHospital, coordinates } = req.body;
@@ -152,6 +237,16 @@ export const createRequest = async (req, res) => {
     }
 };
 
+/**
+ * Get all ambulance requests
+ * @async
+ * @function getAllRequests
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} List of all ambulance requests with driver details
+ * @description Retrieves all ambulance requests sorted by creation date,
+ * populated with assigned driver information
+ */
 export const getAllRequests = async (req, res) => {
     try {
         const requests = await AmbulanceRequest.find()
@@ -169,6 +264,20 @@ export const getAllRequests = async (req, res) => {
     }
 };
 
+/**
+ * Assign driver to ambulance request
+ * @async
+ * @function assignDriver
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Request ID
+ * @param {Object} req.body - Assignment details
+ * @param {string} req.body.driverId - Driver ID to assign
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated request with assigned driver details
+ * @description Assigns an available driver to an ambulance request and
+ * updates both request and driver status
+ */
 export const assignDriver = async (req, res) => {
     try {
         const { driverId } = req.body;
@@ -204,6 +313,20 @@ export const assignDriver = async (req, res) => {
     }
 };
 
+/**
+ * Complete ambulance request
+ * @async
+ * @function completeRequest
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Request ID
+ * @param {Object} req.body - Request details
+ * @param {string} req.body.driverId - Driver ID to mark as available
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated request with completed status
+ * @description Marks an ambulance request as completed and makes the
+ * assigned driver available for new requests
+ */
 export const completeRequest = async (req, res) => {
     try {
         const { driverId } = req.body;
@@ -245,7 +368,18 @@ export const completeRequest = async (req, res) => {
     }
 };
 
-// Get request status
+/**
+ * Get ambulance request status
+ * @async
+ * @function getRequestStatus
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Request ID
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Request details with driver information
+ * @description Retrieves current status of an ambulance request including
+ * assigned driver details if available
+ */
 export const getRequestStatus = async (req, res) => {
     try {
         const request = await AmbulanceRequest.findById(req.params.id)
@@ -270,7 +404,17 @@ export const getRequestStatus = async (req, res) => {
     }
 };
 
-// Get user's requests
+/**
+ * Get user's ambulance request history
+ * @async
+ * @function getUserRequests
+ * @param {Object} req - Express request object
+ * @param {string} req.userId - Authenticated user's ID
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} List of user's ambulance requests
+ * @description Retrieves all ambulance requests made by a specific user,
+ * sorted by creation date with driver details
+ */
 export const getUserRequests = async (req, res) => {
     try {
         const userId = req.userId;
@@ -303,7 +447,16 @@ export const getUserRequests = async (req, res) => {
     }
 };
 
-// Get all drivers
+/**
+ * Get all ambulance drivers
+ * @async
+ * @function getDrivers
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} List of all drivers without version field
+ * @description Retrieves all ambulance drivers with their details,
+ * excluding the version field for cleaner response
+ */
 export const getDrivers = async (req, res) => {
     try {
         const drivers = await AmbulanceDriver.find().select('-__v');
@@ -320,7 +473,20 @@ export const getDrivers = async (req, res) => {
     }
 };
 
-// Update driver status
+/**
+ * Update ambulance driver's status
+ * @async
+ * @function updateDriverStatus
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Driver ID
+ * @param {Object} req.body - Update details
+ * @param {string} req.body.status - New driver status
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated driver details
+ * @description Updates an ambulance driver's availability status
+ * (available/busy/offline)
+ */
 export const updateDriverStatus = async (req, res) => {
     try {
         const driver = await AmbulanceDriver.findByIdAndUpdate(
@@ -348,7 +514,21 @@ export const updateDriverStatus = async (req, res) => {
     }
 };
 
-// Update driver location
+/**
+ * Update ambulance driver's location
+ * @async
+ * @function updateDriverLocation
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Driver ID
+ * @param {Object} req.body - Location details
+ * @param {number} req.body.latitude - Location latitude
+ * @param {number} req.body.longitude - Location longitude
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated driver details with new location
+ * @description Updates an ambulance driver's current location using
+ * GeoJSON Point format for location tracking
+ */
 export const updateDriverLocation = async (req, res) => {
     try {
         const { latitude, longitude } = req.body;
@@ -383,7 +563,19 @@ export const updateDriverLocation = async (req, res) => {
     }
 };
 
-// Get nearby drivers
+/**
+ * Find nearby available ambulance drivers
+ * @async
+ * @function getNearbyDrivers
+ * @param {Object} req - Express request object
+ * @param {Object} req.query - Query parameters
+ * @param {number} req.query.latitude - Location latitude
+ * @param {number} req.query.longitude - Location longitude
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} List of nearby available drivers
+ * @description Finds available ambulance drivers within 5km radius
+ * of the specified location using MongoDB's geospatial queries
+ */
 export const getNearbyDrivers = async (req, res) => {
     try {
         const { latitude, longitude } = req.query;
@@ -413,7 +605,20 @@ export const getNearbyDrivers = async (req, res) => {
     }
 };
 
-// Update request status
+/**
+ * Update ambulance request status
+ * @async
+ * @function updateRequestStatus
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Request ID
+ * @param {Object} req.body - Update details
+ * @param {string} req.body.status - New request status
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Updated request with driver details
+ * @description Updates the status of an ambulance request and returns
+ * the updated request with populated driver information
+ */
 export const updateRequestStatus = async (req, res) => {
     try {
         const request = await AmbulanceRequest.findByIdAndUpdate(
@@ -441,7 +646,20 @@ export const updateRequestStatus = async (req, res) => {
     }
 };
 
-// Cancel a request
+/**
+ * Cancel ambulance request
+ * @async
+ * @function cancelRequest
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - URL parameters
+ * @param {string} req.params.id - Request ID to cancel
+ * @param {string} req.userId - Authenticated user's ID
+ * @param {string} req.role - User's role (admin/user)
+ * @param {Object} res - Express response object
+ * @returns {Promise<Object>} Success message if cancelled
+ * @description Cancels an ambulance request with proper authorization checks.
+ * Only request owner or admin can cancel. Also handles driver availability.
+ */
 export const cancelRequest = async (req, res) => {
     try {
         const requestId = req.params.id;

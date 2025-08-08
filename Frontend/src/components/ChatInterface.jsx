@@ -1,29 +1,82 @@
+/**
+ * @fileoverview Chat Interface Component for Medical AI Consultations
+ * @description React component providing a real-time chat interface for medical AI conversations
+ * with message rendering, file support, and interactive features
+ * @author Healthcare System Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+/**
+ * ChatInterface component for AI medical consultations
+ * @component
+ * @param {Object} props - Component props
+ * @param {Array} props.messages - Array of chat messages with role, content, and metadata
+ * @param {Function} props.onSendMessage - Callback function to send new messages
+ * @param {boolean} props.loading - Loading state for message processing
+ * @param {Array} props.followUpQuestions - Array of suggested follow-up questions (deprecated)
+ * @returns {JSX.Element} Chat interface with message history, input field, and controls
+ * @description Provides a WhatsApp-like chat interface for medical AI conversations featuring:
+ * - Real-time message display with markdown support
+ * - Automatic scrolling to latest messages
+ * - Message type indicators (text, emergency alerts, file analysis)
+ * - Timestamp formatting and user/AI message distinction
+ * - Loading states and input validation
+ */
 const ChatInterface = ({ messages, onSendMessage, loading, followUpQuestions = [] }) => {
+  // State for current message input
   const [message, setMessage] = useState('');
+  
+  // State for follow-up questions visibility (deprecated feature)
   const [showFollowUp, setShowFollowUp] = useState(false);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  
+  // Refs for DOM manipulation and focus management
+  const messagesEndRef = useRef(null);  // For auto-scroll to bottom
+  const inputRef = useRef(null);        // For input focus management
 
+  /**
+   * Scroll to the bottom of the message container
+   * @function scrollToBottom
+   * @description Smoothly scrolls the chat container to show the latest message
+   */
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  /**
+   * Auto-scroll to bottom when new messages arrive
+   * @effect
+   * @description Automatically scrolls to bottom whenever messages array changes
+   */
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  /**
+   * Handle form submission for sending messages
+   * @function handleSubmit
+   * @param {Event} e - Form submission event
+   * @description Validates input, sends message via callback, and resets form state
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Only send if message has content and not currently loading
     if (message.trim() && !loading) {
       onSendMessage(message.trim());
-      setMessage('');
-      setShowFollowUp(false);
+      setMessage('');                    // Clear input field
+      setShowFollowUp(false);           // Hide follow-up questions
     }
   };
 
+  /**
+   * Handle clicking on suggested follow-up questions
+   * @function handleFollowUpClick
+   * @param {string} question - The follow-up question text
+   * @description Cleans question formatting and sends it as a new message
+   * @deprecated This feature has been disabled in the current version
+   */
   const handleFollowUpClick = (question) => {
     // Clean the question by removing any prefixes like "1. " or "- "
     const cleanQuestion = question.replace(/^\d+\.\s*/, '').replace(/^-\s*/, '').trim();
@@ -33,6 +86,13 @@ const ChatInterface = ({ messages, onSendMessage, loading, followUpQuestions = [
     setShowFollowUp(false);
   };
 
+  /**
+   * Format timestamp for message display
+   * @function formatTimestamp
+   * @param {string|Date} timestamp - Message timestamp
+   * @returns {string} Formatted time string (HH:MM format)
+   * @description Converts timestamp to user-friendly time format
+   */
   const formatTimestamp = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour: '2-digit',

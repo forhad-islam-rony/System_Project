@@ -1,19 +1,53 @@
+/**
+ * @fileoverview Gemini AI Service for medical consultations and analysis
+ * @description Service class that integrates Google's Gemini AI for medical response generation,
+ * emergency symptom detection, medical report analysis, and text embeddings with fallback mechanisms
+ * @author Healthcare System Team
+ * @version 2.0.0
+ */
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 dotenv.config();
 
+/**
+ * Service class for Google Gemini AI integration in healthcare context
+ * @class GeminiService
+ * @description Provides medical AI capabilities including:
+ * - Medical consultation responses with conversation context
+ * - Emergency symptom detection and triage
+ * - Medical report analysis from uploaded files
+ * - Text embeddings for RAG (Retrieval-Augmented Generation)
+ * - Rate limiting and error handling with intelligent fallbacks
+ */
 class GeminiService {
+  /**
+   * Initialize Gemini AI service with configuration
+   * @constructor
+   * @description Sets up Gemini client, model configuration, and rate limiting parameters
+   */
   constructor() {
+    // Initialize Gemini client with API key from environment
     this.client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // Use gemini-1.5-flash instead of pro - it has higher rate limits and is cheaper
+    
+    // Use gemini-2.5-flash model for better rate limits and cost efficiency
     this.model = this.client.getGenerativeModel({ model: "gemini-2.5-flash" });
+    
+    // Rate limiting configuration to prevent API quota exhaustion
     this.lastRequestTime = 0;
-    this.requestDelay = 2000; // 2 seconds between requests to handle larger prompts
-    // Note: Gemini doesn't have a dedicated embedding model like OpenAI
-    // We'll use a different approach for embeddings
+    this.requestDelay = 2000; // 2 seconds between requests for larger prompts
+    
+    // Note: Using simple hash-based embeddings as fallback since Gemini
+    // embeddings can hit quota limits easily in development/demo scenarios
   }
 
-  // Rate limiting helper
+  /**
+   * Rate limiting helper to prevent API quota exhaustion
+   * @async
+   * @function waitForRateLimit
+   * @description Ensures minimum delay between API calls to respect rate limits
+   * @returns {Promise<void>} Resolves after appropriate delay
+   */
   async waitForRateLimit() {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
