@@ -1,4 +1,19 @@
 {
+  "scripts": {
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd Backend && npm test",
+    "test:frontend": "cd Frontend && npm test",
+    "test:backend:watch": "cd Backend && npm run test:watch",
+    "test:frontend:watch": "cd Frontend && npm run test:watch",
+    "test:coverage": "npm run test:backend:coverage && npm run test:frontend:coverage",
+    "test:backend:coverage": "cd Backend && npm run test:coverage",
+    "test:frontend:coverage": "cd Frontend && npm run test:coverage",
+    "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev:frontend": "cd Frontend && npm run dev",
+    "start:backend": "cd Backend && npm start",
+    "build:frontend": "cd Frontend && npm run build"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
