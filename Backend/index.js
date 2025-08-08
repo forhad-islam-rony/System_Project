@@ -19,7 +19,7 @@ import ambulanceRoutes from './Routes/ambulanceRoutes.js';
 import chatbotRoutes from './Routes/chatbot.js';
 import debugRoutes from './Routes/debug.js';
 
-dotenv.config();
+dotenv.config({ path: '.env.local' });
 const app = express();
 const PORT = process.env.PORT || 5000;
 
