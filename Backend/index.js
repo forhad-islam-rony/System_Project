@@ -22,8 +22,8 @@ import adminRoute from './Routes/admin.js';        // Admin dashboard and contro
 import postRoute from './Routes/posts.js';         // Community health posts
 import moderatorRoutes from './Routes/moderator.js'; // Content moderation
 import medicineRoutes from './Routes/medicineRoutes.js'; // Pharmacy management
-import cartRoutes from './routes/cartRoutes.js';   // Shopping cart functionality
-import orderRoutes from './routes/orderRoutes.js'; // Order processing
+import cartRoutes from './Routes/cartRoutes.js';   // Shopping cart functionality
+import orderRoutes from './Routes/orderRoutes.js'; // Order processing
 import contactRoute from './Routes/contact.js';    // Contact form handling
 import ambulanceRoutes from './Routes/ambulanceRoutes.js'; // Emergency ambulance services
 import chatbotRoutes from './Routes/chatbot.js';   // AI medical consultation
