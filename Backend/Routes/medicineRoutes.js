@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllMedicines, getMedicineById, createMedicine, getMedicineCategories } from '../Controllers/medicineController.js'
+import { getAllMedicines, getMedicineById, createMedicine, getMedicineCategories } from '../Controllers/medicineController.js';
 import { authenticate, restrict } from '../auth/verifyToken.js';
 
 const router = express.Router();
